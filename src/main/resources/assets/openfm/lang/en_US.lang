@@ -1,7 +1,7 @@
 tile.Radio.name=OpenFM Radio
 tile.Speaker.name=OpenFM Speaker
 item.OpenFMTuner.name=OpenFM Radio Tuner
-itemGroup.tabRadioMod=OpenFM
+itemGroup.tabOpenFM=OpenFM
 msg.selected_speaker=[OpenFM] Selected Speaker
 msg.added_speaker=[OpenFM] Speaker Added
 msg.failed_adding_speaker_limit=[OpenFM] Could not add speaker. Max 10 allowed!

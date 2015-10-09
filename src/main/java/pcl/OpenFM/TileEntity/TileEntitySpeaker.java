@@ -1,5 +1,6 @@
 package pcl.OpenFM.TileEntity;
 
+import cpw.mods.fml.common.Optional;
 import li.cil.oc.api.Network;
 import li.cil.oc.api.network.Environment;
 import li.cil.oc.api.network.Message;
@@ -8,9 +9,14 @@ import li.cil.oc.api.network.Visibility;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
+@Optional.InterfaceList(value={
+		@Optional.Interface(iface = "li.cil.oc.api.network.Environment", modid = "OpenComputers")
+})
 public class TileEntitySpeaker extends TileEntity implements Environment {
+	
 	protected Node node = Network.newNode(this, Visibility.Network).create();
 
+	@Optional.Method(modid = "OpenComputers")
 	@Override
 	public Node node() {
 		return node;
@@ -30,16 +36,19 @@ public class TileEntitySpeaker extends TileEntity implements Environment {
 			node.remove();
 	}
 
+	@Optional.Method(modid = "OpenComputers")
 	@Override
 	public void onConnect(final Node node) {
 		// TODO Auto-generated method stub
 	}
 
+	@Optional.Method(modid = "OpenComputers")
 	@Override
 	public void onMessage(Message message) {
 		// TODO Auto-generated method stub
 	}
 
+	@Optional.Method(modid = "OpenComputers")
 	@Override
 	public void onDisconnect(Node node) {
 		// TODO Auto-generated method stub

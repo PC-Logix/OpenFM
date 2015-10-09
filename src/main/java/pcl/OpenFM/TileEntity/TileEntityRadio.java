@@ -64,12 +64,14 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 	{
 		this.world = w;
 	}
-
+	
+	@Optional.Method(modid = "OpenComputers")
 	@Callback
 	public Object[] greet(Context context, Arguments args) {
 		return new Object[] { "Lasciate ogne speranza, voi ch'intrate" };
 	}
-		
+	
+	@Optional.Method(modid = "OpenComputers")
 	@Callback
 	public Object[] start(Context context, Arguments args) {
 		startStream();
@@ -92,6 +94,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		}
 	}
 	
+	@Optional.Method(modid = "OpenComputers")
 	@Callback
 	public Object[] stop(Context context, Arguments args) {
 		stopStream();
@@ -113,6 +116,12 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 			OpenFM.playerList.remove(this.player);
 			this.isPlaying = false;
 		}
+	}
+	
+	@Optional.Method(modid = "OpenComputers")
+	@Callback
+	public Object[] isPlaying(Context context, Arguments args) {
+		return new Object[] { isPlaying() };
 	}
 	
 	public boolean isPlaying()

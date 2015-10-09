@@ -52,13 +52,7 @@ implements Runnable {
 		try
 		{
 
-			OkHttpClient client = new OkHttpClient();
-			Request request = new Request.Builder().url(this.streamURL).build();
-
-			Response response = client.newCall(request).execute();
-			InputStream stream = response.body().byteStream();
-
-			this.player = new DAdvancedPlayer(stream);
+			this.player = new DAdvancedPlayer(new URL(this.streamURL).openConnection().getInputStream());
 			this.player.setID(this.world, this.x, this.y, this.z);
 			this.player.setPlayBackListener(this);
 			this.player.play();

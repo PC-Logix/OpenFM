@@ -26,7 +26,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 
-@Mod(modid=OpenFM.MODID, name="OpenFM", version=BuildInfo.versionNumber + "." + BuildInfo.buildNumber, dependencies = "required-after:OpenComputers@[1.5.0,)")
+@Mod(modid=OpenFM.MODID, name="OpenFM", version=BuildInfo.versionNumber + "." + BuildInfo.buildNumber, dependencies = "")
 public class OpenFM {
 	public static final String MODID = "openfm";
 	@Mod.Instance(MODID)

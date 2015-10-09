@@ -15,12 +15,27 @@ buildscript {
     }
 }
 
+apply plugin: 'forge'
+apply plugin: 'maven'
+
+repositories {
+	mavenCentral()
+    maven {
+        name = "OC repo"
+        url = "http://maven.cil.li/"
+    }
+}
+
 configurations {
     shade
     compile.extendsFrom shade
 }
 
-apply plugin: 'forge'
+dependencies {
+    compile "li.cil.oc:OpenComputers:MC1.7.10-1.5.18.36:dev"
+	shade "javazoom:jlayer:1.0.1"
+	shade "com.squareup.okhttp:okhttp:2.5.0"
+}
 
 if (System.getenv().BUILD_NUMBER != null)
 	ext.buildNumber = System.getenv().BUILD_NUMBER?.toInteger()
@@ -31,18 +46,10 @@ version = "0.1.0"
 group = "pcl.OpenFM"
 archivesBaseName = "OpenFM"
 
-repositories {
-	mavenCentral()
-    maven {
-        name = "OC repo"
-        url = "http://maven.cil.li/"
-    }
-}
-
-dependencies {
-    compile "li.cil.oc:OpenComputers:MC1.7.10-1.5.18.36:dev"
-	shade "javazoom:jlayer:1.0.1"
-	shade "com.squareup.okhttp:okhttp:2.5.0"
+minecraft {
+	version = "1.7.10-10.13.4.1448-1.7.10"
+	replace "@VERSION@", project.version
+	replace "@BUILD@", project.ext.buildNumber
 }
 
 jar {
@@ -51,28 +58,6 @@ jar {
             exclude 'META-INF', 'META-INF/**'
         }
     }
-}
-
-minecraft {
-	version = "1.7.10-10.13.4.1448-1.7.10"
-	replace "@VERSION@", project.version
-	replace "@BUILD@", project.ext.buildNumber
-	srgExtra "PK:javazoom/jl/ pcl/javazoom/jl"
-}
-
-sourceSets.main.java.srcDir("./src/externs/java")
-
-jar.doFirst {
-	for (String s : new File("./src/externs/java").list())
-		delete new File(sourceSets.main.output.classesDir, s);
-}
-
-task deobfJar(type: Jar, dependsOn: 'jar') {
-    from "build/source/main"
-    classifier "dev"
-}
-artifacts {
-    archives deobfJar
 }
 
 jar.classifier = "${ext.buildNumber}"
@@ -87,7 +72,7 @@ if (project.hasProperty('opensecurity_curseforge_key')) {
 apply plugin: 'curseforge'
 curse {
 	apiKey = curseforge_key
-	projectId = "231687"
+	projectId = "236839"
 	releaseType = "release"
 	changelog = curse_changlog
 	addGameVersion project.minecraft.version
@@ -105,5 +90,12 @@ processResources {
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
+    }
+}
+
+// this is needed for IntelliJ so we don't have to copy over the assets manually every time
+idea {
+    module {
+        outputDir = file('build/classes/main')
     }
 }
