@@ -1,0 +1,109 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+    }
+}
+
+configurations {
+    shade
+    compile.extendsFrom shade
+}
+
+apply plugin: 'forge'
+
+if (System.getenv().BUILD_NUMBER != null)
+	ext.buildNumber = System.getenv().BUILD_NUMBER?.toInteger()
+else
+	ext.buildNumber = 0
+
+version = "0.1.0"
+group = "pcl.OpenFM"
+archivesBaseName = "OpenFM"
+
+repositories {
+	mavenCentral()
+    maven {
+        name = "OC repo"
+        url = "http://maven.cil.li/"
+    }
+}
+
+dependencies {
+    compile "li.cil.oc:OpenComputers:MC1.7.10-1.5.18.36:dev"
+	shade "javazoom:jlayer:1.0.1"
+	shade "com.squareup.okhttp:okhttp:2.5.0"
+}
+
+jar {
+    configurations.shade.each { dep ->
+        from(project.zipTree(dep)){
+            exclude 'META-INF', 'META-INF/**'
+        }
+    }
+}
+
+minecraft {
+	version = "1.7.10-10.13.4.1448-1.7.10"
+	replace "@VERSION@", project.version
+	replace "@BUILD@", project.ext.buildNumber
+	srgExtra "PK:javazoom/jl/ pcl/javazoom/jl"
+}
+
+sourceSets.main.java.srcDir("./src/externs/java")
+
+jar.doFirst {
+	for (String s : new File("./src/externs/java").list())
+		delete new File(sourceSets.main.output.classesDir, s);
+}
+
+task deobfJar(type: Jar, dependsOn: 'jar') {
+    from "build/source/main"
+    classifier "dev"
+}
+artifacts {
+    archives deobfJar
+}
+
+jar.classifier = "${ext.buildNumber}"
+
+def curseforge_key = 0
+def curse_changlog = "default"
+if (project.hasProperty('opensecurity_curseforge_key')) {
+	curseforge_key = project.opensecurity_curseforge_key
+	curse_changlog = project.changelog
+}
+
+apply plugin: 'curseforge'
+curse {
+	apiKey = curseforge_key
+	projectId = "231687"
+	releaseType = "release"
+	changelog = curse_changlog
+	addGameVersion project.minecraft.version
+}
+
+processResources {
+    // replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+                
+        // replace version and mcversion
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+        
+    // copy everything else, thats not the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}

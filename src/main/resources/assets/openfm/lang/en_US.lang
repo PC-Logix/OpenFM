@@ -1,0 +1,12 @@
+tile.Radio.name=OpenFM Radio
+tile.Speaker.name=OpenFM Speaker
+item.OpenFMTuner.name=OpenFM Radio Tuner
+itemGroup.tabRadioMod=OpenFM
+msg.selected_speaker=[OpenFM] Selected Speaker
+msg.added_speaker=[OpenFM] Speaker Added
+msg.failed_adding_speaker_limit=[OpenFM] Could not add speaker. Max 10 allowed!
+msg.failed_adding_speaker_exists=[OpenFM] That speaker is already bound to this radio!
+msg.failed_adding_speaker_unknown=[OpenFM] Could not add speaker. Unknown error!
+msg.not_correct_stream=[OpenFM] Invalid StreamURL.
+msg.invalid_link=[OpenFM] Stream is incorrect format.
+msg.failed_adding_speaker_not_selected=[OpenFM] No speaker selected!
