@@ -11,16 +11,6 @@ import pcl.OpenFM.network.Message.MessageTERadioBlock;
 
 public class NGuiRadio extends GuiRadio {
 	private DRMGuiButton playBtn;
-	private DRMGuiButton redstoneBtn;
-	private DRMGuiButton volUp;
-	private DRMGuiButton volDown;
-	private DRMGuiButton previous;
-	private DRMGuiButton next;
-	private DRMGuiButton clear;
-	private DRMGuiButton copy;
-	private DRMGuiButton paste;
-	private DRMGuiButton exit;
-	private DRMGuiButton play;
 	protected DRMGuiTextField streamTextBox;
 	protected DRMGuiTextField volumeBox;
 
@@ -31,34 +21,18 @@ public class NGuiRadio extends GuiRadio {
 
 
 
-	public void initGui()
-	{
+	@SuppressWarnings("unchecked")
+	public void initGui()	{
 		org.lwjgl.input.Keyboard.enableRepeatEvents(true);
 
 		this.DRMbuttonList.add(new DRMGuiButton(2, this.width / 2 + 12, this.height / 2 + 3 - 5, 10, 10, 58, 24, "", DRMGuiButton.guiLocation));
 		this.DRMbuttonList.add(new DRMGuiButton(3, this.width / 2 - 22, this.height / 2 + 3 - 5, 10, 10, 48, 24, "", DRMGuiButton.guiLocation));
 
 
-		this.DRMbuttonList.add(new DRMGuiButton(4, this.width / 2 - 107, this.height / 2 + 15 - 5, 6, 12, 75, 24, "", DRMGuiButton.guiLocation));
-		this.DRMbuttonList.add(new DRMGuiButton(5, this.width / 2 + 101, this.height / 2 + 15 - 5, 6, 12, 81, 24, "", DRMGuiButton.guiLocation));
-
-
 		this.DRMbuttonList.add(new DRMGuiButton(6, this.width / 2 - 12 - 50, this.height / 2 + 31 - 5, 48, 8, 48, 0, "", DRMGuiButton.guiLocation));
 		this.DRMbuttonList.add(new DRMGuiButton(7, this.width / 2 - 12 - 51, this.height / 2 + 41 - 5, 49, 8, 96, 1, "", DRMGuiButton.guiLocation));
-		this.DRMbuttonList.add(new DRMGuiButton(8, this.width / 2 + 12 + 2, this.height / 2 + 33 - 5, 42, 6, 145, 0, "", DRMGuiButton.guiLocation));
-		this.DRMbuttonList.add(new DRMGuiButton(9, this.width / 2 + 12 + 2, this.height / 2 + 40 - 5, 54, 8, 187, 0, "", DRMGuiButton.guiLocation));
-
 
 		this.DRMbuttonList.add(new DRMGuiButton(10, this.width / 2 + 100, this.height / 2 + 3 - 5, 7, 8, 68, 24, "", DRMGuiButton.guiLocation));
-
-		if (!this.redstoneButtonState) {
-			this.redstoneBtn = new DRMGuiButton(11, this.width / 2 + 100 - 13, this.height / 2 + 3 - 5, 8, 8, 87, 24, "", DRMGuiButton.guiLocation);
-		} else {
-			this.redstoneBtn = new DRMGuiButton(11, this.width / 2 + 100 - 13, this.height / 2 + 3 - 5, 8, 8, 95, 24, "", DRMGuiButton.guiLocation);
-		}
-		if (this.radio.getWorldObj().provider.dimensionId == 0) {
-			this.DRMbuttonList.add(this.redstoneBtn);
-		}
 
 		this.playBtn = new DRMGuiButton(1, this.width / 2 - 12, this.height / 2 + 28 - 5, 24, 24, 0, 0, "", DRMGuiButton.guiLocation);
 		this.DRMbuttonList.add(this.playBtn);
@@ -77,6 +51,7 @@ public class NGuiRadio extends GuiRadio {
 
 
 
+	@SuppressWarnings("unchecked")
 	public void updateScreen()
 	{
 		super.updateScreen();
@@ -100,18 +75,6 @@ public class NGuiRadio extends GuiRadio {
 			this.DRMbuttonList.remove(this.playBtn);
 			this.playBtn = new DRMGuiButton(1, this.width / 2 - 12, this.height / 2 + 28 - 5, 24, 24, 0, 0, "", DRMGuiButton.guiLocation);
 			this.DRMbuttonList.add(this.playBtn);
-		}
-		if ((this.radio.listenToRedstone & !this.redstoneButtonState)) {
-			this.redstoneButtonState = true;
-			this.DRMbuttonList.remove(this.redstoneBtn);
-			this.redstoneBtn = new DRMGuiButton(11, this.width / 2 + 100 - 13, this.height / 2 + 3 - 5, 8, 8, 95, 24, "", DRMGuiButton.guiLocation);
-			this.DRMbuttonList.add(this.redstoneBtn);
-		}
-		if ((!this.radio.listenToRedstone & this.redstoneButtonState)) {
-			this.redstoneButtonState = false;
-			this.DRMbuttonList.remove(this.redstoneBtn);
-			this.redstoneBtn = new DRMGuiButton(11, this.width / 2 + 100 - 13, this.height / 2 + 3 - 5, 8, 8, 87, 24, "", DRMGuiButton.guiLocation);
-			this.DRMbuttonList.add(this.redstoneBtn);
 		}
 	}
 
@@ -162,37 +125,6 @@ public class NGuiRadio extends GuiRadio {
 				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, this.radio.isPlaying(), v, 3));
 			}
 		}
-		if (par1GuiButton.id == 4)
-		{
-			this.saving = false;
-			if (OpenFM.playlist.playlist.size() != 0)
-			{
-				if (0 < OpenFM.playlist.currentStream) {
-					OpenFM.playlist.currentStream -= 1;
-					this.URL = ((String)OpenFM.playlist.playlist.get(OpenFM.playlist.currentStream));
-				} else {
-					OpenFM.playlist.currentStream = (OpenFM.playlist.playlist.size() - 1);
-					this.URL = ((String)OpenFM.playlist.playlist.get(OpenFM.playlist.currentStream));
-				}
-				this.streamTextBox.setCursorPosition(0);
-				this.streamTextBox.setText(this.URL);
-			}
-		}
-		if (par1GuiButton.id == 5)
-		{
-			this.saving = false;
-			if (OpenFM.playlist.playlist.size() != 0) {
-				if (OpenFM.playlist.playlist.size() - 1 > OpenFM.playlist.currentStream) {
-					OpenFM.playlist.currentStream += 1;
-					this.URL = ((String)OpenFM.playlist.playlist.get(OpenFM.playlist.currentStream));
-				} else {
-					OpenFM.playlist.currentStream = 0;
-					this.URL = ((String)OpenFM.playlist.playlist.get(OpenFM.playlist.currentStream));
-				}
-				this.streamTextBox.setCursorPosition(0);
-				this.streamTextBox.setText(this.URL);
-			}
-		}
 		if (par1GuiButton.id == 6)
 		{
 			this.saving = false;
@@ -209,30 +141,6 @@ public class NGuiRadio extends GuiRadio {
 			}
 			catch (Exception localException) {}
 		}
-		if (par1GuiButton.id == 8)
-		{
-			if (!OpenFM.playlist.playlist.contains(this.streamTextBox.getText())) {
-				OpenFM.playlist.add(this.streamTextBox.getText());
-			}
-		}
-		if (par1GuiButton.id == 9)
-		{
-			OpenFM.playlist.remove(this.streamTextBox.getText());
-
-			if (OpenFM.playlist.playlist.size() != 0) {
-				if (0 < OpenFM.playlist.currentStream) {
-					OpenFM.playlist.currentStream -= 1;
-					this.URL = ((String)OpenFM.playlist.playlist.get(OpenFM.playlist.currentStream));
-				} else {
-					OpenFM.playlist.currentStream = (OpenFM.playlist.playlist.size() - 1);
-					this.URL = ((String)OpenFM.playlist.playlist.get(OpenFM.playlist.currentStream));
-				}
-				this.streamTextBox.setText(this.URL);
-			} else {
-				this.streamTextBox.setText(OpenFM.defaultURL);
-			}
-		}
-
 		if (par1GuiButton.id == 10)
 		{
 			Minecraft.getMinecraft().displayGuiScreen(null);

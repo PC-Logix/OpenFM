@@ -13,7 +13,6 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
-import pcl.OpenFM.Data.Playlist;
 import pcl.OpenFM.Handler.ClientEvent;
 import pcl.OpenFM.Handler.ServerEvent;
 import pcl.OpenFM.network.PacketHandler;
@@ -24,7 +23,6 @@ import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 
 @Mod(modid=OpenFM.MODID, name="OpenFM", version=BuildInfo.versionNumber + "." + BuildInfo.buildNumber, dependencies = "")
 public class OpenFM {
@@ -43,7 +41,6 @@ public class OpenFM {
 	public static List<MP3Player> playerList = new ArrayList<MP3Player>();
 	public Configuration config;
 	public static CreativeTabs creativeTab;
-	public static Playlist playlist;
 	public static boolean registered = true;
 	public static final Logger  logger  = LogManager.getFormatterLogger(MODID);
 	
@@ -64,8 +61,6 @@ public class OpenFM {
 				logger.info("OpenUpdater is not installed, not registering.");
 			}
 		}
-		
-		playlist = new Playlist(event);
 		config.save();
 	}
 
