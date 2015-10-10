@@ -13,6 +13,7 @@ public class NGuiRadio extends GuiRadio {
 	private DRMGuiButton playBtn;
 	protected DRMGuiTextField streamTextBox;
 	protected DRMGuiTextField volumeBox;
+	private DRMGuiButton redstoneBtn;
 
 	public NGuiRadio(TileEntityRadio r)
 	{
@@ -25,16 +26,25 @@ public class NGuiRadio extends GuiRadio {
 	public void initGui()	{
 		org.lwjgl.input.Keyboard.enableRepeatEvents(true);
 
-		this.DRMbuttonList.add(new DRMGuiButton(2, this.width / 2 + 12, this.height / 2 + 3 - 5, 10, 10, 58, 24, "", DRMGuiButton.guiLocation));
-		this.DRMbuttonList.add(new DRMGuiButton(3, this.width / 2 - 22, this.height / 2 + 3 - 5, 10, 10, 48, 24, "", DRMGuiButton.guiLocation));
+		this.DRMbuttonList.add(new DRMGuiButton(2, this.width / 2 + 12, this.height / 2 + 3 - 5, 10, 10, 58, 24, "", DRMGuiButton.guiLocation)); //VolDown
+		this.DRMbuttonList.add(new DRMGuiButton(3, this.width / 2 - 22, this.height / 2 + 3 - 5, 10, 10, 48, 24, "", DRMGuiButton.guiLocation)); //VolUp
 
 
-		this.DRMbuttonList.add(new DRMGuiButton(6, this.width / 2 - 12 - 50, this.height / 2 + 31 - 5, 48, 8, 48, 0, "", DRMGuiButton.guiLocation));
-		this.DRMbuttonList.add(new DRMGuiButton(7, this.width / 2 - 12 - 51, this.height / 2 + 41 - 5, 49, 8, 96, 1, "", DRMGuiButton.guiLocation));
+		this.DRMbuttonList.add(new DRMGuiButton(6, this.width / 2 - 12 - 50, this.height / 2 + 31 - 5, 48, 8, 48, 0, "", DRMGuiButton.guiLocation)); //clear
+		this.DRMbuttonList.add(new DRMGuiButton(7, this.width / 2 + 12 + 2, this.height / 2 + 33 - 5, 55, 8, 96, 1, "", DRMGuiButton.guiLocation)); //paste
 
-		this.DRMbuttonList.add(new DRMGuiButton(10, this.width / 2 + 100, this.height / 2 + 3 - 5, 7, 8, 68, 24, "", DRMGuiButton.guiLocation));
+		this.DRMbuttonList.add(new DRMGuiButton(10, this.width / 2 + 100, this.height / 2 + 3 - 5, 7, 8, 68, 24, "", DRMGuiButton.guiLocation)); //Close
 
-		this.playBtn = new DRMGuiButton(1, this.width / 2 - 12, this.height / 2 + 28 - 5, 24, 24, 0, 0, "", DRMGuiButton.guiLocation);
+		if (!this.redstoneButtonState) {
+			this.redstoneBtn = new DRMGuiButton(11, this.width / 2 + 100 - 13, this.height / 2 + 3 - 5, 8, 8, 87, 24, "", DRMGuiButton.guiLocation); //Redstone
+		} else {
+			this.redstoneBtn = new DRMGuiButton(11, this.width / 2 + 100 - 13, this.height / 2 + 3 - 5, 8, 8, 95, 24, "", DRMGuiButton.guiLocation); //Redstone
+		}
+		if (this.radio.getWorldObj().provider.dimensionId == 0) {
+			this.DRMbuttonList.add(this.redstoneBtn);
+		}
+
+		this.playBtn = new DRMGuiButton(1, this.width / 2 - 12, this.height / 2 + 28 - 5, 24, 24, 0, 0, "", DRMGuiButton.guiLocation); //Play
 		this.DRMbuttonList.add(this.playBtn);
 
 
@@ -75,6 +85,18 @@ public class NGuiRadio extends GuiRadio {
 			this.DRMbuttonList.remove(this.playBtn);
 			this.playBtn = new DRMGuiButton(1, this.width / 2 - 12, this.height / 2 + 28 - 5, 24, 24, 0, 0, "", DRMGuiButton.guiLocation);
 			this.DRMbuttonList.add(this.playBtn);
+		}
+		if ((this.radio.listenToRedstone & !this.redstoneButtonState)) {
+			this.redstoneButtonState = true;
+			this.DRMbuttonList.remove(this.redstoneBtn);
+			this.redstoneBtn = new DRMGuiButton(11, this.width / 2 + 100 - 13, this.height / 2 + 3 - 5, 8, 8, 95, 24, "", DRMGuiButton.guiLocation);
+			this.DRMbuttonList.add(this.redstoneBtn);
+		}
+		if ((!this.radio.listenToRedstone & this.redstoneButtonState)) {
+			this.redstoneButtonState = false;
+			this.DRMbuttonList.remove(this.redstoneBtn);
+			this.redstoneBtn = new DRMGuiButton(11, this.width / 2 + 100 - 13, this.height / 2 + 3 - 5, 8, 8, 87, 24, "", DRMGuiButton.guiLocation);
+			this.DRMbuttonList.add(this.redstoneBtn);
 		}
 	}
 
@@ -145,15 +167,6 @@ public class NGuiRadio extends GuiRadio {
 		{
 			Minecraft.getMinecraft().displayGuiScreen(null);
 			Minecraft.getMinecraft().setIngameFocus();
-		}
-
-		if (par1GuiButton.id == 11)
-		{
-			if (!this.redstoneButtonState) {
-				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, this.radio.isPlaying(), this.radio.volume, 11));
-			} else {
-				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, this.radio.isPlaying(), this.radio.volume, 12));
-			}
 		}
 	}
 

@@ -13,8 +13,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  
  
  @SideOnly(Side.CLIENT)
- public class DRMGuiButton
-   extends GuiButton
+ public class DRMGuiButton extends GuiButton
  {
    private int offx;
    private int offy;
@@ -37,13 +36,8 @@ import cpw.mods.fml.relauncher.SideOnly;
      this.offy = y;
      this.DRMbuttonTextures = new ResourceLocation(loc);
    }
-   
  
- 
- 
- 
-   public int getHoverState(boolean p_146114_1_)
-   {
+   public int getHoverState(boolean p_146114_1_) {
      byte b0 = 0;
      
      if (!this.enabled)
@@ -58,8 +52,7 @@ import cpw.mods.fml.relauncher.SideOnly;
      return b0;
    }
    
-   public void drawButton(Minecraft p_146112_1_, int p_146112_2_, int p_146112_3_)
-   {
+   public void drawButton(Minecraft p_146112_1_, int p_146112_2_, int p_146112_3_) {
      if (this.visible)
      {
        FontRenderer fontrenderer = p_146112_1_.fontRenderer;
@@ -91,5 +84,3 @@ import cpw.mods.fml.relauncher.SideOnly;
      }
    }
  }
-
-

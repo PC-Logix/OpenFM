@@ -3,10 +3,9 @@ package pcl.OpenFM.Handler;
 import pcl.OpenFM.OpenFM;
 
 public class ChatMessage {
-	private static String pre = "[OpenFM]";
 
 	public static void writeline(String message) {
-		OpenFM.logger.info(pre + " " + message);
+		OpenFM.logger.info(message);
 	}
 
 	public static void writeError(Exception e) {

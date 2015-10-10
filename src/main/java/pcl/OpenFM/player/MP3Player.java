@@ -6,6 +6,8 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URL;
 
+import javax.sound.sampled.UnsupportedAudioFileException;
+
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -19,11 +21,9 @@ import pcl.OpenFM.network.PacketHandler;
 import pcl.OpenFM.network.Message.MessageTERadioBlock;
 import cpw.mods.fml.client.FMLClientHandler;
 
-public class MP3Player
-extends DPlaybackListener
-implements Runnable {
+public class MP3Player extends DPlaybackListener implements Runnable {
 	private String streamURL;
-	private DAdvancedPlayer player;
+	public DAdvancedPlayer player;
 	private Thread pThread;
 	private int x;
 	private int y;
@@ -96,10 +96,5 @@ implements Runnable {
 	{
 		System.out.println(Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS));
 		return this.player.getVolume() / Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS);
-	}
-	
-	public String getTrackInfo()
-	{
-		return this.player.getTrack();
 	}
 }

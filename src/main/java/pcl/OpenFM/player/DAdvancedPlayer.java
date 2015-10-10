@@ -1,6 +1,9 @@
 package pcl.OpenFM.player;
 
+import java.io.IOException;
 import java.io.InputStream;
+
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 import javazoom.jl.decoder.Bitstream;
 import javazoom.jl.decoder.BitstreamException;
@@ -26,7 +29,8 @@ public class DAdvancedPlayer {
 	private int posY;
 	private int posZ;
 	private World world;
-
+	public InputStream ourStream = null;
+	public MpegInfo tagData = new MpegInfo();
 	public DAdvancedPlayer(InputStream stream) throws JavaLayerException {
 		this(stream, null);
 	}
@@ -39,6 +43,7 @@ public class DAdvancedPlayer {
 	}
 
 	public DAdvancedPlayer(InputStream stream, AudioDevice device) throws JavaLayerException {
+		ourStream = stream;
 		this.bitstream = new Bitstream(stream);
 		if (device != null)
 		{
@@ -72,7 +77,7 @@ public class DAdvancedPlayer {
 			}
 			ret = decodeFrame();
 		}
-		
+
 		AudioDevice out = this.audio;
 
 		if (out != null)
@@ -125,10 +130,11 @@ public class DAdvancedPlayer {
 
 
 			SampleBuffer output = (SampleBuffer)this.decoder.decodeFrame(h, this.bitstream);
+
 			synchronized (this)
 			{
 				out = this.audio;
-
+				
 				if (out != null)
 				{
 					short[] samples = output.getBuffer();
@@ -136,8 +142,7 @@ public class DAdvancedPlayer {
 					for (int samp = 0; samp < samples.length; samp++)
 					{
 						samples[samp] = ((short)(int)(samples[samp] * this.volume * (2 * (Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS) * Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.MASTER)))));
-					}
-
+					}					
 					out.write(samples, 0, output.getBufferLength());
 				}
 			}
@@ -200,17 +205,6 @@ public class DAdvancedPlayer {
 	}
 
 	public float getVolume() {
-		System.out.println("-_-");
 		return this.volume;
-	}
-	
-	public String getTrack() {
-		System.out.println("fsfdsfd");
-		if (this.bitstream.getRawID3v2() != null) {
-			System.out.println("fsfdsfd");
-			return this.bitstream.getRawID3v2().toString();
-		}
-		System.out.println("fsfdsfd");
-		return "Nope";
 	}
 }

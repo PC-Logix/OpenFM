@@ -75,6 +75,7 @@ public class OpenFM {
 		ContentRegistry.registerBlocks();
 		ContentRegistry.registerItems();   
 		proxy.initTileEntities();
+		proxy.registerRenderers();
 	}
 
 	public static void killAllStreams()

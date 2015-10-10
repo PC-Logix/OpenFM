@@ -9,7 +9,9 @@ import li.cil.oc.api.network.SimpleComponent;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import pcl.OpenFM.OpenFM;
@@ -27,7 +29,7 @@ import cpw.mods.fml.common.Optional;
 		@Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "OpenComputers")
 })
 public class TileEntityRadio extends TileEntity implements SimpleComponent {
-	private MP3Player player = null;
+	public MP3Player player = null;
 	public boolean isPlaying = false;
 	public String streamURL = "";
 	public boolean blockExists = true;
@@ -39,6 +41,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 	private boolean scheduleRedstoneInput = false;
 	public ArrayList<Speaker> speakers = new ArrayList<Speaker>();
 	private int th = 0;
+	private int screenColor = 0x0000FF;
 	double cx = 0.0D; double cy = 0.0D; double cz = 0.0D;
 
 	private int speakersCount = 0;
@@ -64,13 +67,13 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 	{
 		this.world = w;
 	}
-	
+
 	@Optional.Method(modid = "OpenComputers")
 	@Callback
 	public Object[] greet(Context context, Arguments args) {
 		return new Object[] { "Lasciate ogne speranza, voi ch'intrate" };
 	}
-	
+
 	@Optional.Method(modid = "OpenComputers")
 	@Callback
 	public Object[] start(Context context, Arguments args) {
@@ -79,7 +82,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		getDescriptionPacket();
 		return new Object[] { true };
 	}
-	
+
 	public void startStream()
 	{
 		Side side = FMLCommonHandler.instance().getEffectiveSide();
@@ -93,7 +96,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 			}
 		}
 	}
-	
+
 	@Optional.Method(modid = "OpenComputers")
 	@Callback
 	public Object[] stop(Context context, Arguments args) {
@@ -103,7 +106,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		getDescriptionPacket();
 		return new Object[] { true };
 	}
-	
+
 	public void stopStream()
 	{
 		Side side = FMLCommonHandler.instance().getEffectiveSide();
@@ -117,13 +120,13 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 			this.isPlaying = false;
 		}
 	}
-	
+
 	@Optional.Method(modid = "OpenComputers")
 	@Callback
 	public Object[] isPlaying(Context context, Arguments args) {
 		return new Object[] { isPlaying() };
 	}
-	
+
 	public boolean isPlaying()
 	{
 		return this.isPlaying;
@@ -199,6 +202,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 				this.scheduledRedstoneInput = false;
 			}
 		}
+		
 	}
 
 	@Optional.Method(modid = "OpenComputers")
@@ -209,42 +213,55 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		getDescriptionPacket();
 		return new Object[] { true };
 	}
-	
+
 	@Optional.Method(modid = "OpenComputers")
 	@Callback
 	public Object[] getVol(Context context, Arguments args) {
 		return new Object[] { this.volume };
 	}
-	
+
 	@Optional.Method(modid = "OpenComputers")
 	@Callback
 	public Object[] setVol(Context context, Arguments args) {
-		this.volume = args.checkInteger(0);
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-		getDescriptionPacket();
-		return new Object[] { this.volume };
+		float v = (float)(args.checkInteger(0));
+		if ((v > 0.0F) && (v <= 1.0F)) {
+			this.volume = args.checkInteger(0);
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			getDescriptionPacket();
+			return new Object[] { this.volume };
+		} else {
+			return new Object[] { false };
+		}
 	}
-	
+
 	@Optional.Method(modid = "OpenComputers")
 	@Callback
 	public Object[] volUp(Context context, Arguments args) {
-		this.volume = this.volume + 0.1f;
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-		getDescriptionPacket();
-		return new Object[] { this.volume };
+		float v = (float)(this.volume + 0.1D);
+		if ((v > 0.0F) && (v <= 1.0F)) {
+			this.volume = v;
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			getDescriptionPacket();
+			return new Object[] { this.volume };
+		} else {
+			return new Object[] { false };
+		}
 	}
-	
+
 	@Optional.Method(modid = "OpenComputers")
 	@Callback
 	public Object[] volDown(Context context, Arguments args) {
-		this.volume = this.volume - 0.1f;
-		if (this.volume < 0) 
-			this.volume = 0;
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-		getDescriptionPacket();
-		return new Object[] { this.volume };
+		float v = (float)(this.volume - 0.1D);
+		if ((v > 0.0F) && (v <= 1.0F)) {
+			this.volume = v;
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			getDescriptionPacket();
+			return new Object[] { this.volume };
+		} else {
+			return new Object[] { false };
+		}
 	}
-	
+
 	public void readFromNBT(NBTTagCompound par1NBTTagCompound)
 	{
 		super.readFromNBT(par1NBTTagCompound);
@@ -254,6 +271,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		this.redstoneInput = par1NBTTagCompound.getBoolean("lastInput");
 		this.isPlaying = par1NBTTagCompound.getBoolean("lastState");
 		this.speakersCount = par1NBTTagCompound.getInteger("speakersCount");
+		this.screenColor = par1NBTTagCompound.getInteger("screenColor");
 		for (int i = 0; i < this.speakersCount; i++) {
 			double x = par1NBTTagCompound.getDouble("speakerX" + i);
 			double y = par1NBTTagCompound.getDouble("speakerY" + i);
@@ -272,6 +290,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		par1NBTTagCompound.setBoolean("lastInput", this.redstoneInput);
 		par1NBTTagCompound.setBoolean("lastState", this.isPlaying);
 		par1NBTTagCompound.setInteger("speakersCount", this.speakers.size());
+		par1NBTTagCompound.setInteger("screenColor", this.screenColor);
 		for (int i = 0; i < this.speakers.size(); i++) {
 			par1NBTTagCompound.setDouble("speakerX" + i, ((Speaker)this.speakers.get(i)).x);
 			par1NBTTagCompound.setDouble("speakerY" + i, ((Speaker)this.speakers.get(i)).y);
@@ -279,6 +298,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		}
 	}
 
+	@Override
 	public Packet getDescriptionPacket()
 	{
 		for (Speaker s : this.speakers) {
@@ -288,13 +308,58 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		int mode = 13;
 		if (this.listenToRedstone)
 			mode = 14;
-		return PacketHandler.INSTANCE.getPacketFrom(new MessageTERadioBlock(this));
+		PacketHandler.INSTANCE.getPacketFrom(new MessageTERadioBlock(this));
+		
+	    NBTTagCompound tagCom = new NBTTagCompound();
+	    this.writeToNBT(tagCom);
+		return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, this.blockMetadata, tagCom);
 	}
 
+	@Override
+	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity packet) {
+		readFromNBT(packet.func_148857_g());
+	}
+	
+	@Optional.Method(modid = "OpenComputers")
+	@Callback
+	public Object[] getListenRedstone(Context context, Arguments args) {
+		return new Object[] { getListenRedstoneInput() };
+	}
+	
 	public boolean getListenRedstoneInput() {
 		return this.listenToRedstone;
 	}
 
+	@Optional.Method(modid = "OpenComputers")
+	@Callback
+	public Object[] setListenRedstone(Context context, Arguments args) {
+		setRedstoneInput(args.checkBoolean(0));
+		return new Object[] { getListenRedstoneInput() };
+	}
+	
+	@Optional.Method(modid = "OpenComputers")
+	@Callback
+	public Object[] getScreenColor(Context context, Arguments args) {
+		return new Object[] { this.getScreenColor() };
+	}
+	
+	public int getScreenColor() {
+		return screenColor;
+	}
+	
+	@Optional.Method(modid = "OpenComputers")
+	@Callback
+	public Object[] setScreenColor(Context context, Arguments args) {
+		setScreenColor(args.checkInteger(0));
+		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		getDescriptionPacket();
+		return new Object[] { true };
+	}
+	
+	public void setScreenColor(Integer color) {
+		this.screenColor = color;
+	}
+	
 	public void setRedstoneInput(boolean input) {
 		if (input) {
 			this.scheduledRedstoneInput = input;
@@ -302,6 +367,12 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		this.scheduleRedstoneInput = true;
 	}
 
+	@Optional.Method(modid = "OpenComputers")
+	@Callback
+	public Object[] getAttachedSpeakers(Context context, Arguments args) {
+		return new Object[] { this.speakers.size() };
+	}
+	
 	public int addSpeaker(World w, double x, double y, double z)
 	{
 		if (this.speakers.size() >= 10)
