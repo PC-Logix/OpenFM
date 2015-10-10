@@ -16,6 +16,8 @@ fm.volDown()
 
 fm.getVol()
 
+fm.setScreenColor(0xFF0000) Sets the text color to red on the display
+
 
 Highly modified version of Dragon's Radio Mod, Dragon's Radio Mod is Licenses MIT.
 
