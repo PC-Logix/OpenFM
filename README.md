@@ -18,3 +18,5 @@ fm.getVol()
 
 
 Highly modified version of Dragon's Radio Mod, Dragon's Radio Mod is Licenses MIT.
+
+Downloads via Curse http://www.curse.com/mc-mods/Minecraft/236839-openfm
