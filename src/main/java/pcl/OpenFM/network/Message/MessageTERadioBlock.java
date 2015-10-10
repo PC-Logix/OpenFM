@@ -22,11 +22,9 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
    
    public double x;
    
- 
    public MessageTERadioBlock() {}
    
-   public MessageTERadioBlock(TileEntityRadio radio)
-   {
+   public MessageTERadioBlock(TileEntityRadio radio) {
      this.x = radio.xCoord;
      this.y = radio.yCoord;
      this.z = radio.zCoord;
@@ -44,8 +42,7 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
  
  
  
-   public MessageTERadioBlock(double x, double y, double z, World world, String streamURL, boolean isPlaying, float volume, int mode)
-   {
+   public MessageTERadioBlock(double x, double y, double z, World world, String streamURL, boolean isPlaying, float volume, int mode) {
      this.x = x;
      this.y = y;
      this.z = z;
@@ -71,12 +68,8 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
      this.ty = ty;
      this.tz = tz;
    }
-   
- 
- 
- 
-   public void fromBytes(ByteBuf buf)
-   {
+
+   public void fromBytes(ByteBuf buf) {
      this.mode = buf.readInt();
      this.x = buf.readDouble();
      this.y = buf.readDouble();
@@ -91,13 +84,8 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
      this.ty = buf.readDouble();
      this.tz = buf.readDouble();
    }
-   
- 
- 
- 
- 
-   public void toBytes(ByteBuf buf)
-   {
+
+   public void toBytes(ByteBuf buf) {
      buf.writeInt(this.mode);
      buf.writeDouble(this.x);
      buf.writeDouble(this.y);
@@ -112,5 +100,3 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
      buf.writeDouble(this.tz);
    }
  }
-
-

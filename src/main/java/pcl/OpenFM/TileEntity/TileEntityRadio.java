@@ -42,6 +42,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 	public ArrayList<Speaker> speakers = new ArrayList<Speaker>();
 	private int th = 0;
 	private int screenColor = 0x0000FF;
+	boolean setColorPlox = false;
 	double cx = 0.0D; double cy = 0.0D; double cz = 0.0D;
 
 	private int speakersCount = 0;
@@ -202,7 +203,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 				this.scheduledRedstoneInput = false;
 			}
 		}
-		
+
 	}
 
 	@Optional.Method(modid = "OpenComputers")
@@ -308,10 +309,15 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		int mode = 13;
 		if (this.listenToRedstone)
 			mode = 14;
-		PacketHandler.INSTANCE.getPacketFrom(new MessageTERadioBlock(this));
+
 		
-	    NBTTagCompound tagCom = new NBTTagCompound();
-	    this.writeToNBT(tagCom);
+		if (!setColorPlox) {
+			setColorPlox = false;
+			return PacketHandler.INSTANCE.getPacketFrom(new MessageTERadioBlock(this));
+		}
+
+		NBTTagCompound tagCom = new NBTTagCompound();
+		this.writeToNBT(tagCom);
 		return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, this.blockMetadata, tagCom);
 	}
 
@@ -319,13 +325,13 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity packet) {
 		readFromNBT(packet.func_148857_g());
 	}
-	
+
 	@Optional.Method(modid = "OpenComputers")
 	@Callback
 	public Object[] getListenRedstone(Context context, Arguments args) {
 		return new Object[] { getListenRedstoneInput() };
 	}
-	
+
 	public boolean getListenRedstoneInput() {
 		return this.listenToRedstone;
 	}
@@ -336,30 +342,32 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		setRedstoneInput(args.checkBoolean(0));
 		return new Object[] { getListenRedstoneInput() };
 	}
-	
+
 	@Optional.Method(modid = "OpenComputers")
 	@Callback
 	public Object[] getScreenColor(Context context, Arguments args) {
 		return new Object[] { this.getScreenColor() };
 	}
-	
+
 	public int getScreenColor() {
 		return screenColor;
 	}
-	
+
 	@Optional.Method(modid = "OpenComputers")
 	@Callback
 	public Object[] setScreenColor(Context context, Arguments args) {
 		setScreenColor(args.checkInteger(0));
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		getDescriptionPacket();
+		markDirty(); // Marks the chunk as dirty, so that it is saved properly on changes. Not required for the sync specifically, but usually goes alongside the former.
 		return new Object[] { true };
 	}
-	
+
 	public void setScreenColor(Integer color) {
 		this.screenColor = color;
+		setColorPlox = true;
 	}
-	
+
 	public void setRedstoneInput(boolean input) {
 		if (input) {
 			this.scheduledRedstoneInput = input;
@@ -372,7 +380,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 	public Object[] getAttachedSpeakers(Context context, Arguments args) {
 		return new Object[] { this.speakers.size() };
 	}
-	
+
 	public int addSpeaker(World w, double x, double y, double z)
 	{
 		if (this.speakers.size() >= 10)
