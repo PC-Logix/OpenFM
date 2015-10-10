@@ -24,6 +24,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import cpw.mods.fml.common.Optional;
+import cpw.mods.fml.common.network.NetworkRegistry;
 
 @Optional.InterfaceList(value={
 		@Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "OpenComputers")
@@ -143,7 +144,8 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 	public void updateEntity()
 	{
 		Side side = FMLCommonHandler.instance().getEffectiveSide();
-		float vol; if (side == Side.CLIENT) {
+		float vol;
+		if (side == Side.CLIENT) {
 			this.th += 1;
 			if (this.th >= 10) {
 				this.th = 0;
@@ -156,7 +158,6 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 					}
 				}
 			}
-
 			if ((Minecraft.getMinecraft().thePlayer != null) && (this.player != null) && 
 					(!isInvalid())) {
 				vol = getClosest();
@@ -174,7 +175,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 					invalidate();
 				}
 			}
-		} else {
+		} else {			
 			if (isPlaying()) {
 				this.th += 1;
 				if (this.th >= 60) {
@@ -194,7 +195,6 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 				if ((!this.scheduledRedstoneInput) && (this.redstoneInput)) {
 					this.isPlaying = (!this.isPlaying);
 					PacketHandler.INSTANCE.sendToAll(new MessageTERadioBlock(this.xCoord, this.yCoord, this.zCoord, 
-
 							getWorldObj(), this.streamURL, this.isPlaying, this.volume, 1));
 				}
 
@@ -203,7 +203,6 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 				this.scheduledRedstoneInput = false;
 			}
 		}
-
 	}
 
 	@Optional.Method(modid = "OpenComputers")
@@ -310,11 +309,9 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		if (this.listenToRedstone)
 			mode = 14;
 
+		PacketHandler.INSTANCE.sendToAllAround(new MessageTERadioBlock(this), new NetworkRegistry.TargetPoint(getWorldObj().provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 20.0D));
+		//PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this), getWorldObj().provider.dimensionId);
 		
-		if (!setColorPlox) {
-			setColorPlox = false;
-			return PacketHandler.INSTANCE.getPacketFrom(new MessageTERadioBlock(this));
-		}
 
 		NBTTagCompound tagCom = new NBTTagCompound();
 		this.writeToNBT(tagCom);
