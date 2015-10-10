@@ -14,12 +14,12 @@ import net.minecraft.tileentity.TileEntity;
 })
 public class TileEntitySpeaker extends TileEntity implements Environment {
 	
-	protected Node node = Network.newNode(this, Visibility.Network).create();
+	protected Node node;
 
 	@Optional.Method(modid = "OpenComputers")
 	@Override
 	public Node node() {
-		return node;
+		return node = Network.newNode(this, Visibility.Network).create();
 	}
 
 	@Override
