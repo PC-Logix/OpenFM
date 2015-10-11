@@ -24,18 +24,18 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid=OpenFM.MODID, name="OpenFM", version=BuildInfo.versionNumber + "." + BuildInfo.buildNumber, dependencies = "")
+@Mod(modid=BuildInfo.modID, name=BuildInfo.modName, version=BuildInfo.versionNumber + "." + BuildInfo.buildNumber, dependencies = "")
 public class OpenFM {
 
 	// Mod vars
-	public static final String MODID = "openfm";
-	@Mod.Instance(MODID)
+	@Mod.Instance(BuildInfo.modID)
 	public static OpenFM instance;
+
 	@SidedProxy(clientSide="pcl.OpenFM.ClientProxy", serverSide="pcl.OpenFM.CommonProxy")
 	public static CommonProxy proxy;
 
 	// Utils
-	public static final Logger logger  = LogManager.getFormatterLogger(MODID);
+	public static final Logger logger  = LogManager.getFormatterLogger(BuildInfo.modID);
 
 	// Mod content
 	public static Block blockRadio;
