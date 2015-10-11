@@ -18,10 +18,6 @@ import cpw.mods.fml.relauncher.Side;
    {
      Side side = Side.SERVER;
      PacketHandler.INSTANCE.sendToAll(message);
-     if ((!OpenFM.registered) && (side == Side.SERVER)) {
-       ChatMessage.writeline("Reminder: Unregistered server. Radios will NOT work! This might also be an error!!!");
-       return null;
-     }
      WorldServer targetWorld = null;
      net.minecraft.tileentity.TileEntity tileEntity = null;
      WorldServer[] ws = MinecraftServer.getServer().worldServers;

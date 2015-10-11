@@ -23,26 +23,29 @@ import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-//import net.minecraft.src.forge.Property;
 
 @Mod(modid=OpenFM.MODID, name="OpenFM", version=BuildInfo.versionNumber + "." + BuildInfo.buildNumber, dependencies = "")
 public class OpenFM {
+
+	// Mod vars
 	public static final String MODID = "openfm";
 	@Mod.Instance(MODID)
 	public static OpenFM instance;
 	@SidedProxy(clientSide="pcl.OpenFM.ClientProxy", serverSide="pcl.OpenFM.CommonProxy")
 	public static CommonProxy proxy;
+
+	// Utils
+	public static final Logger logger  = LogManager.getFormatterLogger(MODID);
+
+	// Mod content
 	public static Block blockRadio;
 	public static Block blockSpeaker;
 	public static Block blockDummySpeaker;
 	public static Item itemRadioTuner;
-	public List<?> l;
-	public int bid;
 	public static List<MP3Player> playerList = new ArrayList<MP3Player>();
 	public static CreativeTabs creativeTab;
-	public static boolean registered = true;
-	public static final Logger  logger  = LogManager.getFormatterLogger(MODID);
-	
+
+	// Config values
 	public static String defaultURL;
 
 	@Mod.EventHandler
