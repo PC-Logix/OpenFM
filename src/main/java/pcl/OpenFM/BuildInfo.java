@@ -7,8 +7,8 @@ package pcl.OpenFM;
  * @author AfterLifeLochie, stolen from LanteaCraft, another fine PC-Logix Minecraft mod.
  */
 public class BuildInfo {
-	public static final String modName = "OpenPrinter";
-	public static final String modID = "openprinter";
+	public static final String modName = "OpenFM";
+	public static final String modID = "openfm";
 
 	public static final String versionNumber = "@VERSION@";
 	public static final String buildNumber = "@BUILD@";
