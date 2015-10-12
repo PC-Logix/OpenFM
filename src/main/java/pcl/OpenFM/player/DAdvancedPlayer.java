@@ -151,6 +151,8 @@ public class DAdvancedPlayer {
 		}
 		catch (RuntimeException ex)
 		{
+			stop();
+			play();
 			throw new JavaLayerException("Exception decoding audio frame", ex);
 		}
 
