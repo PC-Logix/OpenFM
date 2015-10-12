@@ -89,7 +89,7 @@ output.txt
 /bin
 
 #############
-## Python
+## IntelliJ IDEA project files
 #############
 
 *.iml
