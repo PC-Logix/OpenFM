@@ -1,6 +1,5 @@
 package pcl.OpenFM.Items;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -14,10 +13,12 @@ import pcl.OpenFM.network.PacketHandler;
 import pcl.OpenFM.network.Message.MessageTERadioBlock;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
- 
+
+import java.util.HashMap;
+
 public class ItemOpenFMTuner extends Item {
 
-    public static Speaker currentlySelected = null;
+    public static HashMap<ItemStack, Speaker> boundSpeakers = new HashMap<ItemStack, Speaker>();
 
     public ItemOpenFMTuner() {
         setMaxStackSize(1);
@@ -27,32 +28,41 @@ public class ItemOpenFMTuner extends Item {
 
     public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int hitSide, float hitX, float hitY, float hitZ) {
         Side side = FMLCommonHandler.instance().getEffectiveSide();
-        if ((!(player.worldObj.getBlock(x, y, z) instanceof BlockSpeaker)) && (!(player.worldObj.getBlock(x, y, z) instanceof BlockRadio))) {
-            return false;
-        }
+
+        // Item can only be used by client.
         if (side != Side.SERVER) {
 
-            if ((player.worldObj.getBlock(x, y, z) instanceof BlockSpeaker)) {
-                currentlySelected = new Speaker(x, y, z, player.worldObj);
-                player.addChatMessage(new ChatComponentTranslation("msg.selected_speaker"));
-            }
-            if ((player.worldObj.getBlock(x, y, z) instanceof BlockRadio)) {
-                if (currentlySelected != null) {
-                    TileEntityRadio ter = (TileEntityRadio) player.getEntityWorld().getTileEntity(x, y, z);
-                    int res = ter.canAddSpeaker(player.getEntityWorld(), currentlySelected.x, currentlySelected.y, currentlySelected.z);
-                    if (res == 0) {
-                        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentTranslation("msg.added_speaker"));
-                        PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(x, y, z, player.worldObj, ter.streamURL, ter.isPlaying(), ter.volume, 15, currentlySelected.x, currentlySelected.y, currentlySelected.z));
+            // If clicked block is a speaker, keep a reference to it.
+            if ((world.getBlock(x, y, z) instanceof BlockSpeaker)) {
 
-                    } else if (res == 1) {
-                        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentTranslation("msg.failed_adding_speaker_limit"));
-                    } else if (res == 2) {
-                        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentTranslation("msg.failed_adding_speaker_exists"));
-                    } else {
-                        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentTranslation("msg.failed_adding_speaker_unknown"));
+                // TODO: one speaker should only be able to be linked to exactly one radio.
+                boundSpeakers.put(stack, new Speaker(x, y, z, world));
+                player.addChatMessage(new ChatComponentTranslation("msg.selected_speaker"));
+
+            } else if ((world.getBlock(x, y, z) instanceof BlockRadio)) {
+
+                // Else, it it's a radio, try to link it to the speaker.
+                if (boundSpeakers.get(stack) != null) {
+                    Speaker speaker = boundSpeakers.get(stack);
+                    TileEntityRadio radio = (TileEntityRadio) player.getEntityWorld().getTileEntity(x, y, z);
+
+                    // Check if the speaker can be added to the radio.
+                    int canAdd = radio.canAddSpeaker(player.getEntityWorld(), speaker.x, speaker.y, speaker.z);
+                    if (canAdd == 0) {
+                        // It can, so send a packet.
+                        player.addChatMessage(new ChatComponentTranslation("msg.added_speaker"));
+                        PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(x, y, z, world, radio.streamURL, radio.isPlaying(), radio.volume, 15, speaker.x, speaker.y, speaker.z));
+                    } else if (canAdd == 1) {
+                        // Too many speakers linked.
+                        player.addChatMessage(new ChatComponentTranslation("msg.failed_adding_speaker_limit"));
+                    } else if (canAdd == 2) {
+                        // Speaker is already linked.
+                        player.addChatMessage(new ChatComponentTranslation("msg.failed_adding_speaker_exists"));
                     }
+
                 } else {
-                    Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentTranslation("msg.failed_adding_speaker_not_selected"));
+                    // Apparently no speaker is bound.
+                    player.addChatMessage(new ChatComponentTranslation("msg.failed_adding_speaker_not_selected"));
                 }
             }
 
