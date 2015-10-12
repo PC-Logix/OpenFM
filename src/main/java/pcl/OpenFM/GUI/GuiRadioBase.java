@@ -6,20 +6,19 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import pcl.OpenFM.OFMConfiguration;
 import pcl.OpenFM.OpenFM;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
 import cpw.mods.fml.relauncher.Side;
@@ -42,14 +41,12 @@ public class GuiRadioBase extends GuiScreen {
 	public GuiRadioBase(TileEntityRadio r)
 	{
 		this.radio = r;
-		this.redstoneButtonState = r.listenToRedstone;
+		this.redstoneButtonState = r.isListeningToRedstoneInput();
 		this.lockedButtonState = r.isLocked;
 		this.gui_width = 256;
 		this.gui_height = 252; }
 
 	public boolean exists = true;
-
-	private GuiButton selectedButton;
 
 	public void initGui() {}
 
@@ -95,7 +92,6 @@ public class GuiRadioBase extends GuiScreen {
 					GuiScreenEvent.ActionPerformedEvent.Pre event = new GuiScreenEvent.ActionPerformedEvent.Pre(this, guibutton, this.DRMbuttonList);
 					if (MinecraftForge.EVENT_BUS.post(event))
 						break;
-					this.selectedButton = event.button;
 					event.button.func_146113_a(this.mc.getSoundHandler());
 					actionPerformed(event.button);
 					if (equals(this.mc.currentScreen))
@@ -119,7 +115,7 @@ public class GuiRadioBase extends GuiScreen {
 
 	public String takeFirstEntryFromM3U(String m3uurl)
 	{
-		String out = OpenFM.defaultURL;
+		String out = OFMConfiguration.defaultURL;
 		try
 		{
 			URL m3u = new URL(m3uurl);

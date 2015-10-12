@@ -21,7 +21,6 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import pcl.OpenFM.OpenFM;
 import pcl.OpenFM.GUI.GuiRadio;
 import pcl.OpenFM.GUI.GuiRadioBase;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
@@ -31,17 +30,12 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockRadio extends Block implements ITileEntityProvider {
-	@SideOnly(Side.CLIENT)
-	public static IIcon topIcon;
-	@SideOnly(Side.CLIENT)
-	public static IIcon bottomIcon;
+
 	@SideOnly(Side.CLIENT)
 	public static IIcon sideIcon;
 	@SideOnly(Side.CLIENT)
 	public static IIcon frontIcon;
-	@SideOnly(Side.CLIENT)
-	public static IIcon backIcon;
-	public GuiRadioBase raadio;
+	public GuiRadioBase guiRadio;
 
 	public BlockRadio()
 	{
@@ -61,32 +55,27 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public IIcon getIcon(int i, int j)
+	public IIcon getIcon(int side, int meta)
 	{
-		switch (i)
+		switch (side)
 		{
 		case 2: 
-			if (j == 1)
-			{
+			if (meta == 1) {
 				return frontIcon;
 			}
 			return sideIcon;
 		case 3: 
-			if (j == 0)
+			if (meta == 0 || meta == 3)
 				return frontIcon;
-			if (j == 3) {
-				return frontIcon;
-			}
+			
 			return sideIcon;
 		case 4: 
-			if (j == 4)
-			{
+			if (meta == 4){
 				return frontIcon;
 			}
 			return sideIcon;
 		case 5: 
-			if (j == 2)
-			{
+			if (meta == 2){
 				return frontIcon;
 			}
 			return sideIcon;
@@ -112,13 +101,12 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 	private void openGUI(World par1World, int par2, int par3, int par4)
 	{
 		TileEntityRadio ter = (TileEntityRadio)par1World.getTileEntity(par2, par3, par4);
-		this.raadio = new GuiRadio(ter);
-		Minecraft.getMinecraft().displayGuiScreen(this.raadio);
+		this.guiRadio = new GuiRadio(ter);
+		Minecraft.getMinecraft().displayGuiScreen(this.guiRadio);
 	}
 
 	@Override
-	public void breakBlock(World world, int x, int y, int z, Block block, int p_149749_6_)
-	{
+	public void breakBlock(World world, int x, int y, int z, Block block, int p_149749_6_) {
 		TileEntityRadio t = (TileEntityRadio)world.getTileEntity(x, y, z);
 		ArrayList<ItemStack> items = new ArrayList<ItemStack>();
 		if (t instanceof TileEntityRadio) {
@@ -142,49 +130,46 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 			}
 		}
 	}
+	
 	@Override
 	public Item getItemDropped(int meta, Random random, int fortune) {
 	    return null;
 	}
+	
 	@Override
-	public void onBlockPlacedBy(World par1World, int par2, int par3, int par4, EntityLivingBase par5EntityLiving, ItemStack par6ItemStack)
-	{
+	public void onBlockPlacedBy(World par1World, int par2, int par3, int par4, EntityLivingBase par5EntityLiving, ItemStack par6ItemStack) {
 		int l = MathHelper.floor_double(par5EntityLiving.rotationYaw * 4.0F / 360.0F + 0.5D) & 0x3;
 		par1World.setBlockMetadataWithNotify(par2, par3, par4, l + 1, 2);
 		TileEntity te = par1World.getTileEntity(par2, par3, par4);
 		((TileEntityRadio) te).owner = par5EntityLiving.getUniqueID().toString();
 	}
 
-	public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side)
-	{
+	public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) {
 		return true;
 	}
 
-	public void onNeighborBlockChange(World world, int i, int j, int k, Block block)
-	{
-		boolean flag = world.isBlockIndirectlyGettingPowered(i, j, k);
+	public void onNeighborBlockChange(World world, int x, int y, int z, Block block) {
+		boolean flag = world.isBlockIndirectlyGettingPowered(x, y, z);
 		try {
 			Side side = FMLCommonHandler.instance().getEffectiveSide();
 			if (block.canProvidePower()) {
 				TileEntity tileEntity;
 				if (side == Side.SERVER) {
-					tileEntity = MinecraftServer.getServer().getEntityWorld().getTileEntity(i, j, k);
+					tileEntity = MinecraftServer.getServer().getEntityWorld().getTileEntity(x, y, z);
 				} else {
-					tileEntity = FMLClientHandler.instance().getClient().theWorld.getTileEntity(i, j, k);
+					tileEntity = FMLClientHandler.instance().getClient().theWorld.getTileEntity(x, y, z);
 				}
 				((TileEntityRadio)tileEntity).setRedstoneInput(flag);
 			}
 		}
-		catch (Exception localException) {}
+		catch (Exception localException) { }
 	}
 
-	public boolean shouldCheckWeakPower(IBlockAccess world, int x, int y, int z, int side)
-	{
+	public boolean shouldCheckWeakPower(IBlockAccess world, int x, int y, int z, int side) {
 		return true;
 	}
 
-	public TileEntity createNewTileEntity(World var1, int var2)
-	{
-		return new TileEntityRadio(var1);
+	public TileEntity createNewTileEntity(World world, int meta) {
+		return new TileEntityRadio(world);
 	}
 }

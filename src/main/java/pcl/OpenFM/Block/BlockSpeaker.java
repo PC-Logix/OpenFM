@@ -15,19 +15,13 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockSpeaker extends Block implements ITileEntityProvider {
-	@SideOnly(Side.CLIENT)
-	public static IIcon topIcon;
-	@SideOnly(Side.CLIENT)
-	public static IIcon bottomIcon;
+
 	@SideOnly(Side.CLIENT)
 	public static IIcon sideIcon;
 	@SideOnly(Side.CLIENT)
 	public static IIcon rearIcon;
-	@SideOnly(Side.CLIENT)
-	public static IIcon backIcon;
 
-	public BlockSpeaker()
-	{
+	public BlockSpeaker() {
 		super(Material.wood);
 		setHardness(2.0F);
 		setResistance(10.0F);
@@ -36,75 +30,45 @@ public class BlockSpeaker extends Block implements ITileEntityProvider {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public void registerBlockIcons(IIconRegister ir)
-	{
+	public void registerBlockIcons(IIconRegister ir) {
 		sideIcon = ir.registerIcon("openfm:speaker_side");
 		rearIcon = ir.registerIcon("openfm:speaker_rear");
 	}
 
-
 	@SideOnly(Side.CLIENT)
-	public IIcon getIcon(int i, int j)
-	{
-		switch (i)
-		{
-		case 2: 
-			if (j == 1)
-			{
-				return rearIcon;
-			}
+	public IIcon getIcon(int side, int meta) {
 
+        switch (side) {
+            case 2:
+                if (meta == 1) {
+                    return rearIcon;
+                }
+                return sideIcon;
+            case 3:
+                if (meta == 0 || meta == 3) {
+                    return rearIcon;
+                }
+                return sideIcon;
+            case 4:
+                if (meta == 4) {
+                    return rearIcon;
+                }
+                return sideIcon;
+            case 5:
+                if (meta == 2) {
+                    return rearIcon;
+                }
+                return sideIcon;
+        }
+        return sideIcon;
+    }
 
-			return sideIcon;
-
-
-
-		case 3: 
-			if (j == 0)
-				return rearIcon;
-			if (j == 3) {
-				return rearIcon;
-			}
-			return sideIcon;
-
-		case 4: 
-			if (j == 4)
-			{
-				return rearIcon;
-			}
-
-
-			return sideIcon;
-
-
-		case 5: 
-			if (j == 2)
-			{
-				return rearIcon;
-			}
-
-
-			return sideIcon;
-		}
-
-		return sideIcon;
+	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase player, ItemStack itemStack) {
+		int dir = MathHelper.floor_double(player.rotationYaw * 4.0F / 360.0F + 0.5D) & 0x3;
+        world.setBlockMetadataWithNotify(x, y, z, dir + 1, 2);
 	}
 
-
-
-	public void onBlockClicked(World par1World, int par2, int par3, int par4, EntityLivingBase par5EntityLiving, ItemStack par6ItemStack) {}
-
-
-
-	public void onBlockPlacedBy(World par1World, int par2, int par3, int par4, EntityLivingBase par5EntityLiving, ItemStack par6ItemStack)
-	{
-		int l = MathHelper.floor_double(par5EntityLiving.rotationYaw * 4.0F / 360.0F + 0.5D) & 0x3;
-		par1World.setBlockMetadataWithNotify(par2, par3, par4, l + 1, 2);
-	}
-
-	public TileEntity createNewTileEntity(World p_149915_1_, int p_149915_2_) {
+	public TileEntity createNewTileEntity(World world, int metadata) {
 		return new TileEntitySpeaker();
 	}
 }
-
-

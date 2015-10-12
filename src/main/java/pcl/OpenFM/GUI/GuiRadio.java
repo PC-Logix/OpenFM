@@ -6,7 +6,7 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.StatCollector;
-import pcl.OpenFM.OpenFM;
+import pcl.OpenFM.OFMConfiguration;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
 import pcl.OpenFM.network.PacketHandler;
 import pcl.OpenFM.network.Message.MessageTERadioBlock;
@@ -68,7 +68,7 @@ public class GuiRadio extends GuiRadioBase {
 		if (!this.radio.streamURL.equals("")) {
 			this.streamTextBox.setText(this.radio.streamURL);
 		} else {
-			this.streamTextBox.setText(OpenFM.defaultURL);
+			this.streamTextBox.setText(OFMConfiguration.defaultURL);
 		}
 		this.volumeBox = new OFMGuiTextField(this.fontRendererObj, this.width / 2 - 6, this.height / 2 - 5 + 4, 50, 20);
 		this.volumeBox.setMaxStringLength(2);
@@ -87,7 +87,7 @@ public class GuiRadio extends GuiRadioBase {
 			this.mc.displayGuiScreen((net.minecraft.client.gui.GuiScreen)null);
 			this.mc.setIngameFocus();
 		}
-		this.volumeBox.setText(" " + (int)(this.radio.volume * 10.0F));
+		this.volumeBox.setText(" " + (int)(this.radio.getVolume() * 10.0F));
 
 		if ((this.radio.isPlaying()) && (!this.playButtonPlayingState)) {
 			this.playButtonPlayingState = true;
@@ -101,13 +101,13 @@ public class GuiRadio extends GuiRadioBase {
 			this.playBtn = new OFMGuiButton(1, this.width / 2 - 12, this.height / 2 + 28 - 5, 24, 24, 0, 0, "", OFMGuiButton.guiLocation);
 			this.DRMbuttonList.add(this.playBtn);
 		}
-		if ((this.radio.listenToRedstone & !this.redstoneButtonState)) {
+		if ((this.radio.isListeningToRedstoneInput() & !this.redstoneButtonState)) {
 			this.redstoneButtonState = true;
 			this.DRMbuttonList.remove(this.redstoneBtn);
 			this.redstoneBtn = new OFMGuiButton(11, this.width / 2 + 100 - 13, this.height / 2 + 3 - 5, 8, 8, 95, 24, "", OFMGuiButton.guiLocation);
 			this.DRMbuttonList.add(this.redstoneBtn);
 		}
-		if ((!this.radio.listenToRedstone & this.redstoneButtonState)) {
+		if ((!this.radio.isListeningToRedstoneInput() & this.redstoneButtonState)) {
 			this.redstoneButtonState = false;
 			this.DRMbuttonList.remove(this.redstoneBtn);
 			this.redstoneBtn = new OFMGuiButton(11, this.width / 2 + 100 - 13, this.height / 2 + 3 - 5, 8, 8, 87, 24, "", OFMGuiButton.guiLocation);
@@ -197,7 +197,7 @@ public class GuiRadio extends GuiRadioBase {
 					drawHoveringText(temp, par1, par2, fontRendererObj);
 				} else if (btn.id == 11) {
 					String hover;
-					if (!this.radio.listenToRedstone) {
+					if (!this.radio.isListeningToRedstoneInput()) {
 						hover = StatCollector.translateToLocal("gui.string.RedstoneOn");
 					} else {
 						hover = StatCollector.translateToLocal("gui.string.RedstoneOff");
@@ -242,12 +242,12 @@ public class GuiRadio extends GuiRadioBase {
 			{
 				this.radio.streamURL = this.streamTextBox.getText();
 			}
-			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, !this.radio.isPlaying(), this.radio.volume, 1));
+			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, !this.radio.isPlaying(), this.radio.getVolume(), 1));
 		}
 		if (par1GuiButton.id == 2) //VolUp
 		{
 			this.saving = false;
-			float v = (float)(this.radio.volume + 0.1D);
+			float v = (float)(this.radio.getVolume() + 0.1D);
 			if ((v > 0.0F) && (v <= 1.0F)) {
 				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, this.radio.isPlaying(), v, 2));
 			}
@@ -255,7 +255,7 @@ public class GuiRadio extends GuiRadioBase {
 		if (par1GuiButton.id == 3) //VolDown
 		{
 			this.saving = false;
-			float v = (float)(this.radio.volume - 0.1D);
+			float v = (float)(this.radio.getVolume() - 0.1D);
 			if ((v > 0.0F) && (v <= 1.0F)) {
 				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, this.radio.isPlaying(), v, 3));
 			}
@@ -303,9 +303,9 @@ public class GuiRadio extends GuiRadioBase {
 	    if (par1GuiButton.id == 11) //Redstone
 	    {
 	      if (!this.redstoneButtonState) {
-	        PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, this.radio.isPlaying(), this.radio.volume, 11));
+	        PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, this.radio.isPlaying(), this.radio.getVolume(), 11));
 	      } else {
-	        PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, this.radio.isPlaying(), this.radio.volume, 12));
+	        PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, this.radio.isPlaying(), this.radio.getVolume(), 12));
 	      }
 	    }
 	    if (par1GuiButton.id == 12) //Lock

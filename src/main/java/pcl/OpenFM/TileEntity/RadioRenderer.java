@@ -8,7 +8,6 @@ import net.minecraft.tileentity.TileEntity;
 
 import org.lwjgl.opengl.GL11;
 
-import pcl.OpenFM.OpenFM;
 import pcl.OpenFM.player.MpegInfo;
 
 public class RadioRenderer extends TileEntitySpecialRenderer {

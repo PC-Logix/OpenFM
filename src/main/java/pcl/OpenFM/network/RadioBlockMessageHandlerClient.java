@@ -1,7 +1,6 @@
  package pcl.OpenFM.network;
  
- import pcl.OpenFM.OpenFM;
-import pcl.OpenFM.TileEntity.TileEntityRadio;
+ import pcl.OpenFM.TileEntity.TileEntityRadio;
 import pcl.OpenFM.network.Message.MessageTERadioBlock;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
