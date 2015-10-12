@@ -101,11 +101,7 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 		if (side == Side.CLIENT)
 		{
 			TileEntityRadio ter = (TileEntityRadio)par1World.getTileEntity(par2, par3, par4);
-			if (ter.owner != null) {
-				if (MinecraftServer.getServer().getConfigurationManager().func_152596_g(par5EntityPlayer.getGameProfile()) || !ter.isLocked || ter.owner.equals(par5EntityPlayer.getUniqueID().toString())) {
-					openGUI(par1World, par2, par3, par4);
-				}
-			} else {
+			if (!ter.isLocked || ter.owner.equals(par5EntityPlayer.getUniqueID().toString())) {
 				openGUI(par1World, par2, par3, par4);
 			}
 		}
