@@ -3,7 +3,6 @@ package pcl.OpenFM.Block.Gui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import pcl.OpenFM.OFMConfiguration;
-import pcl.OpenFM.OpenFM;
 import pcl.OpenFM.GUI.DRMGuiButton;
 import pcl.OpenFM.GUI.DRMGuiTextField;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
@@ -73,7 +72,7 @@ public class NGuiRadio extends GuiRadio {
 			this.mc.displayGuiScreen((net.minecraft.client.gui.GuiScreen)null);
 			this.mc.setIngameFocus();
 		}
-		this.volumeBox.setText(" " + (int)(this.radio.volume * 10.0F));
+		this.volumeBox.setText(" " + (int)(this.radio.getVolume() * 10.0F));
 
 		if ((this.radio.isPlaying()) && (!this.playButtonPlayingState)) {
 			this.playButtonPlayingState = true;
@@ -87,13 +86,13 @@ public class NGuiRadio extends GuiRadio {
 			this.playBtn = new DRMGuiButton(1, this.width / 2 - 12, this.height / 2 + 28 - 5, 24, 24, 0, 0, "", DRMGuiButton.guiLocation);
 			this.DRMbuttonList.add(this.playBtn);
 		}
-		if ((this.radio.listenToRedstone & !this.redstoneButtonState)) {
+		if ((this.radio.isListeningToRedstoneInput() & !this.redstoneButtonState)) {
 			this.redstoneButtonState = true;
 			this.DRMbuttonList.remove(this.redstoneBtn);
 			this.redstoneBtn = new DRMGuiButton(11, this.width / 2 + 100 - 13, this.height / 2 + 3 - 5, 8, 8, 95, 24, "", DRMGuiButton.guiLocation);
 			this.DRMbuttonList.add(this.redstoneBtn);
 		}
-		if ((!this.radio.listenToRedstone & this.redstoneButtonState)) {
+		if ((!this.radio.isListeningToRedstoneInput() & this.redstoneButtonState)) {
 			this.redstoneButtonState = false;
 			this.DRMbuttonList.remove(this.redstoneBtn);
 			this.redstoneBtn = new DRMGuiButton(11, this.width / 2 + 100 - 13, this.height / 2 + 3 - 5, 8, 8, 87, 24, "", DRMGuiButton.guiLocation);
@@ -130,12 +129,12 @@ public class NGuiRadio extends GuiRadio {
 			{
 				this.radio.streamURL = this.streamTextBox.getText();
 			}
-			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, !this.radio.isPlaying(), this.radio.volume, 1));
+			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, !this.radio.isPlaying(), this.radio.getVolume(), 1));
 		}
 		if (par1GuiButton.id == 2)
 		{
 			this.saving = false;
-			float v = (float)(this.radio.volume + 0.1D);
+			float v = (float)(this.radio.getVolume() + 0.1D);
 			if ((v > 0.0F) && (v <= 1.0F)) {
 				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, this.radio.isPlaying(), v, 2));
 			}
@@ -143,7 +142,7 @@ public class NGuiRadio extends GuiRadio {
 		if (par1GuiButton.id == 3)
 		{
 			this.saving = false;
-			float v = (float)(this.radio.volume - 0.1D);
+			float v = (float)(this.radio.getVolume() - 0.1D);
 			if ((v > 0.0F) && (v <= 1.0F)) {
 				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, this.radio.isPlaying(), v, 3));
 			}

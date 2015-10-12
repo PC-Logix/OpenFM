@@ -51,7 +51,7 @@ public class ItemTuner extends Item {
                     if (canAdd == 0) {
                         // It can, so send a packet.
                         player.addChatMessage(new ChatComponentTranslation("msg.added_speaker"));
-                        PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(x, y, z, world, radio.streamURL, radio.isPlaying(), radio.volume, 15, speaker.x, speaker.y, speaker.z));
+                        PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(x, y, z, world, radio.streamURL, radio.isPlaying(), radio.getVolume(), 15, speaker.x, speaker.y, speaker.z));
                     } else if (canAdd == 1) {
                         // Too many speakers linked.
                         player.addChatMessage(new ChatComponentTranslation("msg.failed_adding_speaker_limit"));

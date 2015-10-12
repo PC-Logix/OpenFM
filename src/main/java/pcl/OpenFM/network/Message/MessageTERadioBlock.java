@@ -31,10 +31,10 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
      this.world = radio.getWorldObj();
      this.dim = this.world.provider.dimensionId;
      this.streamURL = radio.streamURL;
-     this.isPlaying = radio.isPlaying;
-     this.volume = radio.volume;
+     this.isPlaying = radio.isPlaying();
+     this.volume = radio.getVolume();
      int mode = 13;
-     if (radio.listenToRedstone)
+     if (radio.isListeningToRedstoneInput())
        mode = 14;
      this.mode = mode;
    }

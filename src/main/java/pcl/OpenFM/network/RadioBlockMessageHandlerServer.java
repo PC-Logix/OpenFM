@@ -37,21 +37,21 @@ import cpw.mods.fml.relauncher.Side;
        }
        
        if ((message.mode == 11) || (message.mode == 14)) {
-         ((TileEntityRadio)tileEntity).listenToRedstone = true;
+         ((TileEntityRadio)tileEntity).setListenToRedstoneInput(true);
        }
        if ((message.mode == 12) || (message.mode == 13)) {
-         ((TileEntityRadio)tileEntity).listenToRedstone = false;
+         ((TileEntityRadio)tileEntity).setListenToRedstoneInput(false);
        }
        
        if ((message.volume > 0.0F) && (message.volume <= 1.0F)) {
-         ((TileEntityRadio)tileEntity).volume = message.volume;
+         ((TileEntityRadio)tileEntity).setVolume(message.volume);
        }
        
  
        ((TileEntityRadio)tileEntity).streamURL = message.streamURL;
        
        if ((message.mode == 1) || (message.mode == 13) || (message.mode == 14)) {
-         ((TileEntityRadio)tileEntity).isPlaying = message.isPlaying;
+         //((TileEntityRadio)tileEntity).setIsPlaying(message.isPlaying); // This should be handled in startStream() and stopStream().
          if (message.isPlaying)
          {
            ((TileEntityRadio)tileEntity).startStream();

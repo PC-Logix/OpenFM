@@ -19,7 +19,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import pcl.OpenFM.OFMConfiguration;
-import pcl.OpenFM.OpenFM;
 import pcl.OpenFM.GUI.DRMGuiButton;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
 import cpw.mods.fml.relauncher.Side;
@@ -41,7 +40,7 @@ public class GuiRadio extends GuiScreen {
 	public GuiRadio(TileEntityRadio r)
 	{
 		this.radio = r;
-		this.redstoneButtonState = r.listenToRedstone;
+		this.redstoneButtonState = r.isListeningToRedstoneInput();
 		this.gui_width = 256;
 		this.gui_height = 252; }
 

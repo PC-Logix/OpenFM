@@ -30,14 +30,14 @@ import cpw.mods.fml.relauncher.Side;
          return null;
        }
        if ((message.mode == 11) || (message.mode == 14)) {
-         tileEntity.listenToRedstone = true;
+         tileEntity.setListenToRedstoneInput(true);
        }
        if ((message.mode == 12) || (message.mode == 13)) {
-         tileEntity.listenToRedstone = false;
+         tileEntity.setListenToRedstoneInput(false);
        }
        
        if ((message.volume > 0.0F) && (message.volume <= 1.0F)) {
-         tileEntity.volume = message.volume;
+         tileEntity.setVolume(message.volume);
        }
        
        tileEntity.streamURL = message.streamURL;
