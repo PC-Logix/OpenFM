@@ -30,7 +30,6 @@ public class OpenFM {
 	// Mod vars
 	@Mod.Instance(BuildInfo.modID)
 	public static OpenFM instance;
-
 	@SidedProxy(clientSide="pcl.OpenFM.ClientProxy", serverSide="pcl.OpenFM.CommonProxy")
 	public static CommonProxy proxy;
 
@@ -38,12 +37,7 @@ public class OpenFM {
 	public static final Logger logger  = LogManager.getFormatterLogger(BuildInfo.modID);
 
 	// Mod content
-	public static Block blockRadio;
-	public static Block blockSpeaker;
-	public static Block blockDummySpeaker;
-	public static Item itemRadioTuner;
 	public static List<MP3Player> playerList = new ArrayList<MP3Player>();
-	public static CreativeTabs creativeTab;
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
@@ -72,9 +66,9 @@ public class OpenFM {
 		FMLCommonHandler.instance().bus().register(new ClientEvent());
 		MinecraftForge.EVENT_BUS.register(new ServerEvent());
 		FMLCommonHandler.instance().bus().register(new ServerEvent());
-		ContentRegistry.registerTabs();
-		ContentRegistry.registerBlocks();
-		ContentRegistry.registerItems();   
+
+		ContentRegistry.init();
+
 		proxy.initTileEntities();
 		proxy.registerRenderers();
 	}

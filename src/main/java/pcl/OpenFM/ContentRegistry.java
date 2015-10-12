@@ -1,5 +1,6 @@
 package pcl.OpenFM;
 
+import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -17,55 +18,61 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ContentRegistry {
 
+    // Blocks
+    public static Block blockRadio;
+    public static Block blockSpeaker;
+
+    // Items
+    public static Item itemRadioTuner;
+
+    // Tabs
+    public static CreativeTabs creativeTab;
+
+    // Called on mod init()
 	public static void init() {
-
-
+        registerTabs();
+        registerBlocks();
+        registerItems();
 	}
 
 	public static void registerBlocks() {
 
-		OpenFM.blockRadio = new BlockRadio();
-		GameRegistry.registerBlock(OpenFM.blockRadio, "Radio");
+		blockRadio = new BlockRadio();
+		GameRegistry.registerBlock(blockRadio, "Radio");
 		GameRegistry.registerTileEntity(TileEntityRadio.class, "OpenFMRadio");
-		GameRegistry.addRecipe(new ItemStack(OpenFM.blockRadio), "  y", "xyx", "xzx",
+		GameRegistry.addRecipe(new ItemStack(blockRadio), "  y", "xyx", "xzx",
 				'x', new ItemStack(Blocks.planks),
 				'y', new ItemStack(Items.iron_ingot),
 				'z', new ItemStack(Items.diamond));
+		blockRadio.setCreativeTab(creativeTab);
 
-		OpenFM.blockRadio.setCreativeTab(OpenFM.creativeTab);
-
-		OpenFM.blockSpeaker = new BlockSpeaker();
-		GameRegistry.registerBlock(OpenFM.blockSpeaker, "Speaker");
+		blockSpeaker = new BlockSpeaker();
+		GameRegistry.registerBlock(blockSpeaker, "Speaker");
 		GameRegistry.registerTileEntity(TileEntitySpeaker.class, "OpenFMSpeaker");
-		GameRegistry.addRecipe(new ItemStack(OpenFM.blockSpeaker), "xxx", "xyx", "xzx",
+		GameRegistry.addRecipe(new ItemStack(blockSpeaker), "xxx", "xyx", "xzx",
 				'x', new ItemStack(Blocks.planks),
 				'y', new ItemStack(Items.iron_ingot),
 				'z', new ItemStack(Items.redstone));
-
-		OpenFM.blockSpeaker.setCreativeTab(OpenFM.creativeTab);    
-
-		OpenFM.itemRadioTuner = new pcl.OpenFM.Items.ItemOpenFMTuner();
-		GameRegistry.registerItem(OpenFM.itemRadioTuner, "OpenFMRadioTuner");
-		GameRegistry.addRecipe(new ItemStack(OpenFM.itemRadioTuner), "  x", "  y", "  z",
-				'x', new ItemStack(Items.redstone),
-				'y', new ItemStack(Items.redstone),
-				'z', new ItemStack(Items.stick));
-
-		OpenFM.itemRadioTuner.setCreativeTab(OpenFM.creativeTab);
+		blockSpeaker.setCreativeTab(creativeTab);
 	}
 
 	public static void registerItems() {
 
-
+        itemRadioTuner = new pcl.OpenFM.Items.ItemOpenFMTuner();
+        GameRegistry.registerItem(itemRadioTuner, "OpenFMRadioTuner");
+        GameRegistry.addRecipe(new ItemStack(itemRadioTuner), "  x", "  y", "  z",
+                'x', new ItemStack(Items.redstone),
+                'y', new ItemStack(Items.redstone),
+                'z', new ItemStack(Items.stick));
+        itemRadioTuner.setCreativeTab(creativeTab);
 	}
-
 
 	public static void registerTabs() {
 
-		OpenFM.creativeTab = new CreativeTabs("tabOpenFM") {
+		creativeTab = new CreativeTabs("tabOpenFM") {
 			@SideOnly(Side.CLIENT)
 			public Item getTabIconItem() {
-				return Item.getItemFromBlock(OpenFM.blockRadio);
+				return Item.getItemFromBlock(blockRadio);
 			}
 
 			@SideOnly(Side.CLIENT)
