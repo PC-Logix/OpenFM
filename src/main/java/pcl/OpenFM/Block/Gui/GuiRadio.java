@@ -18,6 +18,7 @@ import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import pcl.OpenFM.OFMConfiguration;
 import pcl.OpenFM.OpenFM;
 import pcl.OpenFM.GUI.DRMGuiButton;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
@@ -115,7 +116,7 @@ public class GuiRadio extends GuiScreen {
 
 	public String takeFirstEntryFromM3U(String m3uurl)
 	{
-		String out = OpenFM.defaultURL;
+		String out = OFMConfiguration.defaultURL;
 		try
 		{
 			URL m3u = new URL(m3uurl);

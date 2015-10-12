@@ -2,6 +2,7 @@ package pcl.OpenFM.Block.Gui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import pcl.OpenFM.OFMConfiguration;
 import pcl.OpenFM.OpenFM;
 import pcl.OpenFM.GUI.DRMGuiButton;
 import pcl.OpenFM.GUI.DRMGuiTextField;
@@ -53,7 +54,7 @@ public class NGuiRadio extends GuiRadio {
 		if (!this.radio.streamURL.equals("")) {
 			this.streamTextBox.setText(this.radio.streamURL);
 		} else {
-			this.streamTextBox.setText(OpenFM.defaultURL);
+			this.streamTextBox.setText(OFMConfiguration.defaultURL);
 		}
 		this.volumeBox = new DRMGuiTextField(this.fontRendererObj, this.width / 2 - 6, this.height / 2 - 5 + 4, 50, 20);
 		this.volumeBox.setMaxStringLength(2);

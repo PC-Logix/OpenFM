@@ -45,22 +45,15 @@ public class OpenFM {
 	public static List<MP3Player> playerList = new ArrayList<MP3Player>();
 	public static CreativeTabs creativeTab;
 
-	// Config values
-	public static String defaultURL;
-
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		PacketHandler.init();
 
 		// Load config
-		Configuration config = new Configuration(new File(event.getModConfigurationDirectory() + "/openfm/openfm.cfg"));
-		config.load();
-			defaultURL = config.get("general", "defaultURL", "StreamURL", "The default stream of the player.").getString();
-			boolean enableMUD = config.get("general", "enableMUD", true, "Automatically check for mod updates.").getBoolean();
-		config.save();
+		OFMConfiguration.init(new File(event.getModConfigurationDirectory() + "/openfm/openfm.cfg"));
 
 		// Check for Mod Update Detector
-		if (event.getSourceFile().getName().endsWith(".jar") && event.getSide().isClient() && enableMUD) {
+		if (event.getSourceFile().getName().endsWith(".jar") && event.getSide().isClient() && OFMConfiguration.enableMUD) {
 			logger.info("Registering mod with OpenUpdater.");
 			try {
 				Class.forName("pcl.mud.OpenUpdater").getDeclaredMethod("registerMod", ModContainer.class, URL.class, URL.class).invoke(null, FMLCommonHandler.instance().findContainerFor(this),
