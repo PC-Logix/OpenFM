@@ -24,35 +24,44 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid=OpenFM.MODID, name="OpenFM", version=BuildInfo.versionNumber + "." + BuildInfo.buildNumber, dependencies = "")
+@Mod(modid=BuildInfo.modID, name=BuildInfo.modName, version=BuildInfo.versionNumber + "." + BuildInfo.buildNumber, dependencies = "")
 public class OpenFM {
-	public static final String MODID = "openfm";
-	@Mod.Instance(MODID)
+
+	// Mod vars
+	@Mod.Instance(BuildInfo.modID)
 	public static OpenFM instance;
+
 	@SidedProxy(clientSide="pcl.OpenFM.ClientProxy", serverSide="pcl.OpenFM.CommonProxy")
 	public static CommonProxy proxy;
+
+	// Utils
+	public static final Logger logger  = LogManager.getFormatterLogger(BuildInfo.modID);
+
+	// Mod content
 	public static Block blockRadio;
 	public static Block blockSpeaker;
 	public static Block blockDummySpeaker;
 	public static Item itemRadioTuner;
-	public List<?> l;
-	public int bid;
-	public static String defaultURL;
 	public static List<MP3Player> playerList = new ArrayList<MP3Player>();
-	public Configuration config;
 	public static CreativeTabs creativeTab;
-	public static boolean registered = true;
-	public static final Logger  logger  = LogManager.getFormatterLogger(MODID);
-	
+
+	// Config values
+	public static String defaultURL;
+
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		PacketHandler.init();
+
+		// Load config
 		Configuration config = new Configuration(new File(event.getModConfigurationDirectory() + "/openfm/openfm.cfg"));
 		config.load();
-		defaultURL = config.get("general", "defaultURL", "StreamURL").getString();
-		
-		if (event.getSourceFile().getName().endsWith(".jar") && event.getSide().isClient() && config.get("general", "enableMUD", true).getBoolean()) {
-			logger.info("Registering mod with OpenUpdater");
+			defaultURL = config.get("general", "defaultURL", "StreamURL", "The default stream of the player.").getString();
+			boolean enableMUD = config.get("general", "enableMUD", true, "Automatically check for mod updates.").getBoolean();
+		config.save();
+
+		// Check for Mod Update Detector
+		if (event.getSourceFile().getName().endsWith(".jar") && event.getSide().isClient() && enableMUD) {
+			logger.info("Registering mod with OpenUpdater.");
 			try {
 				Class.forName("pcl.mud.OpenUpdater").getDeclaredMethod("registerMod", ModContainer.class, URL.class, URL.class).invoke(null, FMLCommonHandler.instance().findContainerFor(this),
 						new URL("http://PC-Logix.com/OpenFM/get_latest_build.php?mcver=1.7.10"),
@@ -61,7 +70,6 @@ public class OpenFM {
 				logger.info("OpenUpdater is not installed, not registering.");
 			}
 		}
-		config.save();
 	}
 
 	@Mod.EventHandler
