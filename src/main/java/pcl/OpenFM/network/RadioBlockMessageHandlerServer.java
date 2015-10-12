@@ -40,6 +40,24 @@ import cpw.mods.fml.relauncher.Side;
          return null;
        }
        
+       if (message.mode == 42) {
+    	   ((TileEntityRadio)tileEntity).addStation(message.streamURL);
+    	   ((TileEntityRadio)tileEntity).setStationCount(((TileEntityRadio)tileEntity).stations.size());
+       }
+       
+       if (message.mode == 43) {
+    	   ((TileEntityRadio)tileEntity).delStation(message.streamURL);
+    	   ((TileEntityRadio)tileEntity).setStationCount(((TileEntityRadio)tileEntity).stations.size());
+       }
+       
+       if (message.mode == 44 || message.mode == 47) {
+    	   ((TileEntityRadio)tileEntity).isLocked = true;
+       }
+       
+       if (message.mode == 45 || message.mode == 46) {
+    	   ((TileEntityRadio)tileEntity).isLocked = false;
+       }
+       
        if ((message.mode == 11) || (message.mode == 14)) {
          ((TileEntityRadio)tileEntity).listenToRedstone = true;
        }

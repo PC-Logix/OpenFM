@@ -1,6 +1,7 @@
  package pcl.OpenFM.network;
  
- import pcl.OpenFM.TileEntity.TileEntityRadio;
+ import pcl.OpenFM.OpenFM;
+import pcl.OpenFM.TileEntity.TileEntityRadio;
 import pcl.OpenFM.network.Message.MessageTERadioBlock;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -10,8 +11,7 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
  
  
- public class RadioBlockMessageHandlerClient
-   implements IMessageHandler<MessageTERadioBlock, IMessage>
+ public class RadioBlockMessageHandlerClient implements IMessageHandler<MessageTERadioBlock, IMessage>
  {
    public IMessage onMessage(MessageTERadioBlock message, MessageContext ctx)
    {
@@ -29,6 +29,24 @@ import cpw.mods.fml.relauncher.Side;
          tileEntity.addSpeaker(tileEntity.getWorldObj(), message.tx, message.ty, message.tz);
          return null;
        }
+       
+       if (message.mode == 42) {
+    	   if (!tileEntity.stations.contains(message.streamURL))
+    		   tileEntity.addStation(message.streamURL);
+       }
+       
+       if (message.mode == 43) {
+    	   tileEntity.delStation(message.streamURL);
+       }
+       
+       if (message.mode == 44 || message.mode == 47) {
+    	   tileEntity.isLocked = true;
+       }
+       
+       if (message.mode == 45 || message.mode == 46) {
+    	   tileEntity.isLocked = false;
+       }
+       
        if ((message.mode == 11) || (message.mode == 14)) {
          tileEntity.listenToRedstone = true;
        }

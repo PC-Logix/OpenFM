@@ -1,6 +1,8 @@
 package pcl.OpenFM.TileEntity;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
@@ -9,11 +11,13 @@ import li.cil.oc.api.network.SimpleComponent;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 import pcl.OpenFM.OpenFM;
 import pcl.OpenFM.Block.BlockSpeaker;
 import pcl.OpenFM.misc.Speaker;
@@ -24,7 +28,6 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import cpw.mods.fml.common.Optional;
-import cpw.mods.fml.common.network.NetworkRegistry;
 
 @Optional.InterfaceList(value={
 		@Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "OpenComputers")
@@ -43,10 +46,14 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 	public ArrayList<Speaker> speakers = new ArrayList<Speaker>();
 	private int th = 0;
 	private int screenColor = 0x0000FF;
-	boolean setColorPlox = false;
+	private String screenText = "OpenFM";
+	public List<String> stations = new ArrayList<String>();
 	double cx = 0.0D; double cy = 0.0D; double cz = 0.0D;
 
 	private int speakersCount = 0;
+	private int stationCount = 0;
+	public boolean isLocked;
+	public String owner = "";
 
 	public TileEntityRadio(World w) {
 		this.world = w;
@@ -151,15 +158,13 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 				this.th = 0;
 				for (Speaker s : this.speakers) {
 					Block sb = getWorldObj().getBlock((int)s.x, (int)s.y, (int)s.z);
-
 					if (!(sb instanceof BlockSpeaker)) {
 						if (!getWorldObj().getChunkFromBlockCoords((int)s.x, (int)s.z).isChunkLoaded) break;
 						this.speakers.remove(s); break;
 					}
 				}
 			}
-			if ((Minecraft.getMinecraft().thePlayer != null) && (this.player != null) && 
-					(!isInvalid())) {
+			if ((Minecraft.getMinecraft().thePlayer != null) && (this.player != null) && (!isInvalid())) {
 				vol = getClosest();
 				if (vol > 10000.0F * this.volume) {
 					this.player.setVolume(0.0F);
@@ -262,6 +267,38 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		}
 	}
 
+	public void addStation(String station) {
+		if (!stations.contains(station)) {
+			stations.add(station);
+			PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this.xCoord, this.yCoord, this.zCoord, this.worldObj, station, 42), getWorldObj().provider.dimensionId);
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			getDescriptionPacket();
+			markDirty();
+		}
+	}
+
+	public void delStation(String station) {
+		if (stations.contains(station)) {
+			stations.remove(station);
+			PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this.xCoord, this.yCoord, this.zCoord, this.worldObj, station, 43), getWorldObj().provider.dimensionId);
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			getDescriptionPacket();
+			markDirty();
+		}
+	}
+
+	public String getNext(String uid) {
+	    int idx = stations.indexOf(uid);
+	    if (idx < 0 || idx+1 == stations.size()) return uid;
+	    return stations.get(idx + 1);
+	}
+
+	public String getPrevious(String uid) {
+	    int idx = stations.indexOf(uid);
+	    if (idx <= 0 || idx-1 == stations.size()) return uid;
+	    return stations.get(idx - 1);
+	}
+	
 	public void readFromNBT(NBTTagCompound par1NBTTagCompound)
 	{
 		super.readFromNBT(par1NBTTagCompound);
@@ -271,12 +308,24 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		this.redstoneInput = par1NBTTagCompound.getBoolean("lastInput");
 		this.isPlaying = par1NBTTagCompound.getBoolean("lastState");
 		this.speakersCount = par1NBTTagCompound.getInteger("speakersCount");
+		this.setStationCount(par1NBTTagCompound.getInteger("stationCount"));
 		this.screenColor = par1NBTTagCompound.getInteger("screenColor");
+		this.isLocked = par1NBTTagCompound.getBoolean("isLocked");
+		this.owner = par1NBTTagCompound.getString("owner");
+		if (par1NBTTagCompound.getString("screenText").length() < 1) {
+			this.screenText = "OpenFM";
+		} else {
+			this.screenText = par1NBTTagCompound.getString("screenText");
+		}
 		for (int i = 0; i < this.speakersCount; i++) {
 			double x = par1NBTTagCompound.getDouble("speakerX" + i);
 			double y = par1NBTTagCompound.getDouble("speakerY" + i);
 			double z = par1NBTTagCompound.getDouble("speakerZ" + i);
 			addSpeaker(getWorldObj(), x, y, z);
+		}
+		for(int i = 0; i < this.getStationCount(); i++)
+		{
+			stations.add(par1NBTTagCompound.getString("station" + i));
 		}
 	}
 
@@ -291,10 +340,22 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		par1NBTTagCompound.setBoolean("lastState", this.isPlaying);
 		par1NBTTagCompound.setInteger("speakersCount", this.speakers.size());
 		par1NBTTagCompound.setInteger("screenColor", this.screenColor);
+		par1NBTTagCompound.setString("screenText", this.screenText);
+		par1NBTTagCompound.setBoolean("isLocked", this.isLocked);
+		par1NBTTagCompound.setString("owner", this.owner);
 		for (int i = 0; i < this.speakers.size(); i++) {
 			par1NBTTagCompound.setDouble("speakerX" + i, ((Speaker)this.speakers.get(i)).x);
 			par1NBTTagCompound.setDouble("speakerY" + i, ((Speaker)this.speakers.get(i)).y);
 			par1NBTTagCompound.setDouble("speakerZ" + i, ((Speaker)this.speakers.get(i)).z);
+		}
+		for(int i = 0; i < stations.size(); i++)
+		{
+			String s = stations.get(i);
+			if(s != null)
+			{
+				par1NBTTagCompound.setString("station" + i, s);
+				par1NBTTagCompound.setInteger("stationCount", i + 1);
+			}
 		}
 	}
 
@@ -302,16 +363,15 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 	public Packet getDescriptionPacket()
 	{
 		for (Speaker s : this.speakers) {
-			PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this.xCoord, this.yCoord, this.zCoord, this.worldObj, "", false, 1.0F, 15, s.x, s.y, s.z), 
-					getWorldObj().provider.dimensionId);
+			PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this.xCoord, this.yCoord, this.zCoord, this.worldObj, "", false, 1.0F, 15, s.x, s.y, s.z), getWorldObj().provider.dimensionId);
 		}
 		int mode = 13;
 		if (this.listenToRedstone)
 			mode = 14;
 
-		PacketHandler.INSTANCE.sendToAllAround(new MessageTERadioBlock(this), new NetworkRegistry.TargetPoint(getWorldObj().provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 20.0D));
-		//PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this), getWorldObj().provider.dimensionId);
-		
+		//PacketHandler.INSTANCE.sendToAllAround(new MessageTERadioBlock(this), new NetworkRegistry.TargetPoint(getWorldObj().provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 20.0D));
+		PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this), getWorldObj().provider.dimensionId);
+
 
 		NBTTagCompound tagCom = new NBTTagCompound();
 		this.writeToNBT(tagCom);
@@ -362,7 +422,6 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 
 	public void setScreenColor(Integer color) {
 		this.screenColor = color;
-		setColorPlox = true;
 	}
 
 	public void setRedstoneInput(boolean input) {
@@ -370,6 +429,24 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 			this.scheduledRedstoneInput = input;
 		}
 		this.scheduleRedstoneInput = true;
+	}
+
+	@Optional.Method(modid = "OpenComputers")
+	@Callback
+	public Object[] setScreenText(Context context, Arguments args) {
+		setScreenText(args.checkString(0));
+		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		getDescriptionPacket();
+		markDirty(); // Marks the chunk as dirty, so that it is saved properly on changes. Not required for the sync specifically, but usually goes alongside the former.
+		return new Object[] { true } ;
+	}
+
+	public void setScreenText(String text) {
+		this.screenText = text;
+	}
+
+	public String getScreenText() {
+		return this.screenText;
 	}
 
 	@Optional.Method(modid = "OpenComputers")
@@ -419,6 +496,14 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 	public String getComponentName() {
 		// TODO Auto-generated method stub
 		return "openfm_radio";
+	}
+
+	public int getStationCount() {
+		return this.stationCount;
+	}
+
+	public void setStationCount(int stationCount) {
+		this.stationCount = stationCount;
 	}
 }
 
