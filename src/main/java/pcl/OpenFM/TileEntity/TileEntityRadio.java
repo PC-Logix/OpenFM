@@ -59,7 +59,6 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
         world = w;
     }
 
-
     public void startStream() {
         Side side = FMLCommonHandler.instance().getEffectiveSide();
         if (!OpenFM.playerList.contains(player)) {
@@ -71,7 +70,6 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
         }
     }
 
-
     public void stopStream() {
         Side side = FMLCommonHandler.instance().getEffectiveSide();
         if (OpenFM.playerList.contains(player)) {
@@ -82,7 +80,6 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
             isPlaying = false;
         }
     }
-
 
     public boolean isPlaying() {
         return isPlaying;
@@ -101,7 +98,6 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
         if (side == Side.CLIENT) {
             th += 1;
             if (th >= 10) {
-                th = 0;
                 for (Speaker s : speakers) {
                     Block sb = getWorldObj().getBlock((int) s.x, (int) s.y, (int) s.z);
 
@@ -133,7 +129,6 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
             if (isPlaying()) {
                 th += 1;
                 if (th >= 60) {
-                    th = 0;
                     for (Speaker s : speakers) {
                         if (!(worldObj.getBlock((int) s.x, (int) s.y, (int) s.z) instanceof BlockSpeaker)) {
                             if (!worldObj.getChunkFromBlockCoords((int) s.x, (int) s.z).isChunkLoaded) break;
@@ -163,8 +158,19 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
         volume = vol;
     }
 
+    public void setStreamURL(String url) {
+        streamURL = url;
+    }
+
+    public String getStreamURL() {
+        return streamURL;
+    }
+
     public void setScreenColor(Integer color) {
         screenColor = color;
+        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+        getDescriptionPacket();
+        markDirty(); // Marks the chunk as dirty, so that it is saved properly on changes. Not required for the sync specifically, but usually goes alongside the former.
     }
 
     public boolean isListeningToRedstoneInput() {
@@ -183,13 +189,11 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
     }
 
     public int addSpeaker(World w, double x, double y, double z) {
-        if (speakers.size() >= 10)
-            return 1;
-        for (Speaker s : speakers)
-            if ((s.x == x) && (s.y == y) && (s.z == z))
-                return 2;
-        speakers.add(new Speaker(x, y, z, w));
-        return 0;
+        int ret = canAddSpeaker(w, x, y, z);
+        if (ret == 0) {
+            speakers.add(new Speaker(x, y, z, w));
+        }
+        return ret;
     }
 
     public int canAddSpeaker(World w, double x, double y, double z) {
@@ -206,8 +210,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
     }
 
     private float getClosest() {
-        float closest = (float) getDistanceFrom(Minecraft.getMinecraft().thePlayer.posX,
-                Minecraft.getMinecraft().thePlayer.posY, Minecraft.getMinecraft().thePlayer.posZ);
+        float closest = (float) getDistanceFrom(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY, Minecraft.getMinecraft().thePlayer.posZ);
         if (!speakers.isEmpty()) {
             for (Speaker s : speakers) {
                 float distance = (float) Math.pow(Minecraft.getMinecraft().thePlayer.getDistance(s.x, s.y, s.z), 2.0D);
@@ -230,17 +233,15 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 
     @Override
     public Packet getDescriptionPacket() {
+
         for (Speaker s : speakers) {
-            PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(xCoord, yCoord, zCoord, worldObj, "", false, 1.0F, 15, s.x, s.y, s.z),
-                    getWorldObj().provider.dimensionId);
+            PacketHandler.INSTANCE.sendToDimension(
+                    new MessageTERadioBlock(xCoord, yCoord, zCoord, worldObj, "", false, 1.0F, 15, s.x, s.y, s.z),
+                    getWorldObj().provider.dimensionId
+            );
         }
-        int mode = 13;
-        if (listenToRedstone)
-            mode = 14;
 
         PacketHandler.INSTANCE.sendToAllAround(new MessageTERadioBlock(this), new NetworkRegistry.TargetPoint(getWorldObj().provider.dimensionId, xCoord, yCoord, zCoord, 20.0D));
-        //PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this), getWorldObj().provider.dimensionId);
-
 
         NBTTagCompound tagCom = new NBTTagCompound();
         writeToNBT(tagCom);
@@ -359,9 +360,6 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
     @Callback
     public Object[] setScreenColor(Context context, Arguments args) {
         setScreenColor(args.checkInteger(0));
-        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-        getDescriptionPacket();
-        markDirty(); // Marks the chunk as dirty, so that it is saved properly on changes. Not required for the sync specifically, but usually goes alongside the former.
         return new Object[]{ true };
     }
 

@@ -48,7 +48,7 @@ import cpw.mods.fml.relauncher.Side;
        }
        
  
-       ((TileEntityRadio)tileEntity).streamURL = message.streamURL;
+       ((TileEntityRadio)tileEntity).setStreamURL(message.streamURL);
        
        if ((message.mode == 1) || (message.mode == 13) || (message.mode == 14)) {
          //((TileEntityRadio)tileEntity).setIsPlaying(message.isPlaying); // This should be handled in startStream() and stopStream().

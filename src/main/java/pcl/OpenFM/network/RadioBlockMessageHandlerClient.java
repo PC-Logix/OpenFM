@@ -40,7 +40,7 @@ import cpw.mods.fml.relauncher.Side;
          tileEntity.setVolume(message.volume);
        }
        
-       tileEntity.streamURL = message.streamURL;
+       tileEntity.setStreamURL(message.streamURL);
        
        if ((message.mode == 1) || (message.mode == 13) || (message.mode == 14)) {
          if (message.isPlaying)

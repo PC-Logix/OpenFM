@@ -50,8 +50,8 @@ public class NGuiRadio extends GuiRadio {
 
 		this.streamTextBox = new DRMGuiTextField(this.fontRendererObj, this.width / 2 - 100, this.height / 2 - 5 + 17, 200, 20);
 		this.streamTextBox.setMaxStringLength(1000);
-		if (!this.radio.streamURL.equals("")) {
-			this.streamTextBox.setText(this.radio.streamURL);
+		if (!radio.getStreamURL().equals("")) {
+			this.streamTextBox.setText(radio.getStreamURL());
 		} else {
 			this.streamTextBox.setText(OFMConfiguration.defaultURL);
 		}
@@ -119,24 +119,24 @@ public class NGuiRadio extends GuiRadio {
 		{
 			if (this.streamTextBox.getText().toLowerCase().endsWith(".m3u"))
 			{
-				this.radio.streamURL = takeFirstEntryFromM3U(this.streamTextBox.getText());
+				radio.setStreamURL(takeFirstEntryFromM3U(this.streamTextBox.getText()));
 			}
 			else if (this.streamTextBox.getText().toLowerCase().endsWith(".pls"))
 			{
-				this.radio.streamURL = parsePls(this.streamTextBox.getText());
+				radio.setStreamURL(parsePls(this.streamTextBox.getText()));
 			}
 			else
 			{
-				this.radio.streamURL = this.streamTextBox.getText();
+				radio.setStreamURL(streamTextBox.getText());
 			}
-			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, !this.radio.isPlaying(), this.radio.getVolume(), 1));
+			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.getStreamURL(), !this.radio.isPlaying(), this.radio.getVolume(), 1));
 		}
 		if (par1GuiButton.id == 2)
 		{
 			this.saving = false;
 			float v = (float)(this.radio.getVolume() + 0.1D);
 			if ((v > 0.0F) && (v <= 1.0F)) {
-				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, this.radio.isPlaying(), v, 2));
+				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.getStreamURL(), this.radio.isPlaying(), v, 2));
 			}
 		}
 		if (par1GuiButton.id == 3)
@@ -144,7 +144,7 @@ public class NGuiRadio extends GuiRadio {
 			this.saving = false;
 			float v = (float)(this.radio.getVolume() - 0.1D);
 			if ((v > 0.0F) && (v <= 1.0F)) {
-				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, this.radio.isPlaying(), v, 3));
+				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.getStreamURL(), this.radio.isPlaying(), v, 3));
 			}
 		}
 		if (par1GuiButton.id == 6)

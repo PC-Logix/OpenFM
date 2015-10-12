@@ -30,7 +30,7 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
      this.z = radio.zCoord;
      this.world = radio.getWorldObj();
      this.dim = this.world.provider.dimensionId;
-     this.streamURL = radio.streamURL;
+     this.streamURL = radio.getStreamURL();
      this.isPlaying = radio.isPlaying();
      this.volume = radio.getVolume();
      int mode = 13;
@@ -38,9 +38,6 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
        mode = 14;
      this.mode = mode;
    }
-   
- 
- 
  
    public MessageTERadioBlock(double x, double y, double z, World world, String streamURL, boolean isPlaying, float volume, int mode) {
      this.x = x;
