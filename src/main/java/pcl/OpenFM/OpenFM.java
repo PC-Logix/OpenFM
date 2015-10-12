@@ -60,26 +60,26 @@ public class OpenFM {
 	}
 
 	@Mod.EventHandler
-	public void init(FMLInitializationEvent evt)
-	{
+	public void init(FMLInitializationEvent evt) {
+
+        // Forge event handling
 		MinecraftForge.EVENT_BUS.register(new ClientEvent());
 		FMLCommonHandler.instance().bus().register(new ClientEvent());
 		MinecraftForge.EVENT_BUS.register(new ServerEvent());
 		FMLCommonHandler.instance().bus().register(new ServerEvent());
 
+        // Register blocks, items, creative tab
 		ContentRegistry.init();
 
 		proxy.initTileEntities();
 		proxy.registerRenderers();
 	}
 
-	public static void killAllStreams()
-	{
-		for (MP3Player p : playerList)
-		{
-			p.stop();
-		}
-	}
+	public static void killAllStreams() {
+        for (MP3Player p : playerList) {
+            p.stop();
+        }
+    }
 }
 
 
