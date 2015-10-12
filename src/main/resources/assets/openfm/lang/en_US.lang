@@ -1,6 +1,6 @@
-tile.Radio.name=OpenFM Radio
-tile.Speaker.name=OpenFM Speaker
-item.OpenFMTuner.name=OpenFM Radio Tuner
+tile.Radio.name=Radio
+tile.Speaker.name=Speaker
+item.Tuner.name=Radio Tuner
 itemGroup.tabOpenFM=OpenFM
 msg.selected_speaker=[OpenFM] Selected Speaker
 msg.added_speaker=[OpenFM] Speaker Added
