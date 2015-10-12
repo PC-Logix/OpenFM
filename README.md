@@ -18,6 +18,8 @@ fm.getVol()
 
 fm.setScreenColor(0xFF0000) Sets the text color to red on the display
 
+fm.setScreenText("Text to display on radio")  Text will scroll if larger than the display.
+
 
 Highly modified version of Dragon's Radio Mod, Dragon's Radio Mod is Licenses MIT.
 
