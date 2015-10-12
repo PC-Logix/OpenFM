@@ -16,14 +16,14 @@ import cpw.mods.fml.relauncher.Side;
 
 import java.util.HashMap;
 
-public class ItemOpenFMTuner extends Item {
+public class ItemTuner extends Item {
 
     public static HashMap<ItemStack, Speaker> boundSpeakers = new HashMap<ItemStack, Speaker>();
 
-    public ItemOpenFMTuner() {
+    public ItemTuner() {
         setMaxStackSize(1);
         setUnlocalizedName("Tuner");
-        setTextureName("openfm:ItemOpenFMTuner");
+        setTextureName("openfm:tuner");
     }
 
     public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int hitSide, float hitX, float hitY, float hitZ) {

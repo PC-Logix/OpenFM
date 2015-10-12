@@ -10,6 +10,7 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import pcl.OpenFM.Block.BlockRadio;
 import pcl.OpenFM.Block.BlockSpeaker;
+import pcl.OpenFM.Items.ItemTuner;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
 import pcl.OpenFM.TileEntity.TileEntitySpeaker;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -58,8 +59,8 @@ public class ContentRegistry {
 
 	public static void registerItems() {
 
-        itemRadioTuner = new pcl.OpenFM.Items.ItemOpenFMTuner();
-        GameRegistry.registerItem(itemRadioTuner, "OpenFMRadioTuner");
+        itemRadioTuner = new ItemTuner();
+        GameRegistry.registerItem(itemRadioTuner, "RadioTuner");
         GameRegistry.addRecipe(new ItemStack(itemRadioTuner), "  x", "  y", "  z",
                 'x', new ItemStack(Items.redstone),
                 'y', new ItemStack(Items.redstone),
