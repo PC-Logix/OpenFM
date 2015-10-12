@@ -73,7 +73,8 @@ public class OpenFM {
 		FMLCommonHandler.instance().bus().register(new ServerEvent());
 		ContentRegistry.registerTabs();
 		ContentRegistry.registerBlocks();
-		ContentRegistry.registerItems();   
+		ContentRegistry.registerItems(); 
+		ContentRegistry.registerEvents();
 		proxy.initTileEntities();
 		proxy.registerRenderers();
 	}

@@ -13,19 +13,19 @@ import cpw.mods.fml.relauncher.SideOnly;
  
  
  @SideOnly(Side.CLIENT)
- public class DRMGuiButton extends GuiButton
+ public class OFMGuiButton extends GuiButton
  {
    private int offx;
    private int offy;
    public static String guiLocation = "openfm:textures/gui/buttons.png";
-   private ResourceLocation DRMbuttonTextures = new ResourceLocation("openfm:textures/gui/buttons.png");
+   private ResourceLocation OFMbuttonTextures = new ResourceLocation("openfm:textures/gui/buttons.png");
    
-   public DRMGuiButton(int par1, int par2, int par3, int par4, int par5, String par6Str) {
+   public OFMGuiButton(int par1, int par2, int par3, int par4, int par5, String par6Str) {
      super(par1, par2, par3, par4, par5, par6Str);
    }
    
  
-   public DRMGuiButton(int i, int j, int k, int l, int m, int n, int o, String string, String string2)
+   public OFMGuiButton(int i, int j, int k, int l, int m, int n, int o, String string, String string2)
    {
      super(i, j, k, l, m, string);
      setDRMData(n, o, string2);
@@ -34,7 +34,7 @@ import cpw.mods.fml.relauncher.SideOnly;
    public void setDRMData(int x, int y, String loc) {
      this.offx = x;
      this.offy = y;
-     this.DRMbuttonTextures = new ResourceLocation(loc);
+     this.OFMbuttonTextures = new ResourceLocation(loc);
    }
  
    public int getHoverState(boolean p_146114_1_) {
@@ -56,7 +56,7 @@ import cpw.mods.fml.relauncher.SideOnly;
      if (this.visible)
      {
        FontRenderer fontrenderer = p_146112_1_.fontRenderer;
-       p_146112_1_.getTextureManager().bindTexture(this.DRMbuttonTextures);
+       p_146112_1_.getTextureManager().bindTexture(this.OFMbuttonTextures);
        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
        this.field_146123_n = ((p_146112_2_ >= this.xPosition) && (p_146112_3_ >= this.yPosition) && (p_146112_2_ < this.xPosition + this.width) && (p_146112_3_ < this.yPosition + this.height));
        int k = getHoverState(this.field_146123_n);

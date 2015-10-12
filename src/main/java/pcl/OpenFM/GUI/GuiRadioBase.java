@@ -1,4 +1,4 @@
-package pcl.OpenFM.Block.Gui;
+package pcl.OpenFM.GUI;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,12 +6,14 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -19,28 +21,29 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import pcl.OpenFM.OpenFM;
-import pcl.OpenFM.GUI.DRMGuiButton;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class GuiRadio extends GuiScreen {
+public class GuiRadioBase extends GuiScreen {
 	protected FontRenderer fontRenderer;
 	protected TileEntityRadio radio;
 	protected int gui_width = 256;
 	protected int gui_height = 252;
 	protected boolean saving = false;
 	protected String URL;
-	private String nickURL;
 	protected boolean playButtonPlayingState = false;
 	protected boolean redstoneButtonState = false;
+	protected boolean lockedButtonState;
+	protected boolean isLocked = false;
 
 	public List DRMbuttonList = new ArrayList();
 
-	public GuiRadio(TileEntityRadio r)
+	public GuiRadioBase(TileEntityRadio r)
 	{
 		this.radio = r;
 		this.redstoneButtonState = r.listenToRedstone;
+		this.lockedButtonState = r.isLocked;
 		this.gui_width = 256;
 		this.gui_height = 252; }
 
@@ -66,8 +69,9 @@ public class GuiRadio extends GuiScreen {
 
 		for (k = 0; k < this.DRMbuttonList.size(); k++)
 		{
-			((DRMGuiButton)this.DRMbuttonList.get(k)).drawButton(this.mc, par1, par2);
+			((OFMGuiButton)this.DRMbuttonList.get(k)).drawButton(this.mc, par1, par2);
 		}
+		this.mc.fontRenderer.drawString("OpenFM", this.width / 2 - 16, this.height / 2 + 50, 0xFFFFFF);
 	}
 
 	public void updateScreen() {}
@@ -160,7 +164,7 @@ public class GuiRadio extends GuiScreen {
 		}
 		catch (IOException e)
 		{
-			System.out.println("Inserted URL for a radio is not in a correct form.");
+			OpenFM.logger.info("Inserted URL for a radio is not in a correct form.");
 		}
 		return out;
 	}
