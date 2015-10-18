@@ -1,5 +1,6 @@
 package pcl.OpenFM.TileEntity;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -20,12 +21,12 @@ public class RadioRenderer extends TileEntitySpecialRenderer {
 	@Override
 	public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float f) {
 		TileEntityRadio radio = (TileEntityRadio) tileEntity;
-		
+
 		float light = tileEntity.getWorldObj().getLightBrightnessForSkyBlocks(tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord, 15);
 		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, light, light);
 
 		RenderManager renderMan = RenderManager.instance;
-		FontRenderer fontRenderer = RenderManager.instance.getFontRenderer();
+		
 		GL11.glPushMatrix();
 
 		int dir = tileEntity.getBlockMetadata();
@@ -46,26 +47,12 @@ public class RadioRenderer extends TileEntitySpecialRenderer {
 
 		GL11.glScalef(-0.016666668F, -0.016666668F, 0.016666668F);
 		GL11.glDisable(GL11.GL_LIGHTING);
-		//GL11.glDepthMask(false);
-		//GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		++this.ticks;
 		if (this.ticks > 20) {
 			if (radio.getScreenText().length() > 6) {
-				if (radio.getScreenText().length() > count + 6) {
-					output = radio.getScreenText().substring(count, count + 6);
-					if (fontRenderer.getStringWidth(output) / 6 < 5) {
-						output = radio.getScreenText().substring(count, count + 7);
-					}
-					count++;
-					this.ticks = 0;
-					if (count > radio.getScreenText().length()) {
-						count = 0;
-					}
-				} else {
-					count = 0;
-				}
+				output = scrollText(radio.getScreenText());
 			} else {
 				output = radio.getScreenText();
 			}
@@ -73,8 +60,26 @@ public class RadioRenderer extends TileEntitySpecialRenderer {
 		renderMan.getFontRenderer().drawString(output, -37 / 2, 0, radio.getScreenColor());
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glEnable(GL11.GL_LIGHTING);
-		//GL11.glDepthMask(true);
-		//GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glPopMatrix();
 	}
+
+	public String scrollText(String text) {
+		FontRenderer fontRenderer = RenderManager.instance.getFontRenderer();
+		text = "       " + text + "        ";
+		if (text.length() > count + 6) {
+			output = text.substring(count, count + 6);
+			if (fontRenderer.getStringWidth(output) / 6 < 5) {
+				output = text.substring(count, count + 7);
+			}
+			count++;
+			this.ticks = 0;
+			if (count > text.length()) {
+				count = 0;
+			}
+		} else {
+			count = 0;
+		}
+		return output;
+	}
+
 }
