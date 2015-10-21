@@ -30,7 +30,6 @@ public class DAdvancedPlayer {
 	private int posZ;
 	private World world;
 	public InputStream ourStream = null;
-	public MpegInfo tagData = new MpegInfo();
 	public DAdvancedPlayer(InputStream stream) throws JavaLayerException {
 		this(stream, null);
 	}
@@ -141,7 +140,7 @@ public class DAdvancedPlayer {
 
 					for (int samp = 0; samp < samples.length; samp++)
 					{
-						samples[samp] = ((short)(int)(samples[samp] * this.volume * (2 * (Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS) * Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.MASTER)))));
+						samples[samp] = ((short)(int)(samples[samp] * this.volume * ((Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS) * Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.MASTER)))));
 					}					
 					out.write(samples, 0, output.getBufferLength());
 				}
