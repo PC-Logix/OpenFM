@@ -1,7 +1,16 @@
 package pcl.OpenFM.TileEntity;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
@@ -21,6 +30,7 @@ import pcl.OpenFM.misc.Speaker;
 import pcl.OpenFM.network.PacketHandler;
 import pcl.OpenFM.network.Message.MessageTERadioBlock;
 import pcl.OpenFM.player.MP3Player;
+import pcl.OpenFM.player.OGGPlayer;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -31,11 +41,13 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 		@Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "OpenComputers")
 })
 public class TileEntityRadio extends TileEntity implements SimpleComponent {
-	public MP3Player player = null;
+	public MP3Player mp3Player = null;
+	public OGGPlayer oggPlayer = null;
+	public boolean useMP3 = true;
 	public boolean isPlaying = false;
 	public String streamURL = "";
 	private World world;
-	public float volume = 0.1F;
+	public float volume = 0.3F;
 	private boolean redstoneInput = false;
 	public boolean listenToRedstone = false;
 	private boolean scheduledRedstoneInput = false;
@@ -67,22 +79,54 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 
 	public void startStream() {
 		Side side = FMLCommonHandler.instance().getEffectiveSide();
-		if (!OpenFM.playerList.contains(player)) {
+		String decoder;
+
+
+		if (!OpenFM.playerList.contains(mp3Player)) {
 			isPlaying = true;
 			if (side == Side.CLIENT) {
-				player = new MP3Player(streamURL, world, xCoord, yCoord, zCoord);
-				OpenFM.playerList.add(player);
+				
+				URL file = null;
+				try {
+					file = new URL(streamURL);
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				AudioFileFormat baseFileFormat = null;
+				AudioFormat baseFormat = null;
+				try {
+					baseFileFormat = AudioSystem.getAudioFileFormat(file);
+				} catch (UnsupportedAudioFileException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				baseFormat = baseFileFormat.getFormat();
+				// Audio type such as MPEG1 Layer3, or Layer 2, or ...
+				AudioFileFormat.Type type = baseFileFormat.getType();
+				
+				if (type.toString().equals("MP3")) {
+					decoder = "mp3";
+				} else {
+					decoder = "ogg";
+				}
+				
+				mp3Player = new MP3Player(decoder, streamURL, world, xCoord, yCoord, zCoord);
+				OpenFM.playerList.add(mp3Player);
 			}
 		}
 	}
 
 	public void stopStream() {
 		Side side = FMLCommonHandler.instance().getEffectiveSide();
-		if (OpenFM.playerList.contains(player)) {
+		if (OpenFM.playerList.contains(mp3Player)) {
 			if (side == Side.CLIENT) {
-				player.stop();
+				mp3Player.stop();
 			}
-			OpenFM.playerList.remove(player);
+			OpenFM.playerList.remove(mp3Player);
 			isPlaying = false;
 		}
 	}
@@ -114,17 +158,17 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 					}
 				}
 			}
-			if ((Minecraft.getMinecraft().thePlayer != null) && (player != null) &&
+			if ((Minecraft.getMinecraft().thePlayer != null) && (mp3Player != null) &&
 					(!isInvalid())) {
 				vol = getClosest();
 				if (vol > 10000.0F * volume) {
-					player.setVolume(0.0F);
+					mp3Player.setVolume(0.0F);
 				} else {
 					float v2 = 10000.0F / vol / 100.0F;
 					if (v2 > 1.0F) {
-						player.setVolume(1.0F * volume * volume);
+						mp3Player.setVolume(1.0F * volume * volume);
 					} else {
-						player.setVolume(v2 * volume * volume);
+						mp3Player.setVolume(v2 * volume * volume);
 					}
 				}
 				if (vol == 0.0F) {
@@ -303,44 +347,44 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		return new Object[] { this.speakers.size() };
 	}
 
-    public int addSpeaker(World w, double x, double y, double z) {
-        int ret = canAddSpeaker(w, x, y, z);
-        if (ret == 0) {
-            speakers.add(new Speaker(x, y, z, w));
-        }
-        return ret;
-    }
+	public int addSpeaker(World w, double x, double y, double z) {
+		int ret = canAddSpeaker(w, x, y, z);
+		if (ret == 0) {
+			speakers.add(new Speaker(x, y, z, w));
+		}
+		return ret;
+	}
 
-    public int canAddSpeaker(World w, double x, double y, double z) {
-        if (speakers.size() >= 10)
-            return 1;
-        for (Speaker s : speakers)
-            if ((s.x == x) && (s.y == y) && (s.z == z))
-                return 2;
-        return 0;
-    }
+	public int canAddSpeaker(World w, double x, double y, double z) {
+		if (speakers.size() >= 10)
+			return 1;
+		for (Speaker s : speakers)
+			if ((s.x == x) && (s.y == y) && (s.z == z))
+				return 2;
+		return 0;
+	}
 
 	public float getVolume() {
 		return volume;
 	}
 
-    private float getClosest() {
-        float closest = (float) getDistanceFrom(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY, Minecraft.getMinecraft().thePlayer.posZ);
-        if (!speakers.isEmpty()) {
-            for (Speaker s : speakers) {
-                float distance = (float) Math.pow(Minecraft.getMinecraft().thePlayer.getDistance(s.x, s.y, s.z), 2.0D);
-                if (closest > distance) {
-                    closest = distance;
-                }
-            }
-        }
-        return closest;
-    }
+	private float getClosest() {
+		float closest = (float) getDistanceFrom(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY, Minecraft.getMinecraft().thePlayer.posZ);
+		if (!speakers.isEmpty()) {
+			for (Speaker s : speakers) {
+				float distance = (float) Math.pow(Minecraft.getMinecraft().thePlayer.getDistance(s.x, s.y, s.z), 2.0D);
+				if (closest > distance) {
+					closest = distance;
+				}
+			}
+		}
+		return closest;
+	}
 
 	public int getScreenColor() {
 		return screenColor;
 	}
-    
+
 	@Override
 	public String getComponentName() {
 		// TODO Auto-generated method stub
@@ -355,7 +399,6 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		this.stationCount = stationCount;
 	}
 
-	@SuppressWarnings("unused")
 	@Override
 	public Packet getDescriptionPacket()
 	{
@@ -372,11 +415,11 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, this.blockMetadata, tagCom);
 	}
 
-    @Override
-    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity packet) {
-        readFromNBT(packet.func_148857_g());    // == "getNBTData"
-    }
-	
+	@Override
+	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity packet) {
+		readFromNBT(packet.func_148857_g());    // == "getNBTData"
+	}
+
 	@Optional.Method(modid = "OpenComputers")
 	@Callback
 	public Object[] greet(Context context, Arguments args) {
@@ -391,7 +434,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		getDescriptionPacket();
 		return new Object[]{ true };
 	}
-	
+
 	@Optional.Method(modid = "OpenComputers")
 	@Callback
 	public Object[] stop(Context context, Arguments args) {
@@ -457,6 +500,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		this.screenColor = par1NBTTagCompound.getInteger("screenColor");
 		this.isLocked = par1NBTTagCompound.getBoolean("isLocked");
 		this.owner = par1NBTTagCompound.getString("owner");
+		this.useMP3 = par1NBTTagCompound.getBoolean("useMP3");
 		if (par1NBTTagCompound.getString("screenText").length() < 1) {
 			this.screenText = "OpenFM";
 		} else {
@@ -488,6 +532,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		par1NBTTagCompound.setString("screenText", this.screenText);
 		par1NBTTagCompound.setBoolean("isLocked", this.isLocked);
 		par1NBTTagCompound.setString("owner", this.owner);
+		par1NBTTagCompound.setBoolean("useMP3", this.useMP3);
 		for (int i = 0; i < this.speakers.size(); i++) {
 			par1NBTTagCompound.setDouble("speakerX" + i, ((Speaker)this.speakers.get(i)).x);
 			par1NBTTagCompound.setDouble("speakerY" + i, ((Speaker)this.speakers.get(i)).y);
