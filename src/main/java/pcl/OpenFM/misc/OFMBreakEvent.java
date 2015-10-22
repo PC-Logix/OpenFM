@@ -10,15 +10,15 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class OFMBreakEvent {
-	
+
 	public OFMBreakEvent() {
 		OpenFM.logger.info("Registering BreakEvent");
 	}
-	
+
 	public static boolean IsOp(EntityPlayer player) {
 		return MinecraftServer.getServer().getConfigurationManager().func_152596_g(player.getGameProfile());
 	}
-	
+
 	@SubscribeEvent(priority=EventPriority.NORMAL)
 	public void onBlockBreak(BreakEvent event) {
 		if (!IsOp(event.getPlayer())) {
@@ -34,7 +34,10 @@ public class OFMBreakEvent {
 				}
 			}
 		} else {
-			OpenFM.logger.info("Op is breaking a radio at X:" + event.x + " Y: " + event.y + " Z: " + event.z);
+			TileEntity TE = event.world.getTileEntity(event.x, event.y, event.z);
+			if(TE instanceof TileEntityRadio){
+				OpenFM.logger.info("Op is breaking a radio at X:" + event.x + " Y: " + event.y + " Z: " + event.z);
+			}
 		}
 	}
 }
