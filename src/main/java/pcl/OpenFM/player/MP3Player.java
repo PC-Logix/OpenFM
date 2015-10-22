@@ -1,16 +1,6 @@
 package pcl.OpenFM.player;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
 import java.net.URL;
-
-import javax.sound.sampled.UnsupportedAudioFileException;
-
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundCategory;
@@ -23,17 +13,20 @@ import cpw.mods.fml.client.FMLClientHandler;
 
 public class MP3Player extends DPlaybackListener implements Runnable {
 	private String streamURL;
-	public DAdvancedPlayer player;
+	public DAdvancedPlayer mp3Player;
+	public OGGPlayer oggPlayer;
+	public String decoder;
 	private Thread pThread;
 	private int x;
 	private int y;
 	private int z;
 	private World world;
-	public MP3Player(String mp3url, World w, int a, int b, int c)
+	public MP3Player(String decoder, String mp3url, World w, int a, int b, int c)
 	{
 		try
 		{
 			this.world = w;
+			this.decoder = decoder;
 			this.x = a;
 			this.y = b;
 			this.z = c;
@@ -51,11 +44,17 @@ public class MP3Player extends DPlaybackListener implements Runnable {
 	{
 		try
 		{
+			if (decoder.equals("mp3")) {
+				this.mp3Player = new DAdvancedPlayer(new URL(this.streamURL).openConnection().getInputStream());
+				this.mp3Player.setID(this.world, this.x, this.y, this.z);
+				this.mp3Player.setPlayBackListener(this);
+				this.mp3Player.play();
+			} else {
+				this.oggPlayer = new OGGPlayer();
+				this.oggPlayer.setID(this.world, this.x, this.y, this.z);
+				this.oggPlayer.play(this.streamURL);
+			}
 
-			this.player = new DAdvancedPlayer(new URL(this.streamURL).openConnection().getInputStream());
-			this.player.setID(this.world, this.x, this.y, this.z);
-			this.player.setPlayBackListener(this);
-			this.player.play();
 
 		}
 		catch (Exception e)
@@ -68,9 +67,14 @@ public class MP3Player extends DPlaybackListener implements Runnable {
 
 	public void stop()
 	{
-		if ((this.player != null) && (isPlaying()))
+		if ((this.mp3Player != null || this.oggPlayer != null) && (isPlaying()))
 		{
-			this.player.stop();
+			if (decoder.equals("mp3")) {
+				this.mp3Player.stop();
+			} else {
+				this.oggPlayer.stop();
+			}
+			
 		}
 	}
 
@@ -80,21 +84,32 @@ public class MP3Player extends DPlaybackListener implements Runnable {
 
 	public boolean isPlaying()
 	{
-		return this.pThread.isAlive();
+		if (decoder.equals("mp3")) {
+			return this.pThread.isAlive();
+		} else {
+			return this.oggPlayer.isPlaying();
+		}
+
 	}
 
 	public void setVolume(float f)
 	{
-		if (this.player != null)
+		if (this.mp3Player != null)
 		{
-
-			this.player.setVolume(f);
+			this.mp3Player.setVolume(f);
+		} else if (this.oggPlayer != null) {
+			this.oggPlayer.setVolume(f);
 		}
 	}
 
 	public float getVolume()
 	{
 		System.out.println(Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS));
-		return this.player.getVolume() / Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS);
+		if (decoder.equals("mp3")) {
+			return this.mp3Player.getVolume() / Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS);
+		} else {
+			return this.oggPlayer.getVolume() / Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS);
+		}
+
 	}
 }
