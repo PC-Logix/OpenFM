@@ -14,6 +14,7 @@ import pcl.OpenFM.Handler.ClientEvent;
 import pcl.OpenFM.Handler.ServerEvent;
 import pcl.OpenFM.network.PacketHandler;
 import pcl.OpenFM.player.MP3Player;
+import pcl.OpenFM.player.OGGPlayer;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.ModContainer;
@@ -29,6 +30,7 @@ public class OpenFM {
 	@SidedProxy(clientSide="pcl.OpenFM.ClientProxy", serverSide="pcl.OpenFM.CommonProxy")
 	public static CommonProxy proxy;
 	public static List<MP3Player> playerList = new ArrayList<MP3Player>();
+	public static List<OGGPlayer> oggPlayerList = new ArrayList<OGGPlayer>();
 	public Configuration config;
 	public static final Logger logger = LogManager.getFormatterLogger(BuildInfo.modID);
 	
