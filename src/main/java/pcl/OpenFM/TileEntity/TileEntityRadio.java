@@ -500,7 +500,6 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		this.screenColor = par1NBTTagCompound.getInteger("screenColor");
 		this.isLocked = par1NBTTagCompound.getBoolean("isLocked");
 		this.owner = par1NBTTagCompound.getString("owner");
-		this.useMP3 = par1NBTTagCompound.getBoolean("useMP3");
 		if (par1NBTTagCompound.getString("screenText").length() < 1) {
 			this.screenText = "OpenFM";
 		} else {
@@ -532,7 +531,6 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		par1NBTTagCompound.setString("screenText", this.screenText);
 		par1NBTTagCompound.setBoolean("isLocked", this.isLocked);
 		par1NBTTagCompound.setString("owner", this.owner);
-		par1NBTTagCompound.setBoolean("useMP3", this.useMP3);
 		for (int i = 0; i < this.speakers.size(); i++) {
 			par1NBTTagCompound.setDouble("speakerX" + i, ((Speaker)this.speakers.get(i)).x);
 			par1NBTTagCompound.setDouble("speakerY" + i, ((Speaker)this.speakers.get(i)).y);
