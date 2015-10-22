@@ -8,13 +8,10 @@ import net.minecraft.tileentity.TileEntity;
 
 import org.lwjgl.opengl.GL11;
 
-import pcl.OpenFM.player.MpegInfo;
-
 public class RadioRenderer extends TileEntitySpecialRenderer {
 
 	public Integer ticks = 0;
 	public String text = null;
-	MpegInfo tagData;
 	String output = "";
 	int count = 0;
 	@Override
