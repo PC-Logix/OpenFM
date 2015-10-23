@@ -1,5 +1,6 @@
 package pcl.OpenFM.TileEntity;
 
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 import li.cil.oc.api.Network;
 import li.cil.oc.api.network.Environment;
@@ -15,13 +16,15 @@ import net.minecraft.tileentity.TileEntity;
 public class TileEntitySpeaker extends TileEntity implements Environment {
 	
 	protected Node node;
-
+		
 	@Optional.Method(modid = "OpenComputers")
 	@Override
 	public Node node() {
-		return node = Network.newNode(this, Visibility.Network).create();
+		node = Network.newNode(this, Visibility.Network).create();
+		return node;
 	}
-
+	
+	@Optional.Method(modid = "OpenComputers")
 	@Override
 	public void onChunkUnload() {
 		super.onChunkUnload();
@@ -29,6 +32,7 @@ public class TileEntitySpeaker extends TileEntity implements Environment {
 			node.remove();
 	}
 
+	@Optional.Method(modid = "OpenComputers")
 	@Override
 	public void invalidate() {
 		super.invalidate();
@@ -55,6 +59,7 @@ public class TileEntitySpeaker extends TileEntity implements Environment {
 
 	}
 
+	@Optional.Method(modid = "OpenComputers")
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
@@ -63,6 +68,7 @@ public class TileEntitySpeaker extends TileEntity implements Environment {
 		}
 	}
 
+	@Optional.Method(modid = "OpenComputers")
 	@Override
 	public void writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
@@ -73,6 +79,7 @@ public class TileEntitySpeaker extends TileEntity implements Environment {
 		}
 	}
 
+	@Optional.Method(modid = "OpenComputers")
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
