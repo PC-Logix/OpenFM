@@ -34,13 +34,14 @@ configurations {
     compile.extendsFrom shade
 }
 
+
 dependencies {
     compile "li.cil.oc:OpenComputers:MC1.7.10-1.5.18.36:dev"
 	shade "javazoom:jlayer:1.0.1"
 	shade "com.squareup.okhttp:okhttp:2.5.0"
 	shade "com.googlecode.soundlibs:tritonus-share:0.3.7-2"
-	shade "com.googlecode.soundlibs:mp3spi:1.9.5-1"
-	shade "com.googlecode.soundlibs:vorbisspi:1.0.3-1"
+	compile "com.googlecode.soundlibs:mp3spi:1.9.5-1"
+	compile "com.googlecode.soundlibs:vorbisspi:1.0.3-1"
 }
 
 if (System.getenv().BUILD_NUMBER != null)
@@ -67,7 +68,10 @@ jar {
 }
 
 jar.classifier = "${ext.buildNumber}"
-
+jar.manifest = manifest { attributes(
+	"FMLCorePlugin": "pcl.OpenFM.misc.DepLoader",
+	"FMLCorePluginContainsFMLMod": "icanhazfmlmodpweeze"
+) }
 def curseforge_key = 0
 def curse_changlog = "default"
 if (project.hasProperty('opensecurity_curseforge_key')) {

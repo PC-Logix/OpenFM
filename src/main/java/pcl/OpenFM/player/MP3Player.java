@@ -94,8 +94,7 @@ public class MP3Player extends DPlaybackListener implements Runnable {
 
 	public void setVolume(float f)
 	{
-		if (this.mp3Player != null)
-		{
+		if (this.mp3Player != null) {
 			this.mp3Player.setVolume(f);
 		} else if (this.oggPlayer != null) {
 			this.oggPlayer.setVolume(f);
