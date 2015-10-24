@@ -1,12 +1,12 @@
 [{
 	"repo": "http://caitlynmainer.com/OpenFM/",
-	"file": "mp3spi-1.9.5-1.jar",
+	"file": "OpenFM-mp3spi-1.9.5-1.jar",
 	"class": "javazoom.spi.mpeg.sampled.convert",
 	"coreLib": true
 },
 {
 	"repo": "http://caitlynmainer.com/OpenFM/",
-	"file": "vorbisspi-1.0.3-1.jar",
+	"file": "OpenFM-vorbisspi-1.0.3-1.jar",
 	"class": "javazoom.spi.vorbis.sampled.file",
 	"coreLib": true
 }]
