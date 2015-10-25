@@ -24,6 +24,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import pcl.OpenFM.OFMConfiguration;
 import pcl.OpenFM.OpenFM;
 import pcl.OpenFM.Block.BlockSpeaker;
 import pcl.OpenFM.misc.Speaker;
@@ -45,6 +46,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 	public OGGPlayer oggPlayer = null;
 	public boolean useMP3 = true;
 	public boolean isPlaying = false;
+	public boolean isValid = true;
 	public String streamURL = "";
 	private World world;
 	public float volume = 0.3F;
@@ -78,45 +80,47 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 	}
 
 	public void startStream() {
-		Side side = FMLCommonHandler.instance().getEffectiveSide();
-		String decoder;
+		OFMConfiguration.init(OpenFM.configFile);
+		if (OFMConfiguration.enableStreams) {
+			Side side = FMLCommonHandler.instance().getEffectiveSide();
+			String decoder = null;
+			if (!OpenFM.playerList.contains(mp3Player)) {
+				if (side == Side.CLIENT) {
+					URL file = null;
+					try {
+						file = new URL(streamURL);
+						AudioFileFormat baseFileFormat = null;
+						AudioFormat baseFormat = null;
+						try {
+							baseFileFormat = AudioSystem.getAudioFileFormat(file);
+						} catch (UnsupportedAudioFileException e) {
+							// TODO Auto-generated catch block
+							isValid = false;
+						} catch (IOException e) {
+							isValid = false;
+						}
+						baseFormat = baseFileFormat.getFormat();
+						// Audio type such as MPEG1 Layer3, or Layer 2, or ...
+						AudioFileFormat.Type type = baseFileFormat.getType();
+						OpenFM.logger.info(type.toString());
+						if (type.toString().equals("MP3")) {
+							decoder = "mp3";
+						} else if (type.toString().equals("OGG")) {
+							decoder = "ogg";
+						}
+						if (decoder != null && isValid) {
+							isPlaying = true;
+							OpenFM.logger.info("Starting Stream: " + streamURL + " at X:" + xCoord + " Y:" + yCoord + " Z:" + zCoord);
+							mp3Player = new MP3Player(decoder, streamURL, world, xCoord, yCoord, zCoord);
+							OpenFM.playerList.add(mp3Player);	
+						}
+					} catch (MalformedURLException e) {
 
-
-		if (!OpenFM.playerList.contains(mp3Player)) {
-			isPlaying = true;
-			if (side == Side.CLIENT) {
-				
-				URL file = null;
-				try {
-					file = new URL(streamURL);
-				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					}
 				}
-				AudioFileFormat baseFileFormat = null;
-				AudioFormat baseFormat = null;
-				try {
-					baseFileFormat = AudioSystem.getAudioFileFormat(file);
-				} catch (UnsupportedAudioFileException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				baseFormat = baseFileFormat.getFormat();
-				// Audio type such as MPEG1 Layer3, or Layer 2, or ...
-				AudioFileFormat.Type type = baseFileFormat.getType();
-				
-				if (type.toString().equals("MP3")) {
-					decoder = "mp3";
-				} else {
-					decoder = "ogg";
-				}
-				
-				mp3Player = new MP3Player(decoder, streamURL, world, xCoord, yCoord, zCoord);
-				OpenFM.playerList.add(mp3Player);
 			}
+		} else {
+			stopStream();
 		}
 	}
 
@@ -129,6 +133,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 			OpenFM.playerList.remove(mp3Player);
 			isPlaying = false;
 		}
+		isPlaying = false;
 	}
 
 	public boolean isPlaying() {
@@ -150,7 +155,6 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 			if (th >= 10) {
 				for (Speaker s : speakers) {
 					Block sb = getWorldObj().getBlock((int) s.x, (int) s.y, (int) s.z);
-
 					if (!(sb instanceof BlockSpeaker)) {
 						if (!getWorldObj().getChunkFromBlockCoords((int) s.x, (int) s.z).isChunkLoaded) break;
 						speakers.remove(s);
@@ -158,17 +162,25 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 					}
 				}
 			}
-			if ((Minecraft.getMinecraft().thePlayer != null) && (mp3Player != null) &&
-					(!isInvalid())) {
+			if ((Minecraft.getMinecraft().thePlayer != null) && (mp3Player != null || oggPlayer != null) && (!isInvalid())) {
 				vol = getClosest();
 				if (vol > 10000.0F * volume) {
-					mp3Player.setVolume(0.0F);
+					if (mp3Player != null)
+						mp3Player.setVolume(0.0F);
+					else if (oggPlayer != null)
+						oggPlayer.setVolume(0.0f);
 				} else {
 					float v2 = 10000.0F / vol / 100.0F;
 					if (v2 > 1.0F) {
-						mp3Player.setVolume(1.0F * volume * volume);
+						if (mp3Player != null)
+							mp3Player.setVolume(1.0F * volume * volume);
+						else if (oggPlayer != null)
+							oggPlayer.setVolume(1.0F * volume * volume);
 					} else {
-						mp3Player.setVolume(v2 * volume * volume);
+						if (mp3Player != null)
+							mp3Player.setVolume(v2 * volume * volume);
+						else if (oggPlayer != null)
+							oggPlayer.setVolume(v2 * volume * volume);
 					}
 				}
 				if (vol == 0.0F) {
@@ -177,6 +189,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 			}
 		} else {
 			if (isPlaying()) {
+				PacketHandler.INSTANCE.sendToAllAround(new MessageTERadioBlock(this), new NetworkRegistry.TargetPoint(getWorldObj().provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 50.0D));
 				th += 1;
 				if (th >= 60) {
 					for (Speaker s : speakers) {
