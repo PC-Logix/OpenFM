@@ -105,41 +105,39 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 					try {
 						response = client.newCall(request).execute();
 					} catch (IOException e1) {
-						// TODO Auto-generated catch block
 						isValid = false;
 						streamURL = null;
 						stopStream();
-						//OpenFM.logger.info(e1);
-						//e1.printStackTrace();
 					}
 					try {
 						InputStream stream = response.body().byteStream();
 						baseFileFormat = AudioSystem.getAudioFileFormat(stream);
 					} catch (IOException | UnsupportedAudioFileException e1) {
-						// TODO Auto-generated catch block
 						isValid = false;
 						streamURL = null;
 						stopStream();
-						//OpenFM.logger.info(e1);
-						//e1.printStackTrace();
 					}
-						if (isValid) {
-							baseFormat = baseFileFormat.getFormat();
-							// Audio type such as MPEG1 Layer3, or Layer 2, or ...
-							AudioFileFormat.Type type = baseFileFormat.getType();
-							OpenFM.logger.info(type.toString());
-							if (type.toString().equals("MP3")) {
-								decoder = "mp3";
-							} else if (type.toString().equals("OGG")) {
-								decoder = "ogg";
-							}
-							if (decoder != null && isValid) {
-								isPlaying = true;
-								OpenFM.logger.info("Starting Stream: " + streamURL + " at X:" + xCoord + " Y:" + yCoord + " Z:" + zCoord);
-								mp3Player = new MP3Player(decoder, streamURL, world, xCoord, yCoord, zCoord);
-								OpenFM.playerList.add(mp3Player);	
-							}
+					if (isValid) {
+						baseFormat = baseFileFormat.getFormat();
+						// Audio type such as MPEG1 Layer3, or Layer 2, or ...
+						AudioFileFormat.Type type = baseFileFormat.getType();
+						OpenFM.logger.info(type.toString());
+						if (type.toString().equals("MP3")) {
+							decoder = "mp3";
+						} else if (type.toString().equals("OGG")) {
+							decoder = "ogg";
 						}
+						if (decoder != null && isValid) {
+							isPlaying = true;
+							OpenFM.logger.info("Starting Stream: " + streamURL + " at X:" + xCoord + " Y:" + yCoord + " Z:" + zCoord);
+							mp3Player = new MP3Player(decoder, streamURL, world, xCoord, yCoord, zCoord);
+							OpenFM.playerList.add(mp3Player);	
+						}
+					}
+				} else {
+					if (isValid) {
+						this.isPlaying = true;
+					}
 				}
 			}
 		} else {
