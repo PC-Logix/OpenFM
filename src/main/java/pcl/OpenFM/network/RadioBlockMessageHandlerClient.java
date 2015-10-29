@@ -62,7 +62,9 @@ import cpw.mods.fml.relauncher.Side;
        if ((message.mode == 1) || (message.mode == 13) || (message.mode == 14)) {
          if (message.isPlaying)
          {
-           tileEntity.startStream();
+        	 if (tileEntity.isValid) {
+                 tileEntity.startStream();
+        	 }
          }
          else
          {

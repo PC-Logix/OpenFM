@@ -1,6 +1,11 @@
 package pcl.OpenFM.player;
 
+import java.io.InputStream;
 import java.net.URL;
+
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundCategory;
@@ -45,7 +50,15 @@ public class MP3Player extends DPlaybackListener implements Runnable {
 		try
 		{
 			if (decoder.equals("mp3")) {
-				this.mp3Player = new DAdvancedPlayer(new URL(this.streamURL).openConnection().getInputStream());
+				OkHttpClient client = new OkHttpClient();
+				Request request = new Request.Builder()
+				.url(streamURL)
+				.build();
+				
+				Response response = client.newCall(request).execute();
+				InputStream stream = response.body().byteStream();
+				 
+				this.mp3Player = new DAdvancedPlayer(stream);
 				this.mp3Player.setID(this.world, this.x, this.y, this.z);
 				this.mp3Player.setPlayBackListener(this);
 				this.mp3Player.play();
@@ -54,8 +67,6 @@ public class MP3Player extends DPlaybackListener implements Runnable {
 				this.oggPlayer.setID(this.world, this.x, this.y, this.z);
 				this.oggPlayer.play(this.streamURL);
 			}
-
-
 		}
 		catch (Exception e)
 		{

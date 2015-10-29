@@ -7,9 +7,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  
  
  @SideOnly(Side.CLIENT)
- public class OFMGuiTextField
-   extends GuiTextField
- {
+ public class OFMGuiTextField extends GuiTextField {
    public OFMGuiTextField(FontRenderer par1FontRenderer, int par2, int par3, int par4, int par5)
    {
      super(par1FontRenderer, par2, par3, par4, par5);

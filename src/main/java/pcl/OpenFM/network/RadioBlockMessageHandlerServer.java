@@ -67,7 +67,9 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
          ((TileEntityRadio)tileEntity).isPlaying = message.isPlaying;
          if (message.isPlaying)
          {
-           ((TileEntityRadio)tileEntity).startStream();
+        	if(((TileEntityRadio)tileEntity).isValid) {
+                ((TileEntityRadio)tileEntity).startStream();
+        	}
          }
          else
          {

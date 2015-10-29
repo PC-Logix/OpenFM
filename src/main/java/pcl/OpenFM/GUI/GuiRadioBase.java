@@ -48,7 +48,11 @@ public class GuiRadioBase extends GuiScreen {
 
 	public boolean exists = true;
 
-	public void initGui() {}
+	public void initGui() {
+		
+		super.initGui();
+		
+	}
 
 	public void onGuiClosed()
 	{

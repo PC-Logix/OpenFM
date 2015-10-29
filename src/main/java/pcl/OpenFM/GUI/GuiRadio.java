@@ -27,6 +27,7 @@ public class GuiRadio extends GuiRadioBase {
 
 	@SuppressWarnings("unchecked")
 	public void initGui()	{
+		super.initGui();
 		org.lwjgl.input.Keyboard.enableRepeatEvents(true);
 
 		this.DRMbuttonList.add(new OFMGuiButton(2, this.width / 2 + 12, this.height / 2 + 3 - 5, 10, 10, 58, 24, "", OFMGuiButton.guiLocation)); //VolDown

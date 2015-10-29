@@ -1,9 +1,6 @@
 package pcl.OpenFM.player;
 
-import java.io.IOException;
 import java.io.InputStream;
-
-import javax.sound.sampled.UnsupportedAudioFileException;
 
 import javazoom.jl.decoder.Bitstream;
 import javazoom.jl.decoder.BitstreamException;
@@ -151,7 +148,7 @@ public class DAdvancedPlayer {
 		catch (RuntimeException ex)
 		{
 			stop();
-			play();
+			//play();
 			throw new JavaLayerException("Exception decoding audio frame", ex);
 		}
 
