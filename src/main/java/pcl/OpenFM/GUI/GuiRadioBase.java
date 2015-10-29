@@ -36,7 +36,7 @@ public class GuiRadioBase extends GuiScreen {
 	protected boolean lockedButtonState;
 	protected boolean isLocked = false;
 
-	public List DRMbuttonList = new ArrayList();
+	public List OFMbuttonList = new ArrayList();
 
 	public GuiRadioBase(TileEntityRadio r)
 	{
@@ -68,9 +68,9 @@ public class GuiRadioBase extends GuiScreen {
 		this.mc.renderEngine.bindTexture(new ResourceLocation("openfm:textures/gui/gui_radio.png"));
 		drawTexturedModalRect(k, l, 0, 0, this.gui_width, this.gui_height);
 
-		for (k = 0; k < this.DRMbuttonList.size(); k++)
+		for (k = 0; k < this.OFMbuttonList.size(); k++)
 		{
-			((OFMGuiButton)this.DRMbuttonList.get(k)).drawButton(this.mc, par1, par2);
+			((OFMGuiButton)this.OFMbuttonList.get(k)).drawButton(this.mc, par1, par2);
 		}
 		this.mc.fontRenderer.drawString("OpenFM", this.width / 2 - 16, this.height / 2 + 50, 0xFFFFFF);
 	}
@@ -88,18 +88,18 @@ public class GuiRadioBase extends GuiScreen {
 	{
 		if (par3 == 0)
 		{
-			for (int l = 0; l < this.DRMbuttonList.size(); l++)
+			for (int l = 0; l < this.OFMbuttonList.size(); l++)
 			{
-				GuiButton guibutton = (GuiButton)this.DRMbuttonList.get(l);
+				GuiButton guibutton = (GuiButton)this.OFMbuttonList.get(l);
 				if (guibutton.mousePressed(this.mc, par1, par2))
 				{
-					GuiScreenEvent.ActionPerformedEvent.Pre event = new GuiScreenEvent.ActionPerformedEvent.Pre(this, guibutton, this.DRMbuttonList);
+					GuiScreenEvent.ActionPerformedEvent.Pre event = new GuiScreenEvent.ActionPerformedEvent.Pre(this, guibutton, this.OFMbuttonList);
 					if (MinecraftForge.EVENT_BUS.post(event))
 						break;
 					event.button.func_146113_a(this.mc.getSoundHandler());
 					actionPerformed(event.button);
 					if (equals(this.mc.currentScreen))
-						MinecraftForge.EVENT_BUS.post(new GuiScreenEvent.ActionPerformedEvent.Post(this, event.button, this.DRMbuttonList));
+						MinecraftForge.EVENT_BUS.post(new GuiScreenEvent.ActionPerformedEvent.Post(this, event.button, this.OFMbuttonList));
 				}
 			} 
 		}

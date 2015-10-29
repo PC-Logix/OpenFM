@@ -30,19 +30,21 @@ public class GuiRadio extends GuiRadioBase {
 		super.initGui();
 		org.lwjgl.input.Keyboard.enableRepeatEvents(true);
 
-		this.DRMbuttonList.add(new OFMGuiButton(2, this.width / 2 + 12, this.height / 2 + 3 - 5, 10, 10, 58, 24, "", OFMGuiButton.guiLocation)); //VolDown
-		this.DRMbuttonList.add(new OFMGuiButton(3, this.width / 2 - 22, this.height / 2 + 3 - 5, 10, 10, 48, 24, "", OFMGuiButton.guiLocation)); //VolUp
-
-	    this.DRMbuttonList.add(new OFMGuiButton(4, this.width / 2 - 107, this.height / 2 + 15 - 5, 6, 12, 75, 24, "", OFMGuiButton.guiLocation)); //Scroll Left
-	    this.DRMbuttonList.add(new OFMGuiButton(5, this.width / 2 + 101, this.height / 2 + 15 - 5, 6, 12, 81, 24, "", OFMGuiButton.guiLocation)); //Scroll Right
+		this.OFMbuttonList.clear();
 		
-	    this.DRMbuttonList.add(new OFMGuiButton(6, this.width / 2 - 12 - 50, this.height / 2 + 31 - 5, 48, 8, 48, 0, "", OFMGuiButton.guiLocation)); //Clear
-	    this.DRMbuttonList.add(new OFMGuiButton(7, this.width / 2 - 12 - 51, this.height / 2 + 41 - 5, 49, 8, 96, 1, "", OFMGuiButton.guiLocation)); //Paste
+		this.OFMbuttonList.add(new OFMGuiButton(2, this.width / 2 + 12, this.height / 2 + 3 - 5, 10, 10, 58, 24, "", OFMGuiButton.guiLocation)); //VolDown
+		this.OFMbuttonList.add(new OFMGuiButton(3, this.width / 2 - 22, this.height / 2 + 3 - 5, 10, 10, 48, 24, "", OFMGuiButton.guiLocation)); //VolUp
 
-	    this.DRMbuttonList.add(new OFMGuiButton(8, this.width / 2 + 12 + 2, this.height / 2 + 33 - 5, 42, 6, 145, 0, "", OFMGuiButton.guiLocation)); //Save
-	    this.DRMbuttonList.add(new OFMGuiButton(9, this.width / 2 + 12 + 2, this.height / 2 + 40 - 5, 54, 8, 187, 0, "", OFMGuiButton.guiLocation)); //Delete
+	    this.OFMbuttonList.add(new OFMGuiButton(4, this.width / 2 - 107, this.height / 2 + 15 - 5, 6, 12, 75, 24, "", OFMGuiButton.guiLocation)); //Scroll Left
+	    this.OFMbuttonList.add(new OFMGuiButton(5, this.width / 2 + 101, this.height / 2 + 15 - 5, 6, 12, 81, 24, "", OFMGuiButton.guiLocation)); //Scroll Right
+		
+	    this.OFMbuttonList.add(new OFMGuiButton(6, this.width / 2 - 12 - 50, this.height / 2 + 31 - 5, 48, 8, 48, 0, "", OFMGuiButton.guiLocation)); //Clear
+	    this.OFMbuttonList.add(new OFMGuiButton(7, this.width / 2 - 12 - 51, this.height / 2 + 41 - 5, 49, 8, 96, 1, "", OFMGuiButton.guiLocation)); //Paste
+
+	    this.OFMbuttonList.add(new OFMGuiButton(8, this.width / 2 + 12 + 2, this.height / 2 + 33 - 5, 42, 6, 145, 0, "", OFMGuiButton.guiLocation)); //Save
+	    this.OFMbuttonList.add(new OFMGuiButton(9, this.width / 2 + 12 + 2, this.height / 2 + 40 - 5, 54, 8, 187, 0, "", OFMGuiButton.guiLocation)); //Delete
 	    
-		this.DRMbuttonList.add(new OFMGuiButton(10, this.width / 2 + 100, this.height / 2 + 3 - 5, 7, 8, 68, 24, "", OFMGuiButton.guiLocation)); //Close
+		this.OFMbuttonList.add(new OFMGuiButton(10, this.width / 2 + 100, this.height / 2 + 3 - 5, 7, 8, 68, 24, "", OFMGuiButton.guiLocation)); //Close
 
 		if (!this.redstoneButtonState) {
 			this.redstoneBtn = new OFMGuiButton(11, this.width / 2 + 100 - 13, this.height / 2 + 3 - 5, 8, 8, 87, 24, "", OFMGuiButton.guiLocation); //Redstone
@@ -57,11 +59,11 @@ public class GuiRadio extends GuiRadioBase {
 		}
 		
 		if (this.radio.getWorldObj().provider.dimensionId == 0) {
-			this.DRMbuttonList.add(this.redstoneBtn);
+			this.OFMbuttonList.add(this.redstoneBtn);
 		}
-		this.DRMbuttonList.add(this.lockedBtn);
+		this.OFMbuttonList.add(this.lockedBtn);
 		this.playBtn = new OFMGuiButton(1, this.width / 2 - 12, this.height / 2 + 28 - 5, 24, 24, 0, 0, "", OFMGuiButton.guiLocation); //Play
-		this.DRMbuttonList.add(this.playBtn);
+		this.OFMbuttonList.add(this.playBtn);
 
 
 		this.streamTextBox = new OFMGuiTextField(this.fontRendererObj, this.width / 2 - 100, this.height / 2 - 5 + 17, 200, 20);
@@ -92,39 +94,39 @@ public class GuiRadio extends GuiRadioBase {
 
 		if ((this.radio.isPlaying()) && (!this.playButtonPlayingState)) {
 			this.playButtonPlayingState = true;
-			this.DRMbuttonList.remove(this.playBtn);
+			this.OFMbuttonList.remove(this.playBtn);
 			this.playBtn = new OFMGuiButton(1, this.width / 2 - 12, this.height / 2 + 28 - 5, 24, 24, 24, 0, "", OFMGuiButton.guiLocation);
-			this.DRMbuttonList.add(this.playBtn);
+			this.OFMbuttonList.add(this.playBtn);
 		}
 		if ((!this.radio.isPlaying()) && (this.playButtonPlayingState)) {
 			this.playButtonPlayingState = false;
-			this.DRMbuttonList.remove(this.playBtn);
+			this.OFMbuttonList.remove(this.playBtn);
 			this.playBtn = new OFMGuiButton(1, this.width / 2 - 12, this.height / 2 + 28 - 5, 24, 24, 0, 0, "", OFMGuiButton.guiLocation);
-			this.DRMbuttonList.add(this.playBtn);
+			this.OFMbuttonList.add(this.playBtn);
 		}
 		if ((this.radio.isListeningToRedstoneInput() & !this.redstoneButtonState)) {
 			this.redstoneButtonState = true;
-			this.DRMbuttonList.remove(this.redstoneBtn);
+			this.OFMbuttonList.remove(this.redstoneBtn);
 			this.redstoneBtn = new OFMGuiButton(11, this.width / 2 + 100 - 13, this.height / 2 + 3 - 5, 8, 8, 95, 24, "", OFMGuiButton.guiLocation);
-			this.DRMbuttonList.add(this.redstoneBtn);
+			this.OFMbuttonList.add(this.redstoneBtn);
 		}
 		if ((!this.radio.isListeningToRedstoneInput() & this.redstoneButtonState)) {
 			this.redstoneButtonState = false;
-			this.DRMbuttonList.remove(this.redstoneBtn);
+			this.OFMbuttonList.remove(this.redstoneBtn);
 			this.redstoneBtn = new OFMGuiButton(11, this.width / 2 + 100 - 13, this.height / 2 + 3 - 5, 8, 8, 87, 24, "", OFMGuiButton.guiLocation);
-			this.DRMbuttonList.add(this.redstoneBtn);
+			this.OFMbuttonList.add(this.redstoneBtn);
 		}
 		if ((this.radio.isLocked & !this.lockedButtonState)) {
 			this.lockedButtonState = true;
-			this.DRMbuttonList.remove(this.lockedBtn);
+			this.OFMbuttonList.remove(this.lockedBtn);
 			this.lockedBtn = new OFMGuiButton(12, this.width / 2 + 100 - 4, this.height / 2 + 30, 12, 16, 103, 24, "", OFMGuiButton.guiLocation);
-			this.DRMbuttonList.add(this.lockedBtn);
+			this.OFMbuttonList.add(this.lockedBtn);
 		}
 		if ((!this.radio.isLocked & this.lockedButtonState)) {
 			this.lockedButtonState = false;
-			this.DRMbuttonList.remove(this.lockedBtn);
+			this.OFMbuttonList.remove(this.lockedBtn);
 			this.lockedBtn = new OFMGuiButton(12, this.width / 2 + 100 - 4, this.height / 2 + 30, 12, 16, 115, 24, "", OFMGuiButton.guiLocation);
-			this.DRMbuttonList.add(this.lockedBtn);
+			this.OFMbuttonList.add(this.lockedBtn);
 		}
 
 	}
@@ -137,8 +139,8 @@ public class GuiRadio extends GuiRadioBase {
 		this.streamTextBox.drawTextBox();
 		this.volumeBox.drawTextBox();
 		
-		for (int k = 0; k < this.DRMbuttonList.size(); k++) {
-			OFMGuiButton btn = (OFMGuiButton)this.DRMbuttonList.get(k);
+		for (int k = 0; k < this.OFMbuttonList.size(); k++) {
+			OFMGuiButton btn = (OFMGuiButton)this.OFMbuttonList.get(k);
 			if (btn.func_146115_a()) { // Tells you if the button is hovered by mouse
 				if (btn.id == 1) {
 					String hover;
@@ -334,7 +336,7 @@ public class GuiRadio extends GuiRadioBase {
 
 		if (par1 == '\r')
 		{
-			actionPerformed((GuiButton)this.DRMbuttonList.get(1));
+			actionPerformed((GuiButton)this.OFMbuttonList.get(1));
 		}
 		super.keyTyped(par1, par2);
 	}
