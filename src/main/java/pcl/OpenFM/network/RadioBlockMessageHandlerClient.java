@@ -63,7 +63,11 @@ import cpw.mods.fml.relauncher.Side;
          if (message.isPlaying)
          {
         	 if (tileEntity.isValid) {
-                 tileEntity.startStream();
+                 try {
+					tileEntity.startStream();
+				} catch (Exception e) {
+					tileEntity.stopStream();
+				}
         	 }
          }
          else

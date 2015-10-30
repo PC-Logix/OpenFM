@@ -70,12 +70,20 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 	public TileEntityRadio(World w) {
 		world = w;
 		if (isPlaying)
-			startStream();
+			try {
+				startStream();
+			} catch (Exception e) {
+				stopStream();
+			}
 	}
 
 	public TileEntityRadio() {
 		if (this.isPlaying) {
-			startStream();
+			try {
+				startStream();
+			} catch (Exception e) {
+				stopStream();
+			}
 		}
 	}
 
@@ -84,19 +92,15 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		world = w;
 	}
 
-	public void startStream() {
+	public void startStream() throws Exception {
 		OFMConfiguration.init(OpenFM.configFile);
 		if (OFMConfiguration.enableStreams) {
 			Side side = FMLCommonHandler.instance().getEffectiveSide();
 			String decoder = null;
 			if (!OpenFM.playerList.contains(mp3Player)) {
 				if (side == Side.CLIENT) {
-					URL file = null;
-
 					OkHttpClient client = new OkHttpClient();
-					Request request = new Request.Builder()
-					.url(streamURL)
-					.build();
+					Request request = new Request.Builder().url(streamURL).build();
 					Response response = null;
 
 					AudioFileFormat baseFileFormat = null;
@@ -463,7 +467,12 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 	@Optional.Method(modid = "OpenComputers")
 	@Callback
 	public Object[] start(Context context, Arguments args) {
-		startStream();
+		try {
+			startStream();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		getDescriptionPacket();
 		return new Object[]{ true };

@@ -68,7 +68,11 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
          if (message.isPlaying)
          {
         	if(((TileEntityRadio)tileEntity).isValid) {
-                ((TileEntityRadio)tileEntity).startStream();
+                try {
+					((TileEntityRadio)tileEntity).startStream();
+				} catch (Exception e) {
+					((TileEntityRadio)tileEntity).stopStream();
+				}
         	}
          }
          else
