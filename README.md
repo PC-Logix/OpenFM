@@ -1,6 +1,6 @@
 # OpenFM
 
-Streaming radio for Minecraft, with OpenComputers support.
+Streaming radio for Minecraft, with OpenComputers, and ComputerCraft support.
 
 fm = components.openfm_radio
 
