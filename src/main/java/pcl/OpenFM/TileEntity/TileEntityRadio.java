@@ -1,12 +1,11 @@
 package pcl.OpenFM.TileEntity;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
@@ -18,8 +17,8 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
+import li.cil.oc.api.network.ManagedPeripheral;
 import li.cil.oc.api.network.SimpleComponent;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -42,11 +41,18 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import dan200.computercraft.api.lua.ILuaContext;
+import dan200.computercraft.api.lua.LuaException;
+import dan200.computercraft.api.peripheral.IComputerAccess;
+import dan200.computercraft.api.peripheral.IPeripheral;
 
-@Optional.InterfaceList(value={
-		@Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "OpenComputers")
+@Optional.InterfaceList({
+	@Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "OpenComputers"),
+	@Optional.Interface(iface = "li.cil.oc.api.network.ManagedPeripheral", modid = "OpenComputers"),
+	@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = "ComputerCraft")
 })
-public class TileEntityRadio extends TileEntity implements SimpleComponent {
+
+public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleComponent, ManagedPeripheral {
 	public MP3Player mp3Player = null;
 	public OGGPlayer oggPlayer = null;
 	public boolean useMP3 = true;
@@ -175,6 +181,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		Side side = FMLCommonHandler.instance().getEffectiveSide();
 		float vol;
 		int th = 0;
+		int loops = 0;
 		if (side == Side.CLIENT) {
 			th += 1;
 			if (th >= 10) {
@@ -214,7 +221,12 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 			}
 		} else {
 			if (isPlaying()) {
-				PacketHandler.INSTANCE.sendToAllAround(new MessageTERadioBlock(this), new NetworkRegistry.TargetPoint(getWorldObj().provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 50.0D));
+				if (loops >= 40) {
+					PacketHandler.INSTANCE.sendToAllAround(new MessageTERadioBlock(this), new NetworkRegistry.TargetPoint(getWorldObj().provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 50.0D));
+					loops++;
+				} else {
+					loops = 0;
+				}
 				th += 1;
 				if (th >= 60) {
 					for (Speaker s : speakers) {
@@ -248,63 +260,6 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 
 	public String getStreamURL() {
 		return streamURL;
-	}
-
-	@Optional.Method(modid = "OpenComputers")
-	@Callback
-	public Object[] setURL(Context context, Arguments args) {
-		streamURL = args.checkString(0);
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-		getDescriptionPacket();
-		return new Object[] { true };
-	}
-
-	@Optional.Method(modid = "OpenComputers")
-	@Callback
-	public Object[] getVol(Context context, Arguments args) {
-		return new Object[] { getVolume() };
-	}
-
-	@Optional.Method(modid = "OpenComputers")
-	@Callback
-	public Object[] setVol(Context context, Arguments args) {
-		float v = (float)(args.checkInteger(0));
-		if ((v > 0.0F) && (v <= 1.0F)) {
-			setVolume(args.checkInteger(0));
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-			getDescriptionPacket();
-			return new Object[] { getVolume() };
-		} else {
-			return new Object[] { false };
-		}
-	}
-
-	@Optional.Method(modid = "OpenComputers")
-	@Callback
-	public Object[] volUp(Context context, Arguments args) {
-		float v = (float)(this.volume + 0.1D);
-		if ((v > 0.0F) && (v <= 1.0F)) {
-			setVolume(v);
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-			getDescriptionPacket();
-			return new Object[] { getVolume() };
-		} else {
-			return new Object[] { false };
-		}
-	}
-
-	@Optional.Method(modid = "OpenComputers")
-	@Callback
-	public Object[] volDown(Context context, Arguments args) {
-		float v = (float)(this.volume - 0.1D);
-		if ((v > 0.0F) && (v <= 1.0F)) {
-			setVolume(v);
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-			getDescriptionPacket();
-			return new Object[] { getVolume() };
-		} else {
-			return new Object[] { false };
-		}
 	}
 
 	public void addStation(String station) {
@@ -365,24 +320,8 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 		this.screenText = text;
 	}
 
-	@Optional.Method(modid = "OpenComputers")
-	@Callback
-	public Object[] setScreenText(Context context, Arguments args) {
-		setScreenText(args.checkString(0));
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-		getDescriptionPacket();
-		markDirty(); // Marks the chunk as dirty, so that it is saved properly on changes. Not required for the sync specifically, but usually goes alongside the former.
-		return new Object[] { true } ;
-	}
-
 	public String getScreenText() {
 		return this.screenText;
-	}
-
-	@Optional.Method(modid = "OpenComputers")
-	@Callback
-	public Object[] getAttachedSpeakers(Context context, Arguments args) {
-		return new Object[] { this.speakers.size() };
 	}
 
 	public int addSpeaker(World w, double x, double y, double z) {
@@ -425,7 +364,6 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 
 	@Override
 	public String getComponentName() {
-		// TODO Auto-generated method stub
 		return "openfm_radio";
 	}
 
@@ -456,77 +394,6 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 	@Override
 	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity packet) {
 		readFromNBT(packet.func_148857_g());    // == "getNBTData"
-	}
-
-	@Optional.Method(modid = "OpenComputers")
-	@Callback
-	public Object[] greet(Context context, Arguments args) {
-		return new Object[] { "Lasciate ogne speranza, voi ch'intrate" };
-	}
-
-	@Optional.Method(modid = "OpenComputers")
-	@Callback
-	public Object[] start(Context context, Arguments args) {
-		try {
-			startStream();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-		getDescriptionPacket();
-		return new Object[]{ true };
-	}
-
-	@Optional.Method(modid = "OpenComputers")
-	@Callback
-	public Object[] stop(Context context, Arguments args) {
-		stopStream();
-		isPlaying = false;
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-		getDescriptionPacket();
-		return new Object[]{ true };
-	}
-
-	@Optional.Method(modid = "OpenComputers")
-	@Callback
-	public Object[] isPlaying(Context context, Arguments args) {
-		return new Object[]{ isPlaying() };
-	}
-
-	@Optional.Method(modid = "OpenComputers")
-	@Callback
-	public Object[] getListenRedstone(Context context, Arguments args) {
-		return new Object[]{ isListeningToRedstoneInput() };
-	}
-
-	@Optional.Method(modid = "OpenComputers")
-	@Callback
-	public Object[] setListenRedstone(Context context, Arguments args) {
-		setRedstoneInput(args.checkBoolean(0));
-		return new Object[]{ isListeningToRedstoneInput() };
-	}
-
-	@Optional.Method(modid = "OpenComputers")
-	@Callback
-	public Object[] getScreenColor(Context context, Arguments args) {
-		return new Object[]{ getScreenColor() };
-	}
-
-	@Optional.Method(modid = "OpenComputers")
-	@Callback
-	public Object[] setScreenColor(Context context, Arguments args) {
-		setScreenColor(args.checkInteger(0));
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-		getDescriptionPacket();
-		markDirty(); // Marks the chunk as dirty, so that it is saved properly on changes. Not required for the sync specifically, but usually goes alongside the former.
-		return new Object[]{ true };
-	}
-
-	@Optional.Method(modid = "OpenComputers")
-	@Callback
-	public Object[] getAttachedSpeakerCount(Context context, Arguments args) {
-		return new Object[]{ speakers.size() };
 	}
 
 
@@ -588,5 +455,211 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent {
 				par1NBTTagCompound.setInteger("stationCount", i + 1);
 			}
 		}
+	}
+	
+	
+	public enum ComputerMethod {
+		getAttachedSpeakerCount, //No args
+		setScreenColor, //Integer (0x######)
+		getScreenColor, //No args
+		setListenRedstone, //Boolean
+		getListenRedstone, //No args
+		isPlaying, //No args
+		stop, //No args
+		start, //No args
+		greet, //No args
+		setURL, //String
+		getVol, //No args
+		setVol, //Double
+		volUp, //No args
+		volDown, //No args
+		setScreenText, //String
+		getAttachedSpeakers //No args
+	}
+	
+	public static final int numMethods = ComputerMethod.values().length;
+
+	public static final String[] methodNames = new String[numMethods];
+	static {
+		ComputerMethod[] methods = ComputerMethod.values();
+		for(ComputerMethod method : methods) {
+			methodNames[method.ordinal()] = method.toString();
+		}
+	}
+
+	public static final Map<String, Integer> methodIds = new HashMap<String, Integer>();
+	static {
+		for (int i = 0; i < numMethods; ++i) {
+			methodIds.put(methodNames[i], i);
+		}
+	}
+
+	public Object[] callMethod(int method, Object[] args) throws Exception {
+		if(method < 0 || method >= numMethods) {
+			throw new IllegalArgumentException("Invalid method number");
+		}
+		ComputerMethod computerMethod = ComputerMethod.values()[method];
+
+		switch(computerMethod) {
+			case getAttachedSpeakerCount:
+				return new Object[] { speakers.size() };
+			case setScreenColor:
+				if(args.length < 1) {
+					throw new IllegalArgumentException("Insufficient number of arguments, expected 1");
+				}
+				setScreenColor((int)Math.round((Double)args[0]));
+				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+				getDescriptionPacket();
+				markDirty();
+				return new Object[]{ true };
+				
+			case getScreenColor:
+				return new Object[]{ getScreenColor() };
+
+			case setListenRedstone:
+				setRedstoneInput((boolean) args[0]);
+				return new Object[]{ isListeningToRedstoneInput() };
+				
+			case getListenRedstone:
+				return new Object[]{ isListeningToRedstoneInput() };
+				
+			case isPlaying:
+				return new Object[]{ isPlaying() };
+				
+			case stop:
+				stopStream();
+				isPlaying = false;
+				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+				getDescriptionPacket();
+				return new Object[]{ true };
+				
+			case start:
+				try {
+					startStream();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+				getDescriptionPacket();
+				return new Object[]{ true };
+				
+			case greet:
+				return new Object[] { "Lasciate ogne speranza, voi ch'intrate" };
+				
+			case getAttachedSpeakers:
+				return new Object[] { this.speakers.size() };
+				
+			case setScreenText:
+				setScreenText((String) args[0]);
+				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+				getDescriptionPacket();
+				markDirty(); // Marks the chunk as dirty, so that it is saved properly on changes. Not required for the sync specifically, but usually goes alongside the former.
+				return new Object[] { true } ;
+
+			case volDown:
+				float v = (float)(this.volume - 0.1D);
+				if ((v > 0.0F) && (v <= 1.0F)) {
+					setVolume(v);
+					worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+					getDescriptionPacket();
+					return new Object[] { getVolume() };
+				} else {
+					return new Object[] { false };
+				}
+				
+			case volUp:
+				float v1 = (float)(this.volume + 0.1D);
+				if ((v1 > 0.0F) && (v1 <= 1.0F)) {
+					setVolume(v1);
+					worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+					getDescriptionPacket();
+					return new Object[] { getVolume() };
+				} else {
+					return new Object[] { false };
+				}
+				
+			case setVol:
+				float v2 = (float)(args[0]);
+				if ((v2 > 0.0F) && (v2 <= 1.0F)) {
+					setVolume(v2);
+					worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+					getDescriptionPacket();
+					return new Object[] { getVolume() };
+				} else {
+					return new Object[] { false };
+				}
+				
+			case getVol:
+				return new Object[] { getVolume() };
+				
+			case setURL:
+				streamURL = (String) args[0];
+				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+				getDescriptionPacket();
+				return new Object[] { true };
+				
+			default: throw new Exception("Not implemented.");
+		}
+	}
+	
+
+	@Override
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] invoke(final String method, final Context context,
+						   final Arguments args) throws Exception {
+		final Object[] arguments = new Object[args.count()];
+		for (int i = 0; i < args.count(); ++i) {
+			arguments[i] = args.checkAny(i);
+		}
+		final Integer methodId = methodIds.get(method);
+		if (methodId == null) {
+			throw new NoSuchMethodError();
+		}
+		return callMethod(methodId, arguments);
+	}
+
+	@Override
+	@Optional.Method(modid = "OpenComputers")
+	public String[] methods() {
+		return methodNames;
+	}
+
+	@Override
+	@Optional.Method(modid = "ComputerCraft")
+	public String getType() {
+		return "openfm_radio";
+	}
+
+	@Override
+	@Optional.Method(modid = "ComputerCraft")
+	public String[] getMethodNames() {
+		return methodNames;
+	}
+
+	@Override
+	@Optional.Method(modid = "ComputerCraft")
+	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws LuaException {
+        try {
+            return callMethod(method, arguments);
+        } catch(Exception e) {
+        	// Rethrow errors as LuaExceptions for CC
+        	throw new LuaException(e.getMessage());
+        }
+    }
+
+	@Override
+	@Optional.Method(modid = "ComputerCraft")
+	public void attach(IComputerAccess computer) {
+	}
+
+	@Override
+	@Optional.Method(modid = "ComputerCraft")
+	public void detach(IComputerAccess computer) {
+	}
+
+	@Override
+	@Optional.Method(modid = "ComputerCraft")
+	public boolean equals(IPeripheral other) {
+		return hashCode() == other.hashCode();
 	}
 }

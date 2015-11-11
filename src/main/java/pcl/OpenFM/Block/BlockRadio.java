@@ -28,8 +28,14 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import cpw.mods.fml.common.Optional;
+import dan200.computercraft.api.peripheral.IPeripheral;
+import dan200.computercraft.api.peripheral.IPeripheralProvider;
 
-public class BlockRadio extends Block implements ITileEntityProvider {
+@Optional.InterfaceList({
+	@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheralProvider", modid = "ComputerCraft"),
+})
+public class BlockRadio extends Block implements ITileEntityProvider, IPeripheralProvider {
 
 	@SideOnly(Side.CLIENT)
 	public static IIcon sideIcon;
@@ -171,5 +177,18 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 
 	public TileEntity createNewTileEntity(World world, int meta) {
 		return new TileEntityRadio(world);
+	}
+
+
+    // IPeripheralProvider
+	@Optional.Method(modid = "ComputerCraft")
+	@Override
+	public IPeripheral getPeripheral(World world, int x, int y, int z, int side) {
+		TileEntity te = world.getTileEntity(x, y, z);
+		
+		if(te instanceof TileEntityRadio)
+			return (IPeripheral)te;
+		
+		return null;
 	}
 }

@@ -19,6 +19,10 @@ import pcl.OpenFM.misc.OFMBreakEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.Optional;
+import dan200.computercraft.api.ComputerCraftAPI;
+import dan200.computercraft.api.peripheral.IPeripheralProvider;
 
 public class ContentRegistry {
 	
@@ -39,6 +43,9 @@ public class ContentRegistry {
         registerBlocks();
         registerItems();
         registerEvents();
+        if (Loader.isModLoaded("ComputerCraft")) {
+        	ComputerCraftAPI.registerPeripheralProvider((IPeripheralProvider) blockRadio);
+        }
 	}
 	
 	public static void registerBlocks() {
