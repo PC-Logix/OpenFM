@@ -1,8 +1,6 @@
 package pcl.OpenFM.player;
 
 import java.io.InputStream;
-import java.net.URL;
-
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;

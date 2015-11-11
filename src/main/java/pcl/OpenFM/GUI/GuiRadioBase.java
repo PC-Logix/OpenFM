@@ -36,6 +36,7 @@ public class GuiRadioBase extends GuiScreen {
 	protected boolean lockedButtonState;
 	protected boolean isLocked = false;
 
+	@SuppressWarnings("rawtypes")
 	public List OFMbuttonList = new ArrayList();
 
 	public GuiRadioBase(TileEntityRadio r)

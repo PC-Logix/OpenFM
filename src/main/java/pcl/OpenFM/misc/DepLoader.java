@@ -310,7 +310,8 @@ public class DepLoader implements IFMLLoadingPlugin, IFMLCallHook {
                 f_lmap.setAccessible(true);
 
                 URLClassPath ucp = (URLClassPath) f_ucp.get(cl);
-                Closeable loader = ((Map<String, Closeable>) f_lmap.get(ucp)).remove(URLUtil.urlNoFragString(url));
+                @SuppressWarnings("unchecked")
+				Closeable loader = ((Map<String, Closeable>) f_lmap.get(ucp)).remove(URLUtil.urlNoFragString(url));
                 if (loader != null) {
                     loader.close();
                     ((List<?>) f_loaders.get(ucp)).remove(loader);

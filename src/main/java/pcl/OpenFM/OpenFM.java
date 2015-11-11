@@ -14,7 +14,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import pcl.OpenFM.Handler.ClientEvent;
 import pcl.OpenFM.Handler.ServerEvent;
-import pcl.OpenFM.misc.OFMBreakEvent;
 import pcl.OpenFM.network.PacketHandler;
 import pcl.OpenFM.player.MP3Player;
 import pcl.OpenFM.player.OGGPlayer;

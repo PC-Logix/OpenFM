@@ -5,7 +5,6 @@ import java.util.List;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.world.World;
-import pcl.OpenFM.OpenFM;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 

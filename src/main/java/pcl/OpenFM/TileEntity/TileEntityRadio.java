@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
@@ -110,8 +109,6 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 					Response response = null;
 
 					AudioFileFormat baseFileFormat = null;
-					AudioFormat baseFormat = null;
-
 					try {
 						response = client.newCall(request).execute();
 					} catch (IOException e1) {
@@ -128,7 +125,6 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 						stopStream();
 					}
 					if (isValid) {
-						baseFormat = baseFileFormat.getFormat();
 						// Audio type such as MPEG1 Layer3, or Layer 2, or ...
 						AudioFileFormat.Type type = baseFileFormat.getType();
 						OpenFM.logger.info(type.toString());
@@ -503,6 +499,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 		switch(computerMethod) {
 			case getAttachedSpeakerCount:
 				return new Object[] { speakers.size() };
+				
 			case setScreenColor:
 				if(args.length != 1) {
 					return new Object[]{false, "Insufficient number of arguments, expected 1"};

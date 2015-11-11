@@ -1,6 +1,5 @@
 package pcl.OpenFM.TileEntity;
 
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 import li.cil.oc.api.Network;
 import li.cil.oc.api.network.Environment;

@@ -1,12 +1,9 @@
 package pcl.OpenFM.player;
 
-import java.io.File;
 import java.io.IOException;
 
 
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Deque;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
@@ -18,31 +15,11 @@ import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import cpw.mods.fml.client.FMLClientHandler;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.world.World;
 import pcl.OpenFM.OpenFM;
@@ -66,7 +43,6 @@ public class OGGPlayer {
 
 	public void play(String streamURL) throws IOException {
 		this.streamURL = streamURL;
-		URL file = null;
 		OkHttpClient client = new OkHttpClient();
 		Request request = new Request.Builder()
 		.url(streamURL)
@@ -75,13 +51,6 @@ public class OGGPlayer {
 		Response response = client.newCall(request).execute();
 		InputStream stream = response.body().byteStream();
 		
-		try {
-			file = new URL(streamURL);
-		} catch (MalformedURLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
 		try (final AudioInputStream in = getAudioInputStream(stream)) {
 
 			final AudioFormat outFormat = getOutFormat(in.getFormat());
