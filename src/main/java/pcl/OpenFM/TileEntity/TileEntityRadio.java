@@ -505,7 +505,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 				return new Object[] { speakers.size() };
 			case setScreenColor:
 				if(args.length != 1) {
-					return new Object[]{false, "Insufficient number of arguments, expected 1");
+					return new Object[]{false, "Insufficient number of arguments, expected 1"};
 				}
 				setScreenColor((int)Math.round((Double)args[0]));
 				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
@@ -518,7 +518,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 
 			case setListenRedstone:
 				if(args.length != 1) {
-					return new Object[]{false, "Insufficient number of arguments, expected 1");
+					return new Object[]{false, "Insufficient number of arguments, expected 1"};
 				}
 				setRedstoneInput((boolean) args[0]);
 				return new Object[]{ isListeningToRedstoneInput() };
@@ -554,7 +554,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 				
 			case setScreenText:
 				if(args.length != 1) {
-					return new Object[]{false, "Insufficient number of arguments, expected 1");
+					return new Object[]{false, "Insufficient number of arguments, expected 1"};
 				}
 				setScreenText((String) args[0]);
 				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
@@ -586,7 +586,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 				
 			case setVol:
 				if(args.length != 1) {
-					return new Object[]{false, "Insufficient number of arguments, expected 1");
+					return new Object[]{false, "Insufficient number of arguments, expected 1"};
 				}
 				float v2 = (float)(args[0]);
 				if ((v2 > 0.0F) && (v2 <= 1.0F)) {
@@ -603,14 +603,14 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 				
 			case setURL:
 				if(args.length != 1) {
-					return new Object[]{false, "Insufficient number of arguments, expected 1");
+					return new Object[]{false, "Insufficient number of arguments, expected 1"};
 				}
 				streamURL = (String) args[0];
 				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 				getDescriptionPacket();
 				return new Object[] { true };
 				
-			default: throw new Exception("Not implemented.");
+			default: return new Object[]{false, "Not implemented."};
 		}
 	}
 	
