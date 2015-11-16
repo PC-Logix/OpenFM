@@ -15,7 +15,7 @@ import net.minecraftforge.common.config.Configuration;
 import pcl.OpenFM.Handler.ClientEvent;
 import pcl.OpenFM.Handler.ServerEvent;
 import pcl.OpenFM.network.PacketHandler;
-import pcl.OpenFM.player.MP3Player;
+import pcl.OpenFM.player.PlayerDispatcher;
 import pcl.OpenFM.player.OGGPlayer;
 import cpw.mods.fml.client.GuiIngameModOptions;
 import cpw.mods.fml.client.GuiModList;
@@ -38,8 +38,7 @@ public class OpenFM {
 	public static OpenFM instance;
 	@SidedProxy(clientSide="pcl.OpenFM.ClientProxy", serverSide="pcl.OpenFM.CommonProxy")
 	public static CommonProxy proxy;
-	public static List<MP3Player> playerList = new ArrayList<MP3Player>();
-	public static List<OGGPlayer> oggPlayerList = new ArrayList<OGGPlayer>();
+	public static List<PlayerDispatcher> playerList = new ArrayList<PlayerDispatcher>();
 	public Configuration config;
 	public static final Logger logger = LogManager.getFormatterLogger(BuildInfo.modID);
 	public static File configFile;
@@ -93,7 +92,7 @@ public class OpenFM {
 	}
 
 	public static void killAllStreams() {
-		for (MP3Player p : playerList) {
+		for (PlayerDispatcher p : playerList) {
 			p.stop();
 		}
 	}

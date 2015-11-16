@@ -1,4 +1,4 @@
-package pcl.OpenFM.misc;
+package pcl.OpenFM.Handler;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;

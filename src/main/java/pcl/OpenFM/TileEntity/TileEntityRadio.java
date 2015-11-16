@@ -33,7 +33,7 @@ import pcl.OpenFM.Block.BlockSpeaker;
 import pcl.OpenFM.misc.Speaker;
 import pcl.OpenFM.network.PacketHandler;
 import pcl.OpenFM.network.Message.MessageTERadioBlock;
-import pcl.OpenFM.player.MP3Player;
+import pcl.OpenFM.player.PlayerDispatcher;
 import pcl.OpenFM.player.OGGPlayer;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -52,7 +52,7 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 })
 
 public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleComponent, ManagedPeripheral {
-	public MP3Player mp3Player = null;
+	public PlayerDispatcher mp3Player = null;
 	public OGGPlayer oggPlayer = null;
 	public boolean useMP3 = true;
 	public boolean isPlaying = false;
@@ -136,7 +136,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 						if (decoder != null && isValid) {
 							isPlaying = true;
 							OpenFM.logger.info("Starting Stream: " + streamURL + " at X:" + xCoord + " Y:" + yCoord + " Z:" + zCoord);
-							mp3Player = new MP3Player(decoder, streamURL, world, xCoord, yCoord, zCoord);
+							mp3Player = new PlayerDispatcher(decoder, streamURL, world, xCoord, yCoord, zCoord);
 							OpenFM.playerList.add(mp3Player);	
 						}
 					}

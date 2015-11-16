@@ -98,6 +98,7 @@ public class OGGPlayer {
 			}
 		}
 	}
+	
 	public void setVolume(float f) {
 		this.volume = f;
         if (line != null && line.isOpen()) {

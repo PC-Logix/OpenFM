@@ -14,9 +14,9 @@ import pcl.OpenFM.network.PacketHandler;
 import pcl.OpenFM.network.Message.MessageTERadioBlock;
 import cpw.mods.fml.client.FMLClientHandler;
 
-public class MP3Player extends DPlaybackListener implements Runnable {
+public class PlayerDispatcher extends PlaybackListener implements Runnable {
 	private String streamURL;
-	public DAdvancedPlayer mp3Player;
+	public AdvancedPlayer mp3Player;
 	public OGGPlayer oggPlayer;
 	public String decoder;
 	private Thread pThread;
@@ -24,7 +24,7 @@ public class MP3Player extends DPlaybackListener implements Runnable {
 	private int y;
 	private int z;
 	private World world;
-	public MP3Player(String decoder, String mp3url, World w, int a, int b, int c)
+	public PlayerDispatcher(String decoder, String mp3url, World w, int a, int b, int c)
 	{
 		try
 		{
@@ -56,11 +56,11 @@ public class MP3Player extends DPlaybackListener implements Runnable {
 				Response response = client.newCall(request).execute();
 				InputStream stream = response.body().byteStream();
 				 
-				this.mp3Player = new DAdvancedPlayer(stream);
+				this.mp3Player = new AdvancedPlayer(stream);
 				this.mp3Player.setID(this.world, this.x, this.y, this.z);
 				this.mp3Player.setPlayBackListener(this);
 				this.mp3Player.play();
-			} else {
+			} else if (decoder.equals("ogg")) {
 				this.oggPlayer = new OGGPlayer();
 				this.oggPlayer.setID(this.world, this.x, this.y, this.z);
 				this.oggPlayer.play(this.streamURL);
@@ -80,23 +80,24 @@ public class MP3Player extends DPlaybackListener implements Runnable {
 		{
 			if (decoder.equals("mp3")) {
 				this.mp3Player.stop();
-			} else {
+			} else if (decoder.equals("ogg")) {
 				this.oggPlayer.stop();
 			}
-			
 		}
 	}
 
-	public void playbackStarted(DPlayBackEvent evt) {}
+	public void playbackStarted(PlayBackEvent evt) {}
 
-	public void playbackFinished(DPlayBackEvent evt) {}
+	public void playbackFinished(PlayBackEvent evt) {}
 
 	public boolean isPlaying()
 	{
 		if (decoder.equals("mp3")) {
 			return this.pThread.isAlive();
-		} else {
+		} else if (decoder.equals("ogg")) {
 			return this.oggPlayer.isPlaying();
+		} else {
+			return false;
 		}
 
 	}
@@ -115,9 +116,10 @@ public class MP3Player extends DPlaybackListener implements Runnable {
 		System.out.println(Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS));
 		if (decoder.equals("mp3")) {
 			return this.mp3Player.getVolume() / Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS);
-		} else {
+		} else if (decoder.equals("ogg")) {
 			return this.oggPlayer.getVolume() / Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS);
+		} else {
+			return 0;
 		}
-
 	}
 }

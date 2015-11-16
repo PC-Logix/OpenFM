@@ -1,14 +1,14 @@
 package pcl.OpenFM.player;
 
-public class DPlayBackEvent {
+public class PlayBackEvent {
 	public static int STOPPED = 1;
 	public static int STARTED = 2;
 
-	private DAdvancedPlayer source;
+	private AdvancedPlayer source;
 	private int frame;
 	private int id;
 
-	public DPlayBackEvent(DAdvancedPlayer source, int id, int frame)
+	public PlayBackEvent(AdvancedPlayer source, int id, int frame)
 	{
 		this.id = id;
 		this.source = source;
@@ -33,12 +33,12 @@ public class DPlayBackEvent {
 		this.frame = frame;
 	}
 
-	public DAdvancedPlayer getSource()
+	public AdvancedPlayer getSource()
 	{
 		return this.source;
 	}
 
-	public void setSource(DAdvancedPlayer source) {
+	public void setSource(AdvancedPlayer source) {
 		this.source = source;
 	}
 }

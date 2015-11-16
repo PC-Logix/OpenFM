@@ -16,18 +16,18 @@ import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.world.World;
 import pcl.OpenFM.ContentRegistry;
 
-public class DAdvancedPlayer {
+public class AdvancedPlayer {
 	private Bitstream bitstream;
 	private Decoder decoder;
 	private AudioDevice audio;
-	private DPlaybackListener listener;
+	private PlaybackListener listener;
 	private float volume = 0.0F;
 	private int posX;
 	private int posY;
 	private int posZ;
 	private World world;
 	public InputStream ourStream = null;
-	public DAdvancedPlayer(InputStream stream) throws JavaLayerException {
+	public AdvancedPlayer(InputStream stream) throws JavaLayerException {
 		this(stream, null);
 	}
 
@@ -38,7 +38,7 @@ public class DAdvancedPlayer {
 		this.world = w;
 	}
 
-	public DAdvancedPlayer(InputStream stream, AudioDevice device) throws JavaLayerException {
+	public AdvancedPlayer(InputStream stream, AudioDevice device) throws JavaLayerException {
 		ourStream = stream;
 		this.bitstream = new Bitstream(stream);
 		if (device != null)
@@ -177,24 +177,24 @@ public class DAdvancedPlayer {
 		return play(end - start);
 	}
 
-	private DPlayBackEvent createEvent(int id) {
+	private PlayBackEvent createEvent(int id) {
 		return createEvent(this.audio, id);
 	}
 
-	private DPlayBackEvent createEvent(AudioDevice dev, int id) {
-		return new DPlayBackEvent(this, id, dev.getPosition());
+	private PlayBackEvent createEvent(AudioDevice dev, int id) {
+		return new PlayBackEvent(this, id, dev.getPosition());
 	}
 
-	public void setPlayBackListener(DPlaybackListener listener) {
+	public void setPlayBackListener(PlaybackListener listener) {
 		this.listener = listener;
 	}
 
-	public DPlaybackListener getPlayBackListener() {
+	public PlaybackListener getPlayBackListener() {
 		return this.listener;
 	}
 
 	public void stop() {
-		this.listener.playbackFinished(createEvent(DPlayBackEvent.STOPPED));
+		this.listener.playbackFinished(createEvent(PlayBackEvent.STOPPED));
 		close();
 	}
 
