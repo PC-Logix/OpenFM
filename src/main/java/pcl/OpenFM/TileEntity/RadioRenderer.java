@@ -28,7 +28,7 @@ public class RadioRenderer extends TileEntitySpecialRenderer {
 		int dir = tileEntity.getBlockMetadata();
 		GL11.glNormal3f(0, 1, 0);
 		if (dir == 1) {
-			GL11.glTranslatef((float)x +.501F, (float)y + .72F, (float)z + 0F);
+			GL11.glTranslatef((float)x +.501F, (float)y + .72F, (float)z - .01F);
 			GL11.glRotatef(0F, 0F, 1F, 0F);
 		} else if (dir == 2) {
 			GL11.glTranslatef((float)x + 1.01f, (float)y + .72F, (float)z + .5F);
