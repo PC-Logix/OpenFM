@@ -5,8 +5,10 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.StatCollector;
 import pcl.OpenFM.OFMConfiguration;
+import pcl.OpenFM.Handler.RadioContainer;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
 import pcl.OpenFM.network.PacketHandler;
 import pcl.OpenFM.network.Message.MessageTERadioBlock;
@@ -18,9 +20,9 @@ public class GuiRadio extends GuiRadioBase {
 	private OFMGuiButton redstoneBtn;
 	private OFMGuiButton lockedBtn;
 
-	public GuiRadio(TileEntityRadio r)
+	public GuiRadio(InventoryPlayer inventoryPlayer, TileEntityRadio r)
 	{
-		super(r);
+		super(new RadioContainer(inventoryPlayer, r));
 	}
 
 
@@ -145,65 +147,65 @@ public class GuiRadio extends GuiRadioBase {
 				if (btn.id == 1) {
 					String hover;
 					if (!this.radio.isPlaying) {
-						hover = StatCollector.translateToLocal("gui.string.PlayButton");
+						hover = StatCollector.translateToLocal("gui.string.OpenFM.PlayButton");
 					} else {
-						hover = StatCollector.translateToLocal("gui.string.StopButton");
+						hover = StatCollector.translateToLocal("gui.string.OpenFM.StopButton");
 					}
 					String[] desc = { hover };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
 					drawHoveringText(temp, par1, par2, fontRendererObj);
 				} else if (btn.id == 2) {
-					String[] desc = { StatCollector.translateToLocal("gui.string.VolumeUp") };
+					String[] desc = { StatCollector.translateToLocal("gui.string.OpenFM.VolumeUp") };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
 					drawHoveringText(temp, par1, par2, fontRendererObj);
 				} else if (btn.id == 3) {
-					String[] desc = { StatCollector.translateToLocal("gui.string.VolumeDown") };
+					String[] desc = { StatCollector.translateToLocal("gui.string.OpenFM.VolumeDown") };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
 					drawHoveringText(temp, par1, par2, fontRendererObj);
 				} else if (btn.id == 4) {
-					String[] desc = { StatCollector.translateToLocal("gui.string.ScrollLeft") };
+					String[] desc = { StatCollector.translateToLocal("gui.string.OpenFM.ScrollLeft") };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
 					drawHoveringText(temp, par1, par2, fontRendererObj);
 				} else if (btn.id == 5) {
-					String[] desc = { StatCollector.translateToLocal("gui.string.ScrollRight") };
+					String[] desc = { StatCollector.translateToLocal("gui.string.OpenFM.ScrollRight") };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
 					drawHoveringText(temp, par1, par2, fontRendererObj);
 				} else if (btn.id == 6) {
-					String[] desc = { StatCollector.translateToLocal("gui.string.Clear") };
+					String[] desc = { StatCollector.translateToLocal("gui.string.OpenFM.Clear") };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
 					drawHoveringText(temp, par1, par2, fontRendererObj);
 				} else if (btn.id == 7) {
-					String[] desc = { StatCollector.translateToLocal("gui.string.Paste") };
+					String[] desc = { StatCollector.translateToLocal("gui.string.OpenFM.Paste") };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
 					drawHoveringText(temp, par1, par2, fontRendererObj);
 				} else if (btn.id == 8) {
-					String[] desc = { StatCollector.translateToLocal("gui.string.Save") };
+					String[] desc = { StatCollector.translateToLocal("gui.string.OpenFM.Save") };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
 					drawHoveringText(temp, par1, par2, fontRendererObj);
 				} else if (btn.id == 9) {
-					String[] desc = { StatCollector.translateToLocal("gui.string.Delete") };
+					String[] desc = { StatCollector.translateToLocal("gui.string.OpenFM.Delete") };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
 					drawHoveringText(temp, par1, par2, fontRendererObj);
 				} else if (btn.id == 10) {
-					String[] desc = { StatCollector.translateToLocal("gui.string.Close") };
+					String[] desc = { StatCollector.translateToLocal("gui.string.OpenFM.Close") };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
 					drawHoveringText(temp, par1, par2, fontRendererObj);
 				} else if (btn.id == 11) {
 					String hover;
 					if (!this.radio.isListeningToRedstoneInput()) {
-						hover = StatCollector.translateToLocal("gui.string.RedstoneOn");
+						hover = StatCollector.translateToLocal("gui.string.OpenFM.RedstoneOn");
 					} else {
-						hover = StatCollector.translateToLocal("gui.string.RedstoneOff");
+						hover = StatCollector.translateToLocal("gui.string.OpenFM.RedstoneOff");
 					}
 					String[] desc = { hover };
 					@SuppressWarnings("rawtypes")
@@ -212,9 +214,9 @@ public class GuiRadio extends GuiRadioBase {
 				} else if (btn.id == 12) {
 					String hover;
 					if (!this.radio.isLocked) {
-						hover = StatCollector.translateToLocal("gui.string.Lock");
+						hover = StatCollector.translateToLocal("gui.string.OpenFM.Lock");
 					} else {
-						hover = StatCollector.translateToLocal("gui.string.Unlock");
+						hover = StatCollector.translateToLocal("gui.string.OpenFM.Unlock");
 					}
 					String[] desc = { hover };
 					@SuppressWarnings("rawtypes")

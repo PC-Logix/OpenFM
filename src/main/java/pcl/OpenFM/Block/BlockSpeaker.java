@@ -25,7 +25,7 @@ public class BlockSpeaker extends Block implements ITileEntityProvider {
 		super(Material.wood);
 		setHardness(2.0F);
 		setResistance(10.0F);
-		setBlockName("Speaker");
+		setBlockName("OpenFM.Speaker");
 		setStepSound(Block.soundTypeWood);
 	}
 

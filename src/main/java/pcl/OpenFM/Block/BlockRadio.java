@@ -21,6 +21,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import pcl.OpenFM.OpenFM;
 import pcl.OpenFM.GUI.GuiRadio;
 import pcl.OpenFM.GUI.GuiRadioBase;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
@@ -48,7 +49,7 @@ public class BlockRadio extends Block implements ITileEntityProvider, IPeriphera
 		super(Material.wood);
 		setHardness(2.0F);
 		setResistance(10.0F);
-		setBlockName("Radio");
+		setBlockName("OpenFM.Radio");
 		setStepSound(Block.soundTypeWood);
 	}
 
@@ -90,26 +91,34 @@ public class BlockRadio extends Block implements ITileEntityProvider, IPeriphera
 	}
 
 
-	public boolean onBlockActivated(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9)
-	{
-		Side side = FMLCommonHandler.instance().getEffectiveSide();
-		if (side == Side.CLIENT)
-		{
-			TileEntityRadio ter = (TileEntityRadio)par1World.getTileEntity(par2, par3, par4);
-			if (!ter.isLocked || ter.owner.equals(par5EntityPlayer.getUniqueID().toString())) {
-				openGUI(par1World, par2, par3, par4);
-			}
+//	public boolean onBlockActivated(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9) {
+//		Side side = FMLCommonHandler.instance().getEffectiveSide();
+//		if (side == Side.CLIENT)
+//		{
+//			TileEntityRadio ter = (TileEntityRadio)par1World.getTileEntity(par2, par3, par4);
+//			if (!ter.isLocked || ter.owner.equals(par5EntityPlayer.getUniqueID().toString())) {
+//				openGUI(par1World, par2, par3, par4);
+//			}
+//		}
+//		return true;
+	@Override
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int metadata, float clickX, float clickY, float clickZ) {
+		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		if (tileEntity == null || player.isSneaking()) {
+			return false;
 		}
+		player.openGui(OpenFM.instance, 0, world, x, y, z);
 		return true;
+		
 	}
 
-	@SideOnly(Side.CLIENT)
+/*	@SideOnly(Side.CLIENT)
 	private void openGUI(World par1World, int par2, int par3, int par4)
 	{
 		TileEntityRadio ter = (TileEntityRadio)par1World.getTileEntity(par2, par3, par4);
 		this.guiRadio = new GuiRadio(ter);
 		Minecraft.getMinecraft().displayGuiScreen(this.guiRadio);
-	}
+	}*/
 
 	@Override
 	public void breakBlock(World world, int x, int y, int z, Block block, int p_149749_6_) {

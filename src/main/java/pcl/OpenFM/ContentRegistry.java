@@ -13,6 +13,7 @@ import pcl.OpenFM.Block.BlockRadio;
 import pcl.OpenFM.Block.BlockSpeaker;
 import pcl.OpenFM.Handler.OFMBreakEvent;
 import pcl.OpenFM.Items.ItemBlockRadio;
+import pcl.OpenFM.Items.ItemMemoryCard;
 import pcl.OpenFM.Items.ItemTuner;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
 import pcl.OpenFM.TileEntity.TileEntitySpeaker;
@@ -32,6 +33,7 @@ public class ContentRegistry {
 
     // Items
     public static Item itemRadioTuner;
+    public static Item itemMemoryCard;
 
     // Tabs
     public static CreativeTabs creativeTab;
@@ -72,11 +74,20 @@ public class ContentRegistry {
 
         itemRadioTuner = new ItemTuner();
         GameRegistry.registerItem(itemRadioTuner, "RadioTuner");
+        itemRadioTuner.setCreativeTab(creativeTab);
         GameRegistry.addRecipe(new ItemStack(itemRadioTuner), "  x", "  y", "  z",
                 'x', new ItemStack(Items.redstone),
                 'y', new ItemStack(Items.redstone),
                 'z', new ItemStack(Items.stick));
-        itemRadioTuner.setCreativeTab(creativeTab);
+        
+        itemMemoryCard = new ItemMemoryCard();
+        GameRegistry.registerItem(itemMemoryCard, "MemoryCard");
+        itemMemoryCard.setCreativeTab(creativeTab);
+        GameRegistry.addRecipe(new ItemStack(itemMemoryCard), "  x", "  y", "  z",
+                'x', new ItemStack(Items.redstone),
+                'y', new ItemStack(Items.redstone),
+                'z', new ItemStack(Items.paper));
+        
 	}
 
 	public static void registerEvents() {

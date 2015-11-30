@@ -12,6 +12,7 @@ import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
+import pcl.OpenFM.GUI.OFMGUIHandler;
 import pcl.OpenFM.Handler.ClientEvent;
 import pcl.OpenFM.Handler.ServerEvent;
 import pcl.OpenFM.network.PacketHandler;
@@ -28,6 +29,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -49,7 +51,7 @@ public class OpenFM {
 		// Load config
 		configFile = new File(event.getModConfigurationDirectory() + "/openfm/openfm.cfg");
 		OFMConfiguration.init(configFile);
-
+		NetworkRegistry.INSTANCE.registerGuiHandler(this, new OFMGUIHandler());
 		// Check for Mod Update Detector
 		if (event.getSourceFile().getName().endsWith(".jar") && event.getSide().isClient() && OFMConfiguration.enableMUD) {
 			logger.info("Registering mod with OpenUpdater.");

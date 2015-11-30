@@ -22,7 +22,7 @@ public class ItemTuner extends Item {
 
     public ItemTuner() {
         setMaxStackSize(1);
-        setUnlocalizedName("Tuner");
+        setUnlocalizedName("OpenFM.Tuner");
         setTextureName("openfm:ItemTuner");
     }
 
@@ -37,7 +37,7 @@ public class ItemTuner extends Item {
 
                 // TODO: one speaker should only be able to be linked to exactly one radio.
                 boundSpeakers.put(stack, new Speaker(x, y, z, world));
-                player.addChatMessage(new ChatComponentTranslation("msg.selected_speaker"));
+                player.addChatMessage(new ChatComponentTranslation("msg.OpenFM.selected_speaker"));
 
             } else if ((world.getBlock(x, y, z) instanceof BlockRadio)) {
 
@@ -50,19 +50,19 @@ public class ItemTuner extends Item {
                     int canAdd = radio.canAddSpeaker(player.getEntityWorld(), speaker.x, speaker.y, speaker.z);
                     if (canAdd == 0) {
                         // It can, so send a packet.
-                        player.addChatMessage(new ChatComponentTranslation("msg.added_speaker"));
+                        player.addChatMessage(new ChatComponentTranslation("msg.OpenFM.added_speaker"));
                         PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(x, y, z, world, radio.streamURL, radio.isPlaying(), radio.getVolume(), 15, speaker.x, speaker.y, speaker.z));
                     } else if (canAdd == 1) {
                         // Too many speakers linked.
-                        player.addChatMessage(new ChatComponentTranslation("msg.failed_adding_speaker_limit"));
+                        player.addChatMessage(new ChatComponentTranslation("msg.OpenFM.failed_adding_speaker_limit"));
                     } else if (canAdd == 2) {
                         // Speaker is already linked.
-                        player.addChatMessage(new ChatComponentTranslation("msg.failed_adding_speaker_exists"));
+                        player.addChatMessage(new ChatComponentTranslation("msg.OpenFM.failed_adding_speaker_exists"));
                     }
 
                 } else {
                     // Apparently no speaker is bound.
-                    player.addChatMessage(new ChatComponentTranslation("msg.failed_adding_speaker_not_selected"));
+                    player.addChatMessage(new ChatComponentTranslation("msg.OpenFM.failed_adding_speaker_not_selected"));
                 }
             }
 

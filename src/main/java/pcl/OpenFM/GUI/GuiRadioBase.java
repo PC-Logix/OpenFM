@@ -20,6 +20,7 @@ import org.lwjgl.opengl.GL11;
 
 import pcl.OpenFM.OFMConfiguration;
 import pcl.OpenFM.OpenFM;
+import pcl.OpenFM.Handler.RadioContainer;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -45,7 +46,16 @@ public class GuiRadioBase extends GuiScreen {
 		this.redstoneButtonState = r.isListeningToRedstoneInput();
 		this.lockedButtonState = r.isLocked;
 		this.gui_width = 256;
-		this.gui_height = 252; }
+		this.gui_height = 252; 
+	}
+
+	public GuiRadioBase(RadioContainer radioContainer) {
+		this.radio = radioContainer.tileEntity;
+		this.redstoneButtonState = radioContainer.tileEntity.isListeningToRedstoneInput();
+		this.lockedButtonState = radioContainer.tileEntity.isLocked;
+		this.gui_width = 256;
+		this.gui_height = 252; 
+	}
 
 	public boolean exists = true;
 

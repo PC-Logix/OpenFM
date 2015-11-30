@@ -21,6 +21,9 @@ import li.cil.oc.api.network.ManagedPeripheral;
 import li.cil.oc.api.network.SimpleComponent;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -30,6 +33,7 @@ import net.minecraft.world.World;
 import pcl.OpenFM.OFMConfiguration;
 import pcl.OpenFM.OpenFM;
 import pcl.OpenFM.Block.BlockSpeaker;
+import pcl.OpenFM.Items.ItemMemoryCard;
 import pcl.OpenFM.misc.Speaker;
 import pcl.OpenFM.network.PacketHandler;
 import pcl.OpenFM.network.Message.MessageTERadioBlock;
@@ -51,7 +55,7 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 	@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = "ComputerCraft")
 })
 
-public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleComponent, ManagedPeripheral {
+public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleComponent, ManagedPeripheral, IInventory {
 	public PlayerDispatcher mp3Player = null;
 	public OGGPlayer oggPlayer = null;
 	public boolean useMP3 = true;
@@ -670,5 +674,94 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	@Optional.Method(modid = "ComputerCraft")
 	public boolean equals(IPeripheral other) {
 		return hashCode() == other.hashCode();
+	}
+
+	private ItemStack[] RadioItemStack = new ItemStack[1];
+	
+	@Override
+	public int getSizeInventory() {
+		return this.RadioItemStack.length;
+	}
+
+	@Override
+	public ItemStack getStackInSlot(int i) {
+		return this.RadioItemStack[i];
+	}
+
+	@Override
+	public ItemStack decrStackSize(int slot, int amt) {
+		ItemStack stack = getStackInSlot(slot);
+		if (stack != null) {
+			if (stack.stackSize <= amt) {
+				setInventorySlotContents(slot, null);
+			} else {
+				stack = stack.splitStack(amt);
+				if (stack.stackSize == 0) {
+					setInventorySlotContents(slot, null);
+				}
+			}
+		}
+		return stack;
+	}
+
+	@Override
+	public ItemStack getStackInSlotOnClosing(int i) {
+		if (getStackInSlot(i) != null) {
+			ItemStack var2 = getStackInSlot(i);
+			setInventorySlotContents(i, null);
+			return var2;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public void setInventorySlotContents(int i, ItemStack itemstack) {
+		this.RadioItemStack[i] = itemstack;
+		if (itemstack != null && itemstack.stackSize > this.getInventoryStackLimit()) {
+			itemstack.stackSize = this.getInventoryStackLimit();
+		}
+	}
+
+	@Override
+	public String getInventoryName() {
+		return "ofm_radio";
+	}
+
+	@Override
+	public boolean hasCustomInventoryName() {
+		return false;
+	}
+
+	@Override
+	public int getInventoryStackLimit() {
+		return 1;
+	}
+
+	@Override
+	public boolean isUseableByPlayer(EntityPlayer player) {
+		return worldObj.getTileEntity(xCoord, yCoord, zCoord) == this && player.getDistanceSq(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5) < 64;
+	}
+
+	@Override
+	public void openInventory() {		
+	}
+
+	@Override
+	public void closeInventory() {
+	}
+
+	@Override
+	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
+		if (i == 0) {
+			if (itemstack.getItem() instanceof ItemMemoryCard) {
+				if (itemstack.stackTagCompound == null) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}
+		return false;
 	}
 }

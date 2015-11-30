@@ -71,7 +71,7 @@ public class OGGPlayer {
 
 		} catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
 			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.posX, this.posY, this.posZ, this.world, this.streamURL, false, 0.1F, 1));
-			FMLClientHandler.instance().getClient().thePlayer.addChatMessage(new ChatComponentTranslation("msg.invalid_link", new Object[0]));
+			FMLClientHandler.instance().getClient().thePlayer.addChatMessage(new ChatComponentTranslation("msg.OpenFM.invalid_link", new Object[0]));
 			OpenFM.logger.error(e);
 			throw new IllegalStateException(e);
 		}

@@ -69,7 +69,7 @@ public class PlayerDispatcher extends PlaybackListener implements Runnable {
 		catch (Exception e)
 		{
 			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.x, this.y, this.z, this.world, this.streamURL, !isPlaying(), 0.1F, 1));
-			FMLClientHandler.instance().getClient().thePlayer.addChatMessage(new ChatComponentTranslation("msg.invalid_link", new Object[0]));
+			FMLClientHandler.instance().getClient().thePlayer.addChatMessage(new ChatComponentTranslation("msg.OpenFM.invalid_link", new Object[0]));
 			OpenFM.logger.error(e);
 		}
 	}
