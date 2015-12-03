@@ -69,7 +69,7 @@ public class GuiRadioBase extends GuiContainer {
 	public void drawScreen(int par1, int par2, float par3)
 	{
 		int k = (this.width - this.gui_width) / 2;
-		int l = (this.height - this.gui_height) / 2 + 30 - 5;
+		int l = (this.height - this.gui_height) / 2 + 30 - 5 - 45;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glDisable(2896);
 		this.mc.renderEngine.bindTexture(new ResourceLocation("openfm:textures/gui/gui_radio.png"));
@@ -79,10 +79,10 @@ public class GuiRadioBase extends GuiContainer {
 		{
 			((OFMGuiButton)this.OFMbuttonList.get(k)).drawButton(this.mc, par1, par2);
 		}
-		this.mc.fontRenderer.drawString("OpenFM", this.width / 2 - 16, this.height / 2 + 90, this.radio.getScreenColor());
+		this.mc.fontRenderer.drawString("OpenFM", this.width / 2 - 16, this.height / 2 + 90 - 45, this.radio.getScreenColor());
 
-		this.mc.fontRenderer.drawString(StatCollector.translateToLocal("gui.string.OpenFM.ScreenColor"), this.width / 2 - 101, this.height / 2 + 55, 0xFFFFFF);
-		this.mc.fontRenderer.drawString(StatCollector.translateToLocal("gui.string.OpenFM.ScreenText"), this.width / 2 - 20, this.height / 2 + 55, 0xFFFFFF);
+		this.mc.fontRenderer.drawString(StatCollector.translateToLocal("gui.string.OpenFM.ScreenColor"), this.width / 2 - 101, this.height / 2 + 55 - 45, 0xFFFFFF);
+		this.mc.fontRenderer.drawString(StatCollector.translateToLocal("gui.string.OpenFM.ScreenText"), this.width / 2 - 20, this.height / 2 + 55 - 45, 0xFFFFFF);
 	}
 
 	public void updateScreen() {}

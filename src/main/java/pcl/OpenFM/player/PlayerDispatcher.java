@@ -113,7 +113,6 @@ public class PlayerDispatcher extends PlaybackListener implements Runnable {
 
 	public float getVolume()
 	{
-		System.out.println(Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS));
 		if (decoder.equals("mp3")) {
 			return this.mp3Player.getVolume() / Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS);
 		} else if (decoder.equals("ogg")) {

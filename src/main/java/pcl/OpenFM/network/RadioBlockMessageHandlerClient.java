@@ -51,7 +51,6 @@ import cpw.mods.fml.relauncher.Side;
        }
        
        if (message.mode == 48) {
-    	   System.out.println("Blehf " + message.screenColor);
     	   tileEntity.setScreenColor(message.screenColor);
        }
        
