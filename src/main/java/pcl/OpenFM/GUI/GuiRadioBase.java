@@ -11,7 +11,10 @@ import java.util.List;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -25,7 +28,7 @@ import pcl.OpenFM.TileEntity.TileEntityRadio;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class GuiRadioBase extends GuiScreen {
+public class GuiRadioBase extends GuiContainer {
 	protected FontRenderer fontRenderer;
 	protected TileEntityRadio radio;
 	protected int gui_width = 256;
@@ -40,19 +43,13 @@ public class GuiRadioBase extends GuiScreen {
 	@SuppressWarnings("rawtypes")
 	public List OFMbuttonList = new ArrayList();
 
-	public GuiRadioBase(TileEntityRadio r)
-	{
-		this.radio = r;
-		this.redstoneButtonState = r.isListeningToRedstoneInput();
-		this.lockedButtonState = r.isLocked;
-		this.gui_width = 256;
-		this.gui_height = 252; 
-	}
-
-	public GuiRadioBase(RadioContainer radioContainer) {
-		this.radio = radioContainer.tileEntity;
-		this.redstoneButtonState = radioContainer.tileEntity.isListeningToRedstoneInput();
-		this.lockedButtonState = radioContainer.tileEntity.isLocked;
+	public GuiRadioBase(InventoryPlayer inventoryPlayer, TileEntityRadio tileEntity) {
+		// the container is instanciated and passed to the superclass for
+		// handling
+		super(new RadioContainer(inventoryPlayer, tileEntity));
+		this.radio = tileEntity;
+		this.redstoneButtonState = tileEntity.isListeningToRedstoneInput();
+		this.lockedButtonState = tileEntity.isLocked;
 		this.gui_width = 256;
 		this.gui_height = 252; 
 	}
@@ -62,7 +59,6 @@ public class GuiRadioBase extends GuiScreen {
 	public void initGui() {
 		
 		super.initGui();
-		
 	}
 
 	public void onGuiClosed()
@@ -83,7 +79,10 @@ public class GuiRadioBase extends GuiScreen {
 		{
 			((OFMGuiButton)this.OFMbuttonList.get(k)).drawButton(this.mc, par1, par2);
 		}
-		this.mc.fontRenderer.drawString("OpenFM", this.width / 2 - 16, this.height / 2 + 50, 0xFFFFFF);
+		this.mc.fontRenderer.drawString("OpenFM", this.width / 2 - 16, this.height / 2 + 90, this.radio.getScreenColor());
+
+		this.mc.fontRenderer.drawString(StatCollector.translateToLocal("gui.string.OpenFM.ScreenColor"), this.width / 2 - 101, this.height / 2 + 55, 0xFFFFFF);
+		this.mc.fontRenderer.drawString(StatCollector.translateToLocal("gui.string.OpenFM.ScreenText"), this.width / 2 - 20, this.height / 2 + 55, 0xFFFFFF);
 	}
 
 	public void updateScreen() {}
@@ -97,18 +96,15 @@ public class GuiRadioBase extends GuiScreen {
 	@SideOnly(Side.CLIENT)
 	protected void mouseClicked(int par1, int par2, int par3)
 	{
-		if (par3 == 0)
-		{
-			for (int l = 0; l < this.OFMbuttonList.size(); l++)
-			{
+		if (par3 == 0) {
+			for (int l = 0; l < this.OFMbuttonList.size(); l++) {
 				GuiButton guibutton = (GuiButton)this.OFMbuttonList.get(l);
-				if (guibutton.mousePressed(this.mc, par1, par2))
-				{
+				if (guibutton.mousePressed(this.mc, par1, par2)) {
 					GuiScreenEvent.ActionPerformedEvent.Pre event = new GuiScreenEvent.ActionPerformedEvent.Pre(this, guibutton, this.OFMbuttonList);
 					if (MinecraftForge.EVENT_BUS.post(event))
 						break;
 					event.button.func_146113_a(this.mc.getSoundHandler());
-					actionPerformed(event.button);
+					actionPerformed(event.button.id);
 					if (equals(this.mc.currentScreen))
 						MinecraftForge.EVENT_BUS.post(new GuiScreenEvent.ActionPerformedEvent.Post(this, event.button, this.OFMbuttonList));
 				}
@@ -117,7 +113,7 @@ public class GuiRadioBase extends GuiScreen {
 	}
 
 	@SideOnly(Side.CLIENT)
-	protected void actionPerformed(GuiButton par1GuiButton) {}
+	protected void actionPerformed(int par1GuiButton) {}
 
 	@SideOnly(Side.CLIENT)
 	public boolean getState() {
@@ -178,5 +174,12 @@ public class GuiRadioBase extends GuiScreen {
 			OpenFM.logger.info("Inserted URL for a radio is not in a correct form.");
 		}
 		return out;
+	}
+
+	@Override
+	protected void drawGuiContainerBackgroundLayer(float p_146976_1_,
+			int p_146976_2_, int p_146976_3_) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -46,6 +46,15 @@ import cpw.mods.fml.relauncher.Side;
     	   tileEntity.isLocked = false;
        }
        
+       if (message.mode == 49) {
+    	   tileEntity.setScreenText(message.screenText);
+       }
+       
+       if (message.mode == 48) {
+    	   System.out.println("Blehf " + message.screenColor);
+    	   tileEntity.setScreenColor(message.screenColor);
+       }
+       
        if ((message.mode == 11) || (message.mode == 14)) {
          tileEntity.listenToRedstone = true;
        }

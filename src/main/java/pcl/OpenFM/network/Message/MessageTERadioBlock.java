@@ -28,6 +28,8 @@ public class MessageTERadioBlock implements IMessage {
 	public List<String> stations = new ArrayList<String>();
 	
 	public int stationCount = 0;
+	public int screenColor = 0x0000FF;
+	public String screenText = "OpenFM";
 
 	public MessageTERadioBlock() {}
 
@@ -38,6 +40,8 @@ public class MessageTERadioBlock implements IMessage {
 		this.world = radio.getWorldObj();
 		this.dim = this.world.provider.dimensionId;
 		this.streamURL = radio.streamURL;
+		this.screenColor = radio.getScreenColor();
+		this.screenText = radio.getScreenText();
 		this.isPlaying = radio.isPlaying;
 		this.volume = radio.volume;
 		int mode = 13;
@@ -102,6 +106,21 @@ public class MessageTERadioBlock implements IMessage {
 			
 		}
 	}
+	
+	public MessageTERadioBlock(int xCoord, int yCoord, int zCoord, World worldObj, String stream, String screenInfo, int i, int f) {
+		this.x = xCoord;
+		this.y = yCoord;
+		this.z = zCoord;
+		this.world = worldObj;
+		this.streamURL = stream;
+		this.dim = world.provider.dimensionId;
+		this.mode = i;
+		if (i == 49) {
+			this.screenText = screenInfo;
+		} else if (i == 48) {
+			this.screenColor = Integer.parseInt(screenInfo, 16);
+		}
+	}
 
 	public void fromBytes(ByteBuf buf) {
 		this.mode = buf.readInt();
@@ -109,9 +128,11 @@ public class MessageTERadioBlock implements IMessage {
 		this.y = buf.readDouble();
 		this.z = buf.readDouble();
 		this.dim = buf.readInt();
-		int streamURLlenght = buf.readInt();
-		this.streamURL = new String(buf.readBytes(streamURLlenght).array());
-
+		int streamURLlength = buf.readInt();
+		this.screenColor = buf.readInt();
+		int screenTextLength = buf.readInt();
+		this.screenText = new String(buf.readBytes(screenTextLength).array());
+		this.streamURL = new String(buf.readBytes(streamURLlength).array());
 		this.isPlaying = buf.readBoolean();
 		this.volume = buf.readFloat();
 		this.tx = buf.readDouble();
@@ -126,6 +147,9 @@ public class MessageTERadioBlock implements IMessage {
 		buf.writeDouble(this.z);
 		buf.writeInt(this.dim);
 		buf.writeInt(this.streamURL.length());
+		buf.writeInt(this.screenColor);
+		buf.writeInt(this.screenText.length());
+		buf.writeBytes(this.screenText.getBytes());
 		buf.writeBytes(this.streamURL.getBytes());
 		buf.writeBoolean(this.isPlaying);
 		buf.writeFloat(this.volume);

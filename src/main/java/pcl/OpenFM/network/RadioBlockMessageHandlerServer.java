@@ -26,6 +26,9 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
  
  
      if ((tileEntity instanceof TileEntityRadio)) {
+    	 
+    	 System.out.println(message.mode);
+    	 
        if (message.mode == 15) {
          ((TileEntityRadio)tileEntity).addSpeaker(targetWorld, message.tx, message.ty, message.tz);
          return null;
@@ -47,6 +50,15 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
        
        if (message.mode == 45 || message.mode == 46) {
     	   ((TileEntityRadio)tileEntity).isLocked = false;
+       }
+       
+       if (message.mode == 49) {
+    	   ((TileEntityRadio)tileEntity).setScreenText(message.screenText);
+       }
+       
+       if (message.mode == 48) {
+    	   System.out.println(message.screenColor);
+    	   ((TileEntityRadio)tileEntity).setScreenColor(message.screenColor);
        }
        
        if ((message.mode == 11) || (message.mode == 14)) {
