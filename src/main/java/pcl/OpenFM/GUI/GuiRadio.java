@@ -259,7 +259,6 @@ public class GuiRadio extends GuiRadioBase {
 
 	@cpw.mods.fml.relauncher.SideOnly(cpw.mods.fml.relauncher.Side.CLIENT)
 	protected void actionPerformed(int par1GuiButton) {
-		System.out.println(par1GuiButton);
 		if (par1GuiButton == 0) //Play button
 		{
 			if (this.streamTextBox.getText().toLowerCase().endsWith(".m3u"))
@@ -388,8 +387,7 @@ public class GuiRadio extends GuiRadioBase {
 	}
 
 	@Override
-	protected void keyTyped(char par1, int par2) {	
-		System.out.println(par2);
+	protected void keyTyped(char par1, int par2) {
 		if (this.streamTextBox.isFocused()) {
 			this.streamTextBox.textboxKeyTyped(par1, par2);
 

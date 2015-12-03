@@ -25,10 +25,7 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
      
  
  
-     if ((tileEntity instanceof TileEntityRadio)) {
-    	 
-    	 System.out.println(message.mode);
-    	 
+     if ((tileEntity instanceof TileEntityRadio)) {    	 
        if (message.mode == 15) {
          ((TileEntityRadio)tileEntity).addSpeaker(targetWorld, message.tx, message.ty, message.tz);
          return null;
@@ -57,7 +54,6 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
        }
        
        if (message.mode == 48) {
-    	   System.out.println(message.screenColor);
     	   ((TileEntityRadio)tileEntity).setScreenColor(message.screenColor);
        }
        
