@@ -3,7 +3,7 @@
  */
 package pcl.OpenFM.GUI;
 
-import pcl.OpenFM.Handler.RadioContainer;
+import pcl.OpenFM.TileEntity.RadioContainer;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
 import cpw.mods.fml.common.network.IGuiHandler;
 import net.minecraft.entity.player.EntityPlayer;
@@ -13,7 +13,7 @@ import net.minecraft.world.World;
  * @author Caitlyn
  *
  */
-public class OFMGUIHandler implements IGuiHandler {
+public class OFMGuiHandler implements IGuiHandler {
 
 	@Override
 	public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {

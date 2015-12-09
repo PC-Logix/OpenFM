@@ -24,14 +24,25 @@ import cpw.mods.fml.relauncher.SideOnly;
      super(par1, par2, par3, par4, par5, par6Str);
    }
    
- 
+ /**
+  * GUI Button
+  * @param int Button ID
+  * @param int X
+  * @param int Y
+  * @param int Icon X size
+  * @param int Icon Y size
+  * @param int Icon X location
+  * @param int Icon Y location
+  * @param string
+  * @param string2
+  */
    public OFMGuiButton(int i, int j, int k, int l, int m, int n, int o, String string, String string2)
    {
      super(i, j, k, l, m, string);
-     setDRMData(n, o, string2);
+     setOFMData(n, o, string2);
    }
    
-   public void setDRMData(int x, int y, String loc) {
+   public void setOFMData(int x, int y, String loc) {
      this.offx = x;
      this.offy = y;
      this.OFMbuttonTextures = new ResourceLocation(loc);
@@ -52,19 +63,19 @@ import cpw.mods.fml.relauncher.SideOnly;
      return b0;
    }
    
-   public void drawButton(Minecraft p_146112_1_, int p_146112_2_, int p_146112_3_) {
-     if (this.visible)
-     {
-       FontRenderer fontrenderer = p_146112_1_.fontRenderer;
-       p_146112_1_.getTextureManager().bindTexture(this.OFMbuttonTextures);
+   public void drawButton(Minecraft minecraft, int posX, int posY) {
+     if (this.visible) {
+       FontRenderer fontrenderer = minecraft.fontRenderer;
+       minecraft.getTextureManager().bindTexture(this.OFMbuttonTextures);
        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-       this.field_146123_n = ((p_146112_2_ >= this.xPosition) && (p_146112_3_ >= this.yPosition) && (p_146112_2_ < this.xPosition + this.width) && (p_146112_3_ < this.yPosition + this.height));
+       //Check if the button is being hovered over
+       this.field_146123_n = ((posX >= this.xPosition) && (posY >= this.yPosition) && (posX < this.xPosition + this.width) && (posY < this.yPosition + this.height));
        int k = getHoverState(this.field_146123_n);
        GL11.glEnable(3042);
        OpenGlHelper.glBlendFunc(770, 771, 1, 0);
        GL11.glBlendFunc(770, 771);
        drawTexturedModalRect(this.xPosition, this.yPosition, this.offx, this.offy + k * Math.round(this.height / 2), this.width, this.height);
-       mouseDragged(p_146112_1_, p_146112_2_, p_146112_3_);
+       mouseDragged(minecraft, posX, posY);
        int l = 14737632;
        
        if (this.packedFGColour != 0)

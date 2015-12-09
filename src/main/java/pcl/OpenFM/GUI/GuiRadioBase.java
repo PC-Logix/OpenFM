@@ -12,6 +12,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
@@ -23,7 +24,7 @@ import org.lwjgl.opengl.GL11;
 
 import pcl.OpenFM.OFMConfiguration;
 import pcl.OpenFM.OpenFM;
-import pcl.OpenFM.Handler.RadioContainer;
+import pcl.OpenFM.TileEntity.RadioContainer;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -66,12 +67,14 @@ public class GuiRadioBase extends GuiContainer {
 		Keyboard.enableRepeatEvents(false);
 	}
 
-	public void drawScreen(int par1, int par2, float par3)
-	{
+	@Override
+	public void drawScreen(int par1, int par2, float par3){
 		int k = (this.width - this.gui_width) / 2;
 		int l = (this.height - this.gui_height) / 2 + 30 - 5 - 45;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glDisable(2896);
+		int x = (width - xSize) / 2;
+		int y = (height - ySize) / 2;
 		this.mc.renderEngine.bindTexture(new ResourceLocation("openfm:textures/gui/gui_radio.png"));
 		drawTexturedModalRect(k, l, 0, 0, this.gui_width, this.gui_height);
 
@@ -83,8 +86,16 @@ public class GuiRadioBase extends GuiContainer {
 
 		this.mc.fontRenderer.drawString(StatCollector.translateToLocal("gui.string.OpenFM.ScreenColor"), this.width / 2 - 101, this.height / 2 + 55 - 45, 0xFFFFFF);
 		this.mc.fontRenderer.drawString(StatCollector.translateToLocal("gui.string.OpenFM.ScreenText"), this.width / 2 - 20, this.height / 2 + 55 - 45, 0xFFFFFF);
-	}
 
+		super.drawScreen(par1, par2, par3);
+		RenderHelper.disableStandardItemLighting();
+	}
+	
+	@Override
+    public void drawDefaultBackground() {
+        
+    }
+	
 	public void updateScreen() {}
 
 	protected void keyTyped(char par1, int par2)
@@ -94,8 +105,7 @@ public class GuiRadioBase extends GuiContainer {
 
 
 	@SideOnly(Side.CLIENT)
-	protected void mouseClicked(int par1, int par2, int par3)
-	{
+	protected void mouseClicked(int par1, int par2, int par3) {
 		if (par3 == 0) {
 			for (int l = 0; l < this.OFMbuttonList.size(); l++) {
 				GuiButton guibutton = (GuiButton)this.OFMbuttonList.get(l);
@@ -110,6 +120,7 @@ public class GuiRadioBase extends GuiContainer {
 				}
 			} 
 		}
+		super.mouseClicked(par1, par2, par3);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -177,9 +188,9 @@ public class GuiRadioBase extends GuiContainer {
 	}
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float p_146976_1_,
-			int p_146976_2_, int p_146976_3_) {
-		// TODO Auto-generated method stub
+	protected void drawGuiContainerBackgroundLayer(float p_146976_1_, int p_146976_2_, int p_146976_3_) {
+		int x = (width - xSize) / 2;
+		int y = (height - ySize) / 2;
 		
 	}
 }

@@ -22,14 +22,17 @@ import li.cil.oc.api.network.SimpleComponent;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import pcl.OpenFM.ContentRegistry;
 import pcl.OpenFM.OFMConfiguration;
 import pcl.OpenFM.OpenFM;
 import pcl.OpenFM.Block.BlockSpeaker;
@@ -75,7 +78,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	private int stationCount = 0;
 	public boolean isLocked;
 	public String owner = "";
-
+	public ItemStack[] RadioItemStack = new ItemStack[1];
 	public TileEntityRadio(World w) {
 		world = w;
 		if (isPlaying)
@@ -397,67 +400,90 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	}
 
 
-	public void readFromNBT(NBTTagCompound par1NBTTagCompound)
+	public void readFromNBT(NBTTagCompound nbt)
 	{
-		super.readFromNBT(par1NBTTagCompound);
-		this.streamURL = par1NBTTagCompound.getString("streamurl");
-		this.volume = par1NBTTagCompound.getFloat("volume");
-		this.listenToRedstone = par1NBTTagCompound.getBoolean("input");
-		this.redstoneInput = par1NBTTagCompound.getBoolean("lastInput");
-		this.isPlaying = par1NBTTagCompound.getBoolean("lastState");
-		int speakersCount = par1NBTTagCompound.getInteger("speakersCount");
-		this.setStationCount(par1NBTTagCompound.getInteger("stationCount"));
-		this.screenColor = par1NBTTagCompound.getInteger("screenColor");
-		this.isLocked = par1NBTTagCompound.getBoolean("isLocked");
-		this.owner = par1NBTTagCompound.getString("owner");
-		if (par1NBTTagCompound.getString("screenText").length() < 1) {
+		super.readFromNBT(nbt);
+		this.streamURL = nbt.getString("streamurl");
+		this.volume = nbt.getFloat("volume");
+		this.listenToRedstone = nbt.getBoolean("input");
+		this.redstoneInput = nbt.getBoolean("lastInput");
+		this.isPlaying = nbt.getBoolean("lastState");
+		int speakersCount = nbt.getInteger("speakersCount");
+		this.setStationCount(nbt.getInteger("stationCount"));
+		this.screenColor = nbt.getInteger("screenColor");
+		this.isLocked = nbt.getBoolean("isLocked");
+		this.owner = nbt.getString("owner");
+		if (nbt.getString("screenText").length() < 1) {
 			this.screenText = "OpenFM";
 		} else {
-			this.screenText = par1NBTTagCompound.getString("screenText");
+			this.screenText = nbt.getString("screenText");
 		}
 		for (int i = 0; i < speakersCount; i++) {
-			double x = par1NBTTagCompound.getDouble("speakerX" + i);
-			double y = par1NBTTagCompound.getDouble("speakerY" + i);
-			double z = par1NBTTagCompound.getDouble("speakerZ" + i);
+			double x = nbt.getDouble("speakerX" + i);
+			double y = nbt.getDouble("speakerY" + i);
+			double z = nbt.getDouble("speakerZ" + i);
 			addSpeaker(getWorldObj(), x, y, z);
 		}
 		for(int i = 0; i < this.getStationCount(); i++)
 		{
-			stations.add(par1NBTTagCompound.getString("station" + i));
+			stations.add(nbt.getString("station" + i));
+		}
+		NBTTagList var2 = nbt.getTagList("Items",nbt.getId());
+		this.RadioItemStack = new ItemStack[this.getSizeInventory()];
+		for (int var3 = 0; var3 < var2.tagCount(); ++var3)
+		{
+			NBTTagCompound var4 = (NBTTagCompound)var2.getCompoundTagAt(var3);
+			byte var5 = var4.getByte("Slot");
+			if (var5 >= 0 && var5 < this.RadioItemStack.length)
+			{
+				this.RadioItemStack[var5] = ItemStack.loadItemStackFromNBT(var4);
+			}
 		}
 	}
 
 
-	public void writeToNBT(NBTTagCompound par1NBTTagCompound)
+	public void writeToNBT(NBTTagCompound nbt)
 	{
-		super.writeToNBT(par1NBTTagCompound);
-		par1NBTTagCompound.setString("streamurl", this.streamURL);
-		par1NBTTagCompound.setFloat("volume", this.volume);
-		par1NBTTagCompound.setBoolean("input", this.listenToRedstone);
-		par1NBTTagCompound.setBoolean("lastInput", this.redstoneInput);
-		par1NBTTagCompound.setBoolean("lastState", this.isPlaying);
-		par1NBTTagCompound.setInteger("speakersCount", this.speakers.size());
-		par1NBTTagCompound.setInteger("screenColor", this.screenColor);
-		par1NBTTagCompound.setString("screenText", this.screenText);
-		par1NBTTagCompound.setBoolean("isLocked", this.isLocked);
-		par1NBTTagCompound.setString("owner", this.owner);
+		super.writeToNBT(nbt);
+		nbt.setString("streamurl", this.streamURL);
+		nbt.setFloat("volume", this.volume);
+		nbt.setBoolean("input", this.listenToRedstone);
+		nbt.setBoolean("lastInput", this.redstoneInput);
+		nbt.setBoolean("lastState", this.isPlaying);
+		nbt.setInteger("speakersCount", this.speakers.size());
+		nbt.setInteger("screenColor", this.screenColor);
+		nbt.setString("screenText", this.screenText);
+		nbt.setBoolean("isLocked", this.isLocked);
+		nbt.setString("owner", this.owner);
 		for (int i = 0; i < this.speakers.size(); i++) {
-			par1NBTTagCompound.setDouble("speakerX" + i, ((Speaker)this.speakers.get(i)).x);
-			par1NBTTagCompound.setDouble("speakerY" + i, ((Speaker)this.speakers.get(i)).y);
-			par1NBTTagCompound.setDouble("speakerZ" + i, ((Speaker)this.speakers.get(i)).z);
+			nbt.setDouble("speakerX" + i, ((Speaker)this.speakers.get(i)).x);
+			nbt.setDouble("speakerY" + i, ((Speaker)this.speakers.get(i)).y);
+			nbt.setDouble("speakerZ" + i, ((Speaker)this.speakers.get(i)).z);
 		}
 		for(int i = 0; i < stations.size(); i++)
 		{
 			String s = stations.get(i);
 			if(s != null)
 			{
-				par1NBTTagCompound.setString("station" + i, s);
-				par1NBTTagCompound.setInteger("stationCount", i + 1);
+				nbt.setString("station" + i, s);
+				nbt.setInteger("stationCount", i + 1);
 			}
 		}
+		NBTTagList var2 = new NBTTagList();
+		for (int var3 = 0; var3 < this.RadioItemStack.length; ++var3)
+		{
+			if (this.RadioItemStack[var3] != null)
+			{
+				NBTTagCompound var4 = new NBTTagCompound();
+				var4.setByte("Slot", (byte)var3);
+				this.RadioItemStack[var3].writeToNBT(var4);
+				var2.appendTag(var4);
+			}
+		}
+		nbt.setTag("Items", var2);
 	}
-	
-	
+
+
 	public enum ComputerMethod {
 		getAttachedSpeakerCount, //No args
 		setScreenColor, //Integer (0x######)
@@ -476,7 +502,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 		setScreenText, //String
 		getAttachedSpeakers //No args
 	}
-	
+
 	public static final int numMethods = ComputerMethod.values().length;
 
 	public static final String[] methodNames = new String[numMethods];
@@ -501,125 +527,125 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 		ComputerMethod computerMethod = ComputerMethod.values()[method];
 
 		switch(computerMethod) {
-			case getAttachedSpeakerCount:
-				return new Object[] { speakers.size() };
-				
-			case setScreenColor:
-				if(args.length != 1) {
-					return new Object[]{false, "Insufficient number of arguments, expected 1"};
-				}
-				setScreenColor((int)Math.round((Double)args[0]));
-				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-				getDescriptionPacket();
-				markDirty();
-				return new Object[]{ true };
-				
-			case getScreenColor:
-				return new Object[]{ getScreenColor() };
+		case getAttachedSpeakerCount:
+			return new Object[] { speakers.size() };
 
-			case setListenRedstone:
-				if(args.length != 1) {
-					return new Object[]{false, "Insufficient number of arguments, expected 1"};
-				}
-				setRedstoneInput((boolean) args[0]);
-				return new Object[]{ isListeningToRedstoneInput() };
-				
-			case getListenRedstone:
-				return new Object[]{ isListeningToRedstoneInput() };
-				
-			case isPlaying:
-				return new Object[]{ isPlaying() };
-				
-			case stop:
-				stopStream();
-				isPlaying = false;
-				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-				getDescriptionPacket();
-				return new Object[]{ true };
-				
-			case start:
-				try {
-					startStream();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-				getDescriptionPacket();
-				return new Object[]{ true };
-				
-			case greet:
-				return new Object[] { "Lasciate ogne speranza, voi ch'intrate" };
-				
-			case getAttachedSpeakers:
-				return new Object[] { this.speakers.size() };
-				
-			case setScreenText:
-				if(args.length != 1) {
-					return new Object[]{false, "Insufficient number of arguments, expected 1"};
-				}
-				setScreenText((String) args[0]);
-				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-				getDescriptionPacket();
-				markDirty(); // Marks the chunk as dirty, so that it is saved properly on changes. Not required for the sync specifically, but usually goes alongside the former.
-				return new Object[] { true } ;
+		case setScreenColor:
+			if(args.length != 1) {
+				return new Object[]{false, "Insufficient number of arguments, expected 1"};
+			}
+			setScreenColor((int)Math.round((Double)args[0]));
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			getDescriptionPacket();
+			markDirty();
+			return new Object[]{ true };
 
-			case volDown:
-				float v = (float)(this.volume - 0.1D);
-				if ((v > 0.0F) && (v <= 1.0F)) {
-					setVolume(v);
-					worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-					getDescriptionPacket();
-					return new Object[] { getVolume() };
-				} else {
-					return new Object[] { false };
-				}
-				
-			case volUp:
-				float v1 = (float)(this.volume + 0.1D);
-				if ((v1 > 0.0F) && (v1 <= 1.0F)) {
-					setVolume(v1);
-					worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-					getDescriptionPacket();
-					return new Object[] { getVolume() };
-				} else {
-					return new Object[] { false };
-				}
-				
-			case setVol:
-				if(args.length != 1) {
-					return new Object[]{false, "Insufficient number of arguments, expected 1"};
-				}
-				float v2 = (float)(args[0]);
-				if ((v2 > 0.0F) && (v2 <= 1.0F)) {
-					setVolume(v2);
-					worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-					getDescriptionPacket();
-					return new Object[] { getVolume() };
-				} else {
-					return new Object[] { false };
-				}
-				
-			case getVol:
+		case getScreenColor:
+			return new Object[]{ getScreenColor() };
+
+		case setListenRedstone:
+			if(args.length != 1) {
+				return new Object[]{false, "Insufficient number of arguments, expected 1"};
+			}
+			setRedstoneInput((boolean) args[0]);
+			return new Object[]{ isListeningToRedstoneInput() };
+
+		case getListenRedstone:
+			return new Object[]{ isListeningToRedstoneInput() };
+
+		case isPlaying:
+			return new Object[]{ isPlaying() };
+
+		case stop:
+			stopStream();
+			isPlaying = false;
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			getDescriptionPacket();
+			return new Object[]{ true };
+
+		case start:
+			try {
+				startStream();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			getDescriptionPacket();
+			return new Object[]{ true };
+
+		case greet:
+			return new Object[] { "Lasciate ogne speranza, voi ch'intrate" };
+
+		case getAttachedSpeakers:
+			return new Object[] { this.speakers.size() };
+
+		case setScreenText:
+			if(args.length != 1) {
+				return new Object[]{false, "Insufficient number of arguments, expected 1"};
+			}
+			setScreenText((String) args[0]);
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			getDescriptionPacket();
+			markDirty(); // Marks the chunk as dirty, so that it is saved properly on changes. Not required for the sync specifically, but usually goes alongside the former.
+			return new Object[] { true } ;
+
+		case volDown:
+			float v = (float)(this.volume - 0.1D);
+			if ((v > 0.0F) && (v <= 1.0F)) {
+				setVolume(v);
+				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+				getDescriptionPacket();
 				return new Object[] { getVolume() };
-				
-			case setURL:
-				if(args.length != 1) {
-					return new Object[]{false, "Insufficient number of arguments, expected 1"};
-				}
-				streamURL = (String) args[0];
+			} else {
+				return new Object[] { false };
+			}
+
+		case volUp:
+			float v1 = (float)(this.volume + 0.1D);
+			if ((v1 > 0.0F) && (v1 <= 1.0F)) {
+				setVolume(v1);
 				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 				getDescriptionPacket();
-				return new Object[] { true };
-				
-			default: return new Object[]{false, "Not implemented."};
+				return new Object[] { getVolume() };
+			} else {
+				return new Object[] { false };
+			}
+
+		case setVol:
+			if(args.length != 1) {
+				return new Object[]{false, "Insufficient number of arguments, expected 1"};
+			}
+			float v2 = (float)(args[0]);
+			if ((v2 > 0.0F) && (v2 <= 1.0F)) {
+				setVolume(v2);
+				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+				getDescriptionPacket();
+				return new Object[] { getVolume() };
+			} else {
+				return new Object[] { false };
+			}
+
+		case getVol:
+			return new Object[] { getVolume() };
+
+		case setURL:
+			if(args.length != 1) {
+				return new Object[]{false, "Insufficient number of arguments, expected 1"};
+			}
+			streamURL = (String) args[0];
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			getDescriptionPacket();
+			return new Object[] { true };
+
+		default: return new Object[]{false, "Not implemented."};
 		}
 	}
-	
+
 
 	@Override
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] invoke(final String method, final Context context,
-						   final Arguments args) throws Exception {
+			final Arguments args) throws Exception {
 		final Object[] arguments = new Object[args.count()];
 		for (int i = 0; i < args.count(); ++i) {
 			arguments[i] = args.checkAny(i);
@@ -652,13 +678,13 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws LuaException {
-        try {
-            return callMethod(method, arguments);
-        } catch(Exception e) {
-        	// Rethrow errors as LuaExceptions for CC
-        	throw new LuaException(e.getMessage());
-        }
-    }
+		try {
+			return callMethod(method, arguments);
+		} catch(Exception e) {
+			// Rethrow errors as LuaExceptions for CC
+			throw new LuaException(e.getMessage());
+		}
+	}
 
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
@@ -676,11 +702,9 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 		return hashCode() == other.hashCode();
 	}
 
-	private ItemStack[] RadioItemStack = new ItemStack[1];
-	
 	@Override
 	public int getSizeInventory() {
-		return this.RadioItemStack.length;
+		return RadioItemStack.length;
 	}
 
 	@Override
@@ -755,13 +779,45 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
 		if (i == 0) {
 			if (itemstack.getItem() instanceof ItemMemoryCard) {
-				if (itemstack.stackTagCompound == null) {
-					return true;
-				} else {
-					return false;
-				}
+				return true;
 			}
 		}
 		return false;
+	}
+
+	public void writeDataToCard() {
+		System.out.println("-_-");
+		if (getStackInSlot(0) != null) {
+			RadioItemStack[0] = new ItemStack(ContentRegistry.itemMemoryCard);
+			RadioItemStack[0].setTagCompound(new NBTTagCompound());
+			RadioItemStack[0].stackTagCompound.setString("screenText", this.screenText);	
+			RadioItemStack[0].stackTagCompound.setInteger("screenColor", this.screenColor);
+			RadioItemStack[0].stackTagCompound.setString("streamURL", this.streamURL);
+			RadioItemStack[0].stackTagCompound.setInteger("stationCount", this.stationCount);
+			for(int i = 0; i < this.getStationCount(); i++)
+			{
+				RadioItemStack[0].stackTagCompound.setString("station" + i, stations.get(i));
+			}
+			RadioItemStack[0].setStackDisplayName(this.screenText);
+		}
+		
+	}
+
+	public void readDataFromCard() {
+		if (getStackInSlot(0) != null) {
+			if (RadioItemStack[0].hasTagCompound()) {
+				this.screenText = RadioItemStack[0].getTagCompound().getString("screenText");
+				this.screenColor = RadioItemStack[0].getTagCompound().getInteger("screenColor");
+				this.streamURL = RadioItemStack[0].getTagCompound().getString("streamURL");
+				this.stationCount = RadioItemStack[0].getTagCompound().getInteger("stationCount");
+				for(int i = 0; i < this.getStationCount(); i++)
+				{
+					stations.add(RadioItemStack[0].stackTagCompound.getString("station" + i));
+				}
+				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+				getDescriptionPacket();
+				markDirty();
+			}
+		}
 	}
 }
