@@ -26,8 +26,8 @@ import pcl.OpenFM.OFMConfiguration;
 import pcl.OpenFM.OpenFM;
 import pcl.OpenFM.TileEntity.RadioContainer;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class GuiRadioBase extends GuiContainer {
 	protected FontRenderer fontRenderer;
@@ -82,10 +82,10 @@ public class GuiRadioBase extends GuiContainer {
 		{
 			((OFMGuiButton)this.OFMbuttonList.get(k)).drawButton(this.mc, par1, par2);
 		}
-		this.mc.fontRenderer.drawString("OpenFM", this.width / 2 - 16, this.height / 2 + 90 - 45, this.radio.getScreenColor());
+		this.mc.fontRendererObj.drawString("OpenFM", this.width / 2 - 16, this.height / 2 + 90 - 45, this.radio.getScreenColor());
 
-		this.mc.fontRenderer.drawString(StatCollector.translateToLocal("gui.string.OpenFM.ScreenColor"), this.width / 2 - 101, this.height / 2 + 55 - 45, 0xFFFFFF);
-		this.mc.fontRenderer.drawString(StatCollector.translateToLocal("gui.string.OpenFM.ScreenText"), this.width / 2 - 20, this.height / 2 + 55 - 45, 0xFFFFFF);
+		this.mc.fontRendererObj.drawString(StatCollector.translateToLocal("gui.string.OpenFM.ScreenColor"), this.width / 2 - 101, this.height / 2 + 55 - 45, 0xFFFFFF);
+		this.mc.fontRendererObj.drawString(StatCollector.translateToLocal("gui.string.OpenFM.ScreenText"), this.width / 2 - 20, this.height / 2 + 55 - 45, 0xFFFFFF);
 
 		super.drawScreen(par1, par2, par3);
 		RenderHelper.disableStandardItemLighting();
@@ -100,7 +100,12 @@ public class GuiRadioBase extends GuiContainer {
 
 	protected void keyTyped(char par1, int par2)
 	{
-		super.keyTyped(par1, par2);
+		try {
+			super.keyTyped(par1, par2);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 
@@ -113,14 +118,19 @@ public class GuiRadioBase extends GuiContainer {
 					GuiScreenEvent.ActionPerformedEvent.Pre event = new GuiScreenEvent.ActionPerformedEvent.Pre(this, guibutton, this.OFMbuttonList);
 					if (MinecraftForge.EVENT_BUS.post(event))
 						break;
-					event.button.func_146113_a(this.mc.getSoundHandler());
+					event.button.playPressSound(this.mc.getSoundHandler());
 					actionPerformed(event.button.id);
 					if (equals(this.mc.currentScreen))
 						MinecraftForge.EVENT_BUS.post(new GuiScreenEvent.ActionPerformedEvent.Post(this, event.button, this.OFMbuttonList));
 				}
 			} 
 		}
-		super.mouseClicked(par1, par2, par3);
+		try {
+			super.mouseClicked(par1, par2, par3);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@SideOnly(Side.CLIENT)

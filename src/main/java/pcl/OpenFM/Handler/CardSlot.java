@@ -21,7 +21,7 @@ public class CardSlot extends Slot {
 	@Override
 	public boolean isItemValid(ItemStack itemstack) {
 		if (itemstack.getItem() instanceof ItemMemoryCard) {
-			if (itemstack.stackTagCompound == null) {
+			if (itemstack.getTagCompound() == null) {
 				return true;
 			} else {
 				return false;

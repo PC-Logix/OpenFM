@@ -6,6 +6,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -17,12 +18,10 @@ import pcl.OpenFM.Items.ItemMemoryCard;
 import pcl.OpenFM.Items.ItemTuner;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
 import pcl.OpenFM.TileEntity.TileEntitySpeaker;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import cpw.mods.fml.common.Loader;
-import dan200.computercraft.api.ComputerCraftAPI;
-import dan200.computercraft.api.peripheral.IPeripheralProvider;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.Loader;
 
 public class ContentRegistry {
 	
@@ -44,9 +43,6 @@ public class ContentRegistry {
         registerBlocks();
         registerItems();
         registerEvents();
-        if (Loader.isModLoaded("ComputerCraft")) {
-        	ComputerCraftAPI.registerPeripheralProvider((IPeripheralProvider) blockRadio);
-        }
 	}
 	
 	public static void registerBlocks() {
@@ -109,7 +105,7 @@ public class ContentRegistry {
 		};
 	}
 
-	public static boolean checkBlock(World w, int x, int y, int z) {
-		return (w.getBlock(x, y, z) instanceof BlockRadio);
+	public static boolean checkBlock(World w, BlockPos pos) {
+		return (w.getBlockState(pos) instanceof BlockRadio);
 	}
 }

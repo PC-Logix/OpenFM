@@ -8,8 +8,8 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
  
  
  @SideOnly(Side.CLIENT)
@@ -65,12 +65,12 @@ import cpw.mods.fml.relauncher.SideOnly;
    
    public void drawButton(Minecraft minecraft, int posX, int posY) {
      if (this.visible) {
-       FontRenderer fontrenderer = minecraft.fontRenderer;
+       FontRenderer fontrenderer = minecraft.fontRendererObj;
        minecraft.getTextureManager().bindTexture(this.OFMbuttonTextures);
        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
        //Check if the button is being hovered over
-       this.field_146123_n = ((posX >= this.xPosition) && (posY >= this.yPosition) && (posX < this.xPosition + this.width) && (posY < this.yPosition + this.height));
-       int k = getHoverState(this.field_146123_n);
+       this.hovered = ((posX >= this.xPosition) && (posY >= this.yPosition) && (posX < this.xPosition + this.width) && (posY < this.yPosition + this.height));
+       int k = getHoverState(this.hovered);
        GL11.glEnable(3042);
        OpenGlHelper.glBlendFunc(770, 771, 1, 0);
        GL11.glBlendFunc(770, 771);
@@ -86,7 +86,7 @@ import cpw.mods.fml.relauncher.SideOnly;
        {
          l = 10526880;
        }
-       else if (this.field_146123_n)
+       else if (this.hovered)
        {
          l = 16777120;
        }

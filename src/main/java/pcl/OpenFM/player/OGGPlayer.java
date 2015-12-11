@@ -19,7 +19,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.world.World;
 import pcl.OpenFM.OpenFM;

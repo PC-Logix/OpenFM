@@ -6,7 +6,7 @@ import java.util.List;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.world.World;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 public class MessageTERadioBlock implements IMessage {
 	public World world;
@@ -34,11 +34,11 @@ public class MessageTERadioBlock implements IMessage {
 	public MessageTERadioBlock() {}
 
 	public MessageTERadioBlock(TileEntityRadio radio) {
-		this.x = radio.xCoord;
-		this.y = radio.yCoord;
-		this.z = radio.zCoord;
-		this.world = radio.getWorldObj();
-		this.dim = this.world.provider.dimensionId;
+		this.x = radio.getPos().getX();
+		this.y = radio.getPos().getY();
+		this.z = radio.getPos().getZ();
+		this.world = radio.getWorld();
+		this.dim = this.world.provider.getDimensionId();
 		this.streamURL = radio.streamURL;
 		this.screenColor = radio.getScreenColor();
 		this.screenText = radio.getScreenText();
@@ -60,7 +60,7 @@ public class MessageTERadioBlock implements IMessage {
 		this.y = y;
 		this.z = z;
 		this.world = world;
-		this.dim = world.provider.dimensionId;
+		this.dim = world.provider.getDimensionId();
 		this.streamURL = streamURL;
 		this.isPlaying = isPlaying;
 		this.volume = volume;
@@ -72,7 +72,7 @@ public class MessageTERadioBlock implements IMessage {
 		this.y = y;
 		this.z = z;
 		this.world = world;
-		this.dim = world.provider.dimensionId;
+		this.dim = world.provider.getDimensionId();
 		this.streamURL = streamURL;
 		this.isPlaying = isPlaying;
 		this.volume = volume;
@@ -87,7 +87,7 @@ public class MessageTERadioBlock implements IMessage {
 		this.y = yCoord;
 		this.z = zCoord;
 		this.world = worldObj;
-		this.dim = world.provider.dimensionId;
+		this.dim = world.provider.getDimensionId();
 		this.streamURL = station;
 		this.mode = i;
 		if (i == 42) {
@@ -113,7 +113,7 @@ public class MessageTERadioBlock implements IMessage {
 		this.z = zCoord;
 		this.world = worldObj;
 		this.streamURL = stream;
-		this.dim = world.provider.dimensionId;
+		this.dim = world.provider.getDimensionId();
 		this.mode = i;
 		if (i == 49) {
 			this.screenText = screenInfo;

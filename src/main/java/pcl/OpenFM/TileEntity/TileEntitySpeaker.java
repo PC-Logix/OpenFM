@@ -1,18 +1,19 @@
 package pcl.OpenFM.TileEntity;
 
-import cpw.mods.fml.common.Optional;
+import net.minecraftforge.fml.common.Optional;
 import li.cil.oc.api.Network;
 import li.cil.oc.api.network.Environment;
 import li.cil.oc.api.network.Message;
 import li.cil.oc.api.network.Node;
 import li.cil.oc.api.network.Visibility;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.gui.IUpdatePlayerListBox;
 import net.minecraft.tileentity.TileEntity;
 
 @Optional.InterfaceList(value={
 		@Optional.Interface(iface = "li.cil.oc.api.network.Environment", modid = "OpenComputers")
 })
-public class TileEntitySpeaker extends TileEntity implements Environment {
+public class TileEntitySpeaker extends TileEntity implements Environment, IUpdatePlayerListBox {
 	
 	protected Node node;
 		
@@ -79,9 +80,14 @@ public class TileEntitySpeaker extends TileEntity implements Environment {
 	}
 
 	@Optional.Method(modid = "OpenComputers")
-	@Override
 	public void updateEntity() {
-		super.updateEntity();
+		if (node != null && node.network() == null) {
+			Network.joinOrCreateNetwork(this);
+		}
+	}
+
+	@Override
+	public void update() {
 		if (node != null && node.network() == null) {
 			Network.joinOrCreateNetwork(this);
 		}

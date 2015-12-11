@@ -20,6 +20,7 @@ import li.cil.oc.api.machine.Context;
 import li.cil.oc.api.network.ManagedPeripheral;
 import li.cil.oc.api.network.SimpleComponent;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -31,6 +32,8 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.world.World;
 import pcl.OpenFM.ContentRegistry;
 import pcl.OpenFM.OFMConfiguration;
@@ -42,15 +45,11 @@ import pcl.OpenFM.network.PacketHandler;
 import pcl.OpenFM.network.Message.MessageTERadioBlock;
 import pcl.OpenFM.player.PlayerDispatcher;
 import pcl.OpenFM.player.OGGPlayer;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import cpw.mods.fml.common.Optional;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.lua.LuaException;
-import dan200.computercraft.api.peripheral.IComputerAccess;
-import dan200.computercraft.api.peripheral.IPeripheral;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.Optional;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 @Optional.InterfaceList({
 	@Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "OpenComputers"),
@@ -58,7 +57,7 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 	@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = "ComputerCraft")
 })
 
-public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleComponent, ManagedPeripheral, IInventory {
+public class TileEntityRadio extends TileEntity implements SimpleComponent, ManagedPeripheral, IInventory {
 	public PlayerDispatcher mp3Player = null;
 	public OGGPlayer oggPlayer = null;
 	public boolean useMP3 = true;
@@ -142,8 +141,8 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 						}
 						if (decoder != null && isValid) {
 							isPlaying = true;
-							OpenFM.logger.info("Starting Stream: " + streamURL + " at X:" + xCoord + " Y:" + yCoord + " Z:" + zCoord);
-							mp3Player = new PlayerDispatcher(decoder, streamURL, world, xCoord, yCoord, zCoord);
+							OpenFM.logger.info("Starting Stream: " + streamURL + " at X:" + pos.getX() + " Y:" + pos.getY() + " Z:" + pos.getZ());
+							mp3Player = new PlayerDispatcher(decoder, streamURL, world, pos.getX(), pos.getY(), pos.getZ());
 							OpenFM.playerList.add(mp3Player);	
 						}
 					}
@@ -189,9 +188,9 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 			th += 1;
 			if (th >= 10) {
 				for (Speaker s : speakers) {
-					Block sb = getWorldObj().getBlock((int) s.x, (int) s.y, (int) s.z);
+					IBlockState sb = getWorld().getBlockState(new BlockPos((int) s.x, (int) s.y, (int) s.z));
 					if (!(sb instanceof BlockSpeaker)) {
-						if (!getWorldObj().getChunkFromBlockCoords((int) s.x, (int) s.z).isChunkLoaded) break;
+						if (!getWorld().getChunkFromBlockCoords(new BlockPos((int) s.x, (int) s.y, (int) s.z)).isLoaded()) break;
 						speakers.remove(s);
 						break;
 					}
@@ -225,7 +224,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 		} else {
 			if (isPlaying()) {
 				if (loops >= 40) {
-					PacketHandler.INSTANCE.sendToAllAround(new MessageTERadioBlock(this), new NetworkRegistry.TargetPoint(getWorldObj().provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 50.0D));
+					PacketHandler.INSTANCE.sendToAllAround(new MessageTERadioBlock(this), new NetworkRegistry.TargetPoint(getWorld().provider.getDimensionId(), this.pos.getX(), this.pos.getY(), this.pos.getZ(), 50.0D));
 					loops++;
 				} else {
 					loops = 0;
@@ -233,8 +232,8 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 				th += 1;
 				if (th >= 60) {
 					for (Speaker s : speakers) {
-						if (!(worldObj.getBlock((int) s.x, (int) s.y, (int) s.z) instanceof BlockSpeaker)) {
-							if (!worldObj.getChunkFromBlockCoords((int) s.x, (int) s.z).isChunkLoaded) break;
+						if (!(worldObj.getBlockState(new BlockPos((int) s.x, (int) s.y, (int) s.z)) instanceof BlockSpeaker)) {
+							if (!worldObj.getChunkFromBlockCoords(new BlockPos((int) s.x, (int) s.y, (int) s.z)).isLoaded()) break;
 							speakers.remove(s);
 							break;
 						}
@@ -246,8 +245,8 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 			if ((scheduleRedstoneInput) && (listenToRedstone)) {
 				if ((!scheduledRedstoneInput) && (redstoneInput)) {
 					isPlaying = (!isPlaying);
-					PacketHandler.INSTANCE.sendToAll(new MessageTERadioBlock(xCoord, yCoord, zCoord,
-							getWorldObj(), streamURL, isPlaying, volume, 1));
+					PacketHandler.INSTANCE.sendToAll(new MessageTERadioBlock(pos.getX(), pos.getY(), pos.getZ(),
+							getWorld(), streamURL, isPlaying, volume, 1));
 				}
 
 				redstoneInput = scheduledRedstoneInput;
@@ -268,8 +267,8 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	public void addStation(String station) {
 		if (!stations.contains(station)) {
 			stations.add(station);
-			PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this.xCoord, this.yCoord, this.zCoord, this.worldObj, station, 42), getWorldObj().provider.dimensionId);
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this.pos.getX(), this.pos.getY(), this.pos.getZ(), this.worldObj, station, 42), getWorld().provider.getDimensionId());
+			worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
 			getDescriptionPacket();
 			markDirty();
 		}
@@ -278,8 +277,8 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	public void delStation(String station) {
 		if (stations.contains(station)) {
 			stations.remove(station);
-			PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this.xCoord, this.yCoord, this.zCoord, this.worldObj, station, 43), getWorldObj().provider.dimensionId);
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this.pos.getX(), this.pos.getY(), this.pos.getZ(), this.worldObj, station, 43), getWorld().provider.getDimensionId());
+			worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
 			getDescriptionPacket();
 			markDirty();
 		}
@@ -307,7 +306,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 
 	public void setScreenColor(Integer color) {
 		this.screenColor = color;
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
 		getDescriptionPacket();
 		markDirty();
 	}
@@ -349,7 +348,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	}
 
 	private float getClosest() {
-		float closest = (float) getDistanceFrom(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY, Minecraft.getMinecraft().thePlayer.posZ);
+		float closest = (float) getDistanceSq(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY, Minecraft.getMinecraft().thePlayer.posZ);
 		if (!speakers.isEmpty()) {
 			for (Speaker s : speakers) {
 				float distance = (float) Math.pow(Minecraft.getMinecraft().thePlayer.getDistance(s.x, s.y, s.z), 2.0D);
@@ -382,21 +381,21 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	public Packet getDescriptionPacket()
 	{
 		for (Speaker s :speakers) {
-			PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this.xCoord, this.yCoord, this.zCoord, this.worldObj, "", false, 1.0F, 15, s.x, s.y, s.z), getWorldObj().provider.dimensionId);
+			PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this.pos.getX(), this.pos.getY(), this.pos.getZ(), this.worldObj, "", false, 1.0F, 15, s.x, s.y, s.z), getWorld().provider.getDimensionId());
 		}
 
-		PacketHandler.INSTANCE.sendToAllAround(new MessageTERadioBlock(this), new NetworkRegistry.TargetPoint(getWorldObj().provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 30.0D));
+		PacketHandler.INSTANCE.sendToAllAround(new MessageTERadioBlock(this), new NetworkRegistry.TargetPoint(getWorld().provider.getDimensionId(), this.pos.getX(), this.pos.getY(), this.pos.getZ(), 30.0D));
 		//PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this), getWorldObj().provider.dimensionId);
 
 
 		NBTTagCompound tagCom = new NBTTagCompound();
 		this.writeToNBT(tagCom);
-		return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, this.blockMetadata, tagCom);
+		return new S35PacketUpdateTileEntity();
 	}
 
 	@Override
 	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity packet) {
-		readFromNBT(packet.func_148857_g());    // == "getNBTData"
+		readFromNBT(packet.getNbtCompound());    // == "getNBTData"
 	}
 
 
@@ -422,7 +421,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 			double x = nbt.getDouble("speakerX" + i);
 			double y = nbt.getDouble("speakerY" + i);
 			double z = nbt.getDouble("speakerZ" + i);
-			addSpeaker(getWorldObj(), x, y, z);
+			addSpeaker(getWorld(), x, y, z);
 		}
 		for(int i = 0; i < this.getStationCount(); i++)
 		{
@@ -535,7 +534,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 				return new Object[]{false, "Insufficient number of arguments, expected 1"};
 			}
 			setScreenColor((int)Math.round((Double)args[0]));
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
 			getDescriptionPacket();
 			markDirty();
 			return new Object[]{ true };
@@ -559,7 +558,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 		case stop:
 			stopStream();
 			isPlaying = false;
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
 			getDescriptionPacket();
 			return new Object[]{ true };
 
@@ -569,7 +568,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
 			getDescriptionPacket();
 			return new Object[]{ true };
 
@@ -584,7 +583,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 				return new Object[]{false, "Insufficient number of arguments, expected 1"};
 			}
 			setScreenText((String) args[0]);
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
 			getDescriptionPacket();
 			markDirty(); // Marks the chunk as dirty, so that it is saved properly on changes. Not required for the sync specifically, but usually goes alongside the former.
 			return new Object[] { true } ;
@@ -593,7 +592,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 			float v = (float)(this.volume - 0.1D);
 			if ((v > 0.0F) && (v <= 1.0F)) {
 				setVolume(v);
-				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+				worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
 				getDescriptionPacket();
 				return new Object[] { getVolume() };
 			} else {
@@ -604,7 +603,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 			float v1 = (float)(this.volume + 0.1D);
 			if ((v1 > 0.0F) && (v1 <= 1.0F)) {
 				setVolume(v1);
-				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+				worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
 				getDescriptionPacket();
 				return new Object[] { getVolume() };
 			} else {
@@ -618,7 +617,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 			float v2 = (float)(args[0]);
 			if ((v2 > 0.0F) && (v2 <= 1.0F)) {
 				setVolume(v2);
-				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+				worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
 				getDescriptionPacket();
 				return new Object[] { getVolume() };
 			} else {
@@ -633,7 +632,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 				return new Object[]{false, "Insufficient number of arguments, expected 1"};
 			}
 			streamURL = (String) args[0];
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
 			getDescriptionPacket();
 			return new Object[] { true };
 
@@ -661,45 +660,6 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	@Optional.Method(modid = "OpenComputers")
 	public String[] methods() {
 		return methodNames;
-	}
-
-	@Override
-	@Optional.Method(modid = "ComputerCraft")
-	public String getType() {
-		return "openfm_radio";
-	}
-
-	@Override
-	@Optional.Method(modid = "ComputerCraft")
-	public String[] getMethodNames() {
-		return methodNames;
-	}
-
-	@Override
-	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws LuaException {
-		try {
-			return callMethod(method, arguments);
-		} catch(Exception e) {
-			// Rethrow errors as LuaExceptions for CC
-			throw new LuaException(e.getMessage());
-		}
-	}
-
-	@Override
-	@Optional.Method(modid = "ComputerCraft")
-	public void attach(IComputerAccess computer) {
-	}
-
-	@Override
-	@Optional.Method(modid = "ComputerCraft")
-	public void detach(IComputerAccess computer) {
-	}
-
-	@Override
-	@Optional.Method(modid = "ComputerCraft")
-	public boolean equals(IPeripheral other) {
-		return hashCode() == other.hashCode();
 	}
 
 	@Override
@@ -748,31 +708,13 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	}
 
 	@Override
-	public String getInventoryName() {
-		return "ofm_radio";
-	}
-
-	@Override
-	public boolean hasCustomInventoryName() {
-		return false;
-	}
-
-	@Override
 	public int getInventoryStackLimit() {
 		return 1;
 	}
 
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer player) {
-		return worldObj.getTileEntity(xCoord, yCoord, zCoord) == this && player.getDistanceSq(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5) < 64;
-	}
-
-	@Override
-	public void openInventory() {		
-	}
-
-	@Override
-	public void closeInventory() {
+		return worldObj.getTileEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ())) == this && player.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 64;
 	}
 
 	@Override
@@ -790,13 +732,13 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 		if (getStackInSlot(0) != null) {
 			RadioItemStack[0] = new ItemStack(ContentRegistry.itemMemoryCard);
 			RadioItemStack[0].setTagCompound(new NBTTagCompound());
-			RadioItemStack[0].stackTagCompound.setString("screenText", this.screenText);	
-			RadioItemStack[0].stackTagCompound.setInteger("screenColor", this.screenColor);
-			RadioItemStack[0].stackTagCompound.setString("streamURL", this.streamURL);
-			RadioItemStack[0].stackTagCompound.setInteger("stationCount", this.stationCount);
+			RadioItemStack[0].getTagCompound().setString("screenText", this.screenText);	
+			RadioItemStack[0].getTagCompound().setInteger("screenColor", this.screenColor);
+			RadioItemStack[0].getTagCompound().setString("streamURL", this.streamURL);
+			RadioItemStack[0].getTagCompound().setInteger("stationCount", this.stationCount);
 			for(int i = 0; i < this.getStationCount(); i++)
 			{
-				RadioItemStack[0].stackTagCompound.setString("station" + i, stations.get(i));
+				RadioItemStack[0].getTagCompound().setString("station" + i, stations.get(i));
 			}
 			RadioItemStack[0].setStackDisplayName(this.screenText);
 		}
@@ -812,12 +754,66 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 				this.stationCount = RadioItemStack[0].getTagCompound().getInteger("stationCount");
 				for(int i = 0; i < this.getStationCount(); i++)
 				{
-					stations.add(RadioItemStack[0].stackTagCompound.getString("station" + i));
+					stations.add(RadioItemStack[0].getTagCompound().getString("station" + i));
 				}
-				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+				worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
 				getDescriptionPacket();
 				markDirty();
 			}
 		}
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return "ofm_radio";
+	}
+
+	@Override
+	public boolean hasCustomName() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public IChatComponent getDisplayName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void openInventory(EntityPlayer player) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void closeInventory(EntityPlayer player) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getField(int id) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, int value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getFieldCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void clear() {
+		// TODO Auto-generated method stub
+		
 	}
 }

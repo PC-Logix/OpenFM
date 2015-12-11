@@ -13,6 +13,6 @@ public class ItemMemoryCard extends Item {
     public ItemMemoryCard() {
         setMaxStackSize(1);
         setUnlocalizedName("OpenFM.MemoryCard");
-        setTextureName("openfm:ItemMemoryCard");
+        //setTextureName("openfm:ItemMemoryCard");
     }
 }

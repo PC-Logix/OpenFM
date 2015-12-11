@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 import pcl.OpenFM.OpenFM;
 import pcl.OpenFM.network.PacketHandler;
 import pcl.OpenFM.network.Message.MessageTERadioBlock;
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class PlayerDispatcher extends PlaybackListener implements Runnable {
 	private String streamURL;

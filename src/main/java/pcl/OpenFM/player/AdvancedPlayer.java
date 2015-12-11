@@ -13,6 +13,7 @@ import javazoom.jl.player.FactoryRegistry;
 import javazoom.jl.player.advanced.PlaybackEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundCategory;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import pcl.OpenFM.ContentRegistry;
 
@@ -68,7 +69,7 @@ public class AdvancedPlayer {
 
 		while ((frames-- > 0) && (ret))
 		{
-			if (!ContentRegistry.checkBlock(this.world, this.posX, this.posY, this.posZ)) {
+			if (!ContentRegistry.checkBlock(this.world, new BlockPos(this.posX, this.posY, this.posZ))) {
 				close();
 			}
 			ret = decodeFrame();

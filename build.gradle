@@ -1,22 +1,19 @@
 buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
     }
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
-    }
+  }
+  dependencies {
+    classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.0.4"
+  }
 }
 
-apply plugin: 'forge'
-apply plugin: 'maven'
+// for people who want stable
+plugins {
+    id "net.minecraftforge.gradle.forge" version "2.0.2"
+}
+apply plugin: "com.matthewprenger.cursegradle"
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -36,7 +33,7 @@ configurations {
 
 
 dependencies {
-    compile "li.cil.oc:OpenComputers:MC1.7.10-1.5.18.36:dev"
+    compile "li.cil.oc:OpenComputers:MC1.8-1.5.20.41:dev"
 	shade "javazoom:jlayer:1.0.1"
 	shade "com.squareup.okhttp:okhttp:2.5.0"
 	shade "com.googlecode.soundlibs:tritonus-share:0.3.7-2"
@@ -54,7 +51,15 @@ group = "pcl.OpenFM"
 archivesBaseName = "OpenFM"
 
 minecraft {
-	version = "1.7.10-10.13.4.1448-1.7.10"
+    version = "1.8-11.14.4.1563"
+    runDir = "run"
+    
+    // the mappings can be changed at any time, and must be in the following format.
+    // snapshot_YYYYMMDD   snapshot are built nightly.
+    // stable_#            stables are built at the discretion of the MCP team.
+    // Use non-default mappings at your own risk. they may not allways work.
+    // simply re-run your setup task after changing the mappings to update your workspace.
+    mappings = "snapshot_20141130"
 	replace "@VERSION@", project.version
 	replace "@BUILD@", project.ext.buildNumber
 }
@@ -69,7 +74,7 @@ jar {
 
 jar.classifier = "${ext.buildNumber}"
 jar.manifest = manifest { attributes(
-	"FMLCorePlugin": "pcl.OpenFM.misc.DepLoader",
+	"FMLCorePlugin": "pcl.OpenFM.misc.OFMDepLoader",
 	"FMLCorePluginContainsFMLMod": "icanhazfmlmodpweeze"
 ) }
 def curseforge_key = 0
@@ -79,13 +84,13 @@ if (project.hasProperty('opensecurity_curseforge_key')) {
 	curse_changlog = project.changelog
 }
 
-apply plugin: 'curseforge'
-curse {
+curseforge {
 	apiKey = curseforge_key
-	projectId = "236839"
-	releaseType = "release"
-	changelog = curse_changlog
-	addGameVersion project.minecraft.version
+	project {
+		id = "236839"
+		releaseType = "release"
+		changelog = curse_changlog
+	}
 }
 
 processResources {

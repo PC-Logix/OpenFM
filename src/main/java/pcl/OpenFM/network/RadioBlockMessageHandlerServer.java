@@ -1,12 +1,13 @@
 package pcl.OpenFM.network;
 
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.WorldServer;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
 import pcl.OpenFM.network.Message.MessageTERadioBlock;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class RadioBlockMessageHandlerServer implements IMessageHandler<MessageTERadioBlock, IMessage>
 {
@@ -17,9 +18,9 @@ public class RadioBlockMessageHandlerServer implements IMessageHandler<MessageTE
 		net.minecraft.tileentity.TileEntity tileEntity = null;
 		WorldServer[] ws = MinecraftServer.getServer().worldServers;
 		for (WorldServer s : ws) {
-			if (s.provider.dimensionId == message.dim) {
+			if (s.provider.getDimensionId() == message.dim) {
 				targetWorld = s;
-				tileEntity = s.getTileEntity((int)message.x, (int)message.y, (int)message.z);
+				tileEntity = s.getTileEntity(new BlockPos((int)message.x, (int)message.y, (int)message.z));
 			}
 		}
 

@@ -2,12 +2,13 @@
  
  import pcl.OpenFM.TileEntity.TileEntityRadio;
 import pcl.OpenFM.network.Message.MessageTERadioBlock;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraft.util.BlockPos;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
  
  
  public class RadioBlockMessageHandlerClient implements IMessageHandler<MessageTERadioBlock, IMessage>
@@ -19,13 +20,13 @@ import cpw.mods.fml.relauncher.Side;
        return null;
      TileEntityRadio tileEntity = null;
      
-     tileEntity = (TileEntityRadio)FMLClientHandler.instance().getClient().theWorld.getTileEntity((int)message.x, (int)message.y, (int)message.z);
+     tileEntity = (TileEntityRadio)FMLClientHandler.instance().getClient().theWorld.getTileEntity(new BlockPos((int)message.x, (int)message.y, (int)message.z));
      if (tileEntity == null) {
        return null;
      }
      if ((tileEntity instanceof TileEntityRadio)) {
        if (message.mode == 15) {
-         tileEntity.addSpeaker(tileEntity.getWorldObj(), message.tx, message.ty, message.tz);
+         tileEntity.addSpeaker(tileEntity.getWorld(), message.tx, message.ty, message.tz);
          return null;
        }
        
