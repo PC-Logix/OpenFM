@@ -18,11 +18,6 @@ public class ItemBlockRadio extends ItemBlock {
 		// TODO Auto-generated constructor stub
 	}
 	
-    public String getUnlocalizedName(ItemStack stack)
-    {
-        return "Radio";
-    }
-	
 	@Override
 	public boolean placeBlockAt(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, IBlockState state) {
         if(super.placeBlockAt(stack, player, world, pos, side, hitX, hitY, hitZ, state))
