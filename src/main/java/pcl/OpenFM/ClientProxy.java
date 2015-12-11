@@ -10,14 +10,14 @@ import net.minecraft.item.Item;
 
 public class ClientProxy extends CommonProxy {
 
-	public static void init() {
-		registerItem(Item.getItemFromBlock(ContentRegistry.blockRadio), 0, "openfm:Radio");
-	}
 	
 	public void registerRenderers() {
 		TileEntitySpecialRenderer radioRenderer = new RadioRenderer();
 		ClientRegistry.bindTileEntitySpecialRenderer(pcl.OpenFM.TileEntity.TileEntityRadio.class, radioRenderer);
 		OpenFM.logger.info("Registering TESR");
+		
+		registerItem(Item.getItemFromBlock(ContentRegistry.blockRadio), 0, "openfm:Radio");
+		OpenFM.logger.info("Registering Item Renderer");
 	}
 
 	public static void registerItem(Item item, int metadata, String itemName)

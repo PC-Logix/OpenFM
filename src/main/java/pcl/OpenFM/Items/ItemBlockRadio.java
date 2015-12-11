@@ -18,15 +18,10 @@ public class ItemBlockRadio extends ItemBlock {
 		// TODO Auto-generated constructor stub
 	}
 	
-    /**
-     * Returns the unlocalized name of this item. This version accepts an ItemStack so different stacks can have
-     * different names based on their damage or NBT.
-     */
     public String getUnlocalizedName(ItemStack stack)
     {
         return "Radio";
     }
-	
 	
 	@Override
 	public boolean placeBlockAt(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, IBlockState state) {

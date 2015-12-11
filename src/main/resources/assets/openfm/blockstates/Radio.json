@@ -4,6 +4,6 @@
         "facing=south": { "model": "openfm:Radio", "y": 0 },
         "facing=west":  { "model": "openfm:Radio", "y": 90 },
         "facing=east":  { "model": "openfm:Radio", "y": 270 },
-		"inventory":	{ "model": "openfm:Radio", "y": 180 }
+		"inventory":	{ "model": "openfm:Radio", "y": 90 }
     }
 }
