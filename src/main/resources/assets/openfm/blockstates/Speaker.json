@@ -4,6 +4,6 @@
         "facing=south": { "model": "openfm:Speaker" },
         "facing=west":  { "model": "openfm:Speaker", "y": 90 },
         "facing=east":  { "model": "openfm:Speaker", "y": 270 },
-		"inventory":	{ "model": "openfm:item/Speaker" }
+		"inventory":	{ "model": "openfm:Speaker" }
     }
 }
