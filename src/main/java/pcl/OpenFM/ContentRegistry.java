@@ -48,6 +48,8 @@ public class ContentRegistry {
 	public static void registerBlocks() {
 
 		blockRadio = new BlockRadio();
+		//Rename these to lowercase and keep in world
+		// GameRegistry.addSubstitutionAlias("minecraft:end_stone", GameRegistry.Type.BLOCK, testBlock);
 		GameRegistry.registerBlock(blockRadio, ItemBlockRadio.class, "Radio");
 		GameRegistry.registerTileEntity(TileEntityRadio.class, "OpenFMRadio");
 		GameRegistry.addRecipe(new ItemStack(blockRadio), "  y", "xyx", "xzx",

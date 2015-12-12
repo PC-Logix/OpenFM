@@ -20,6 +20,7 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void registerItemRenderers() {
 		registerItem(ContentRegistry.blockRadio, 0, "Radio");
+		registerItem(ContentRegistry.blockSpeaker, 0, "Speaker");
 		
 	}
 	

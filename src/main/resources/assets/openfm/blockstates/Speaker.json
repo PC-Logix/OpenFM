@@ -1,0 +1,9 @@
+{
+    "variants": {
+        "facing=north": { "model": "openfm:Speaker", "y": 180 },
+        "facing=south": { "model": "openfm:Speaker" },
+        "facing=west":  { "model": "openfm:Speaker", "y": 90 },
+        "facing=east":  { "model": "openfm:Speaker", "y": 270 },
+		"inventory":	{ "model": "openfm:item/Speaker" }
+    }
+}
