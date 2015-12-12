@@ -14,7 +14,7 @@ public class ItemBlockRadio extends ItemBlock {
 
 	public ItemBlockRadio(Block p_i45328_1_) {
 		super(p_i45328_1_);
-		//setUnlocalizedName("Radio");
+		setUnlocalizedName("Radio");
 		// TODO Auto-generated constructor stub
 	}
 	

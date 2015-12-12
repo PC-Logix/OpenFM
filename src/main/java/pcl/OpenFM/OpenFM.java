@@ -44,6 +44,7 @@ public class OpenFM {
 	public Configuration config;
 	public static final Logger logger = LogManager.getFormatterLogger(BuildInfo.modID);
 	public static File configFile;
+	
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		PacketHandler.init();
@@ -63,6 +64,10 @@ public class OpenFM {
 				logger.info("OpenUpdater is not installed, not registering.");
 			}
 		}
+		ContentRegistry.init();
+		proxy.initTileEntities();
+		proxy.registerItemRenderers();
+		
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -82,8 +87,6 @@ public class OpenFM {
 		FMLCommonHandler.instance().bus().register(new ServerEvent());
 		FMLCommonHandler.instance().bus().register(instance);
 		MinecraftForge.EVENT_BUS.register(instance);
-		ContentRegistry.init();
-		proxy.initTileEntities();
 		proxy.registerRenderers();
 	}
 
