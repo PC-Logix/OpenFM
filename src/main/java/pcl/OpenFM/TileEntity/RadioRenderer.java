@@ -23,7 +23,8 @@ public class RadioRenderer extends TileEntitySpecialRenderer {
 	public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float f, int p_180535_9_) {
 		TileEntityRadio radio = (TileEntityRadio) tileEntity;
 		
-		float light = tileEntity.getWorld().getLightBrightness(new BlockPos(tileEntity.getPos().getX(), tileEntity.getPos().getY(), tileEntity.getPos().getZ()));
+		float light = tileEntity.getWorld().getLightBrightness(tileEntity.getPos());
+		Minecraft.getMinecraft().entityRenderer.disableLightmap();
 		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, light, light);
 
 		//RenderManager renderMan = RenderManager.instance;

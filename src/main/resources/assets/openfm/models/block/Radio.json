@@ -1,8 +1,0 @@
-{
-    "parent": "block/orientable",
-    "textures": {
-        "top": "openfm:blocks/radio_side",
-        "front": "openfm:blocks/radio_front",
-        "side": "openfm:blocks/radio_side"
-    }
-}

@@ -135,7 +135,6 @@ public class AdvancedPlayer {
 				if (out != null)
 				{
 					short[] samples = output.getBuffer();
-
 					for (int samp = 0; samp < samples.length; samp++)
 					{
 						samples[samp] = ((short)(int)(samples[samp] * this.volume * ((Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS) * Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.MASTER)))));

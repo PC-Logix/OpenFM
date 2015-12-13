@@ -31,6 +31,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.server.gui.IUpdatePlayerListBox;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.IChatComponent;
@@ -57,7 +58,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 	@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = "ComputerCraft")
 })
 
-public class TileEntityRadio extends TileEntity implements SimpleComponent, ManagedPeripheral, IInventory {
+public class TileEntityRadio extends TileEntity implements SimpleComponent, ManagedPeripheral, IInventory, IUpdatePlayerListBox {
 	public PlayerDispatcher mp3Player = null;
 	public OGGPlayer oggPlayer = null;
 	public boolean useMP3 = true;
@@ -179,7 +180,8 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 		super.invalidate();
 	}
 
-	public void updateEntity() {
+	@Override
+	public void update() {
 		Side side = FMLCommonHandler.instance().getEffectiveSide();
 		float vol;
 		int th = 0;
@@ -390,7 +392,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 
 		NBTTagCompound tagCom = new NBTTagCompound();
 		this.writeToNBT(tagCom);
-		return new S35PacketUpdateTileEntity();
+		return new S35PacketUpdateTileEntity(this.pos, 1, tagCom);
 	}
 
 	@Override

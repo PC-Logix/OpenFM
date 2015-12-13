@@ -52,9 +52,6 @@ public class MessageTERadioBlock implements IMessage {
 		this.mode = mode;
 	}
 
-
-
-
 	public MessageTERadioBlock(double x, double y, double z, World world, String streamURL, boolean isPlaying, float volume, int mode) {
 		this.x = x;
 		this.y = y;

@@ -102,12 +102,12 @@ public class ContentRegistry {
 
 			@SideOnly(Side.CLIENT)
 			public String getTranslatedTabLabel() {
-				return StatCollector.translateToLocal("itemGroup.tabOpenFM");
+				return StatCollector.translateToLocal("itemGroup.OpenFM.tabOpenFM");
 			}
 		};
 	}
 
 	public static boolean checkBlock(World w, BlockPos pos) {
-		return (w.getBlockState(pos) instanceof BlockRadio);
+		return (w.getBlockState(pos).getBlock() instanceof BlockRadio);
 	}
 }

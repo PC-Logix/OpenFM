@@ -290,19 +290,19 @@ public class GuiRadio extends GuiRadioBase {
 			} else {
 				this.radio.streamURL = this.streamTextBox.getText();
 			}
-			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getY(), this.radio.getWorld(), this.radio.streamURL, !this.radio.isPlaying(), this.radio.getVolume(), 1));
+			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getZ(), this.radio.getWorld(), this.radio.streamURL, !this.radio.isPlaying(), this.radio.getVolume(), 1));
 		}
 		if (buttonID == 1) { //VolUp
 			this.saving = false;
 			float v = (float)(this.radio.getVolume() + 0.1D);
 			if ((v > 0.0F) && (v <= 1.0F)) {
-				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getY(), this.radio.getWorld(), this.radio.streamURL, this.radio.isPlaying(), v, 2));
+				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getZ(), this.radio.getWorld(), this.radio.streamURL, this.radio.isPlaying(), v, 2));
 			}
 		} if (buttonID == 2) { //VolDown 
 			this.saving = false;
 			float v = (float)(this.radio.getVolume() - 0.1D);
 			if ((v > 0.0F) && (v <= 1.0F)) {
-				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getY(), this.radio.getWorld(), this.radio.streamURL, this.radio.isPlaying(), v, 3));
+				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getZ(), this.radio.getWorld(), this.radio.streamURL, this.radio.isPlaying(), v, 3));
 			}
 		} if (buttonID == 3) { //Scroll left 
 			this.streamTextBox.setText(this.radio.getPrevious(this.streamTextBox.getText()));
@@ -322,37 +322,37 @@ public class GuiRadio extends GuiRadioBase {
 			catch (Exception localException) {}
 		} if (buttonID == 7) { //Save
 			this.radio.addStation(this.streamTextBox.getText());
-			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getY(), this.radio.getWorld(), this.radio.streamURL, 42));
+			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getZ(), this.radio.getWorld(), this.radio.streamURL, 42));
 
 		} if (buttonID == 8) { //Delete 
 			this.radio.delStation(this.streamTextBox.getText());
-			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getY(), this.radio.getWorld(), this.radio.streamURL, 43));
+			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getZ(), this.radio.getWorld(), this.radio.streamURL, 43));
 		} if (buttonID == 9) { //Close 
 			Minecraft.getMinecraft().displayGuiScreen(null);
 			Minecraft.getMinecraft().setIngameFocus();
 		}
 		if (buttonID == 10) { //Redstone 
 			if (!this.redstoneButtonState) {
-				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getY(), this.radio.getWorld(), this.radio.streamURL, this.radio.isPlaying(), this.radio.getVolume(), 11));
+				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getZ(), this.radio.getWorld(), this.radio.streamURL, this.radio.isPlaying(), this.radio.getVolume(), 11));
 			} else {
-				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getY(), this.radio.getWorld(), this.radio.streamURL, this.radio.isPlaying(), this.radio.getVolume(), 12));
+				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getZ(), this.radio.getWorld(), this.radio.streamURL, this.radio.isPlaying(), this.radio.getVolume(), 12));
 			}
 		} if (buttonID == 11) { //Lock
 			if (!this.lockedButtonState) {
-				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getY(), this.radio.getWorld(), this.radio.streamURL, 44));
+				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getZ(), this.radio.getWorld(), this.radio.streamURL, 44));
 			} else {
-				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getY(), this.radio.getWorld(), this.radio.streamURL, 45));
+				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getZ(), this.radio.getWorld(), this.radio.streamURL, 45));
 			}
 		} if (buttonID == 13) { //Screen Color
-			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getY(), this.radio.getWorld(), this.radio.streamURL, this.colorBox.getText(), 48, 0));
+			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getZ(), this.radio.getWorld(), this.radio.streamURL, this.colorBox.getText(), 48, 0));
 		}
 
 		if (buttonID == 14) { //Screen Text
-			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getY(), this.radio.getWorld(), this.radio.streamURL, this.screenTextBox.getText(), 49, 0));
+			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getZ(), this.radio.getWorld(), this.radio.streamURL, this.screenTextBox.getText(), 49, 0));
 		}
 		if (buttonID == 16) { //Read from card
 			//PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, 51));
-			if (this.radio.RadioItemStack[0].hasTagCompound()) {
+			if (this.radio.RadioItemStack[0] != null && this.radio.RadioItemStack[0].hasTagCompound()) {
 				this.screenTextBox.setText(this.radio.RadioItemStack[0].getTagCompound().getString("screenText"));
 				this.colorBox.setText(toHexString(this.radio.RadioItemStack[0].getTagCompound().getInteger("screenColor")));
 				this.streamTextBox.setText(this.radio.RadioItemStack[0].getTagCompound().getString("streamURL"));
@@ -362,7 +362,7 @@ public class GuiRadio extends GuiRadioBase {
 			}
 		}
 		if (buttonID == 15) { //Write to card
-			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getY(), this.radio.getWorld(), this.radio.streamURL, 50));
+			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.getPos().getX(), this.radio.getPos().getY(), this.radio.getPos().getZ(), this.radio.getWorld(), this.radio.streamURL, 50));
 		}
 	}
 
