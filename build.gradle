@@ -48,7 +48,7 @@ else
 
 version = "0.1.0"
 group = "pcl.OpenFM"
-archivesBaseName = "OpenFM"
+archivesBaseName = "OpenFM-1.8"
 
 minecraft {
     version = "1.8-11.14.4.1563"
