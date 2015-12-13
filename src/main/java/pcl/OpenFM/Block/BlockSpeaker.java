@@ -55,12 +55,6 @@ public class BlockSpeaker extends Block implements ITileEntityProvider {
 	{
 		return new BlockState(this, new IProperty[] {PROPERTYFACING});
 	}
-	
-/*	@Override
-	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player, ItemStack stack) {
-		int dir = MathHelper.floor_double(player.rotationYaw * 4.0F / 360.0F + 0.5D) & 0x3;
-        world.setBlockState(pos, state);
-	}*/
 
 	@Override
 	  public IBlockState onBlockPlaced(World world, BlockPos pos, EnumFacing blockFaceClickedOn, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {

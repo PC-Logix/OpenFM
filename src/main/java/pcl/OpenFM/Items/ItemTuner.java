@@ -34,13 +34,13 @@ public class ItemTuner extends Item {
         if (FMLCommonHandler.instance().getEffectiveSide() != Side.SERVER) {
 
             // If clicked block is a speaker, keep a reference to it.
-            if ((world.getBlockState(pos) instanceof BlockSpeaker)) {
+            if ((world.getBlockState(pos).getBlock() instanceof BlockSpeaker)) {
 
                 // TODO: one speaker should only be able to be linked to exactly one radio.
                 boundSpeakers.put(stack, new Speaker(pos.getX(), pos.getY(), pos.getZ(), world));
                 player.addChatMessage(new ChatComponentTranslation("msg.OpenFM.selected_speaker"));
 
-            } else if ((world.getBlockState(pos) instanceof BlockRadio)) {
+            } else if ((world.getBlockState(pos).getBlock() instanceof BlockRadio)) {
 
                 // Else, it it's a radio, try to link it to the speaker.
                 if (boundSpeakers.get(stack) != null) {
