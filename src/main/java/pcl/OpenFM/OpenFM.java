@@ -70,6 +70,7 @@ public class OpenFM {
 		
 	}
 
+/*
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onEvent(GuiOpenEvent event) {
@@ -77,7 +78,7 @@ public class OpenFM {
 			event.gui = new GuiModList(new GuiIngameMenu());
 		}
 	}
-	
+*/	
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent evt) {
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new OFMGuiHandler());
