@@ -10,7 +10,7 @@ import cpw.mods.fml.relauncher.Side;
    
    public static void init() {
      INSTANCE.registerMessage(RadioBlockMessageHandlerServer.class, MessageTERadioBlock.class, 0, Side.SERVER);
-     INSTANCE.registerMessage(RadioBlockMessageHandlerClient.class, MessageTERadioBlock.class, 0, Side.CLIENT);
+     INSTANCE.registerMessage(RadioBlockMessageHandlerClient.class, MessageTERadioBlock.class, 1, Side.CLIENT);
    }
  }
 
