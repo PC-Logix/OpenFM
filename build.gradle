@@ -36,7 +36,7 @@ configurations {
 
 
 dependencies {
-    compile "li.cil.oc:OpenComputers:MC1.7.10-1.5.18.36:dev"
+    compile "li.cil.oc:OpenComputers:MC1.7.10-1.5.+:dev"
 	shade "javazoom:jlayer:1.0.1"
 	shade "com.squareup.okhttp:okhttp:2.5.0"
 	shade "com.googlecode.soundlibs:tritonus-share:0.3.7-2"
