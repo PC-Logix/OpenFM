@@ -83,7 +83,7 @@ public class GuiRadio extends GuiRadioBase {
 		this.streamTextBox = new OFMGuiTextField(1, this.fontRendererObj, this.width / 2 - 100, this.height / 2 - 5 + 17 - 45, 200, 20);
 		this.streamTextBox.setMaxStringLength(1000);
 		
-		if (!this.radio.streamURL.equals("")) {
+		if (!(this.radio.streamURL == null) || !this.radio.streamURL.equals("")) {
 			this.streamTextBox.setText(this.radio.streamURL);
 		} else {
 			this.streamTextBox.setText(OFMConfiguration.defaultURL);
