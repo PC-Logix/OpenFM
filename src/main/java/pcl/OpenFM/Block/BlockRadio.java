@@ -128,10 +128,8 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 	}
 
 	@Override
-	  public IBlockState onBlockPlaced(World world, BlockPos pos, EnumFacing blockFaceClickedOn, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+	public IBlockState onBlockPlaced(World world, BlockPos pos, EnumFacing blockFaceClickedOn, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
 		EnumFacing enumfacing = (placer == null) ? EnumFacing.NORTH : EnumFacing.fromAngle(placer.rotationYaw);
-		TileEntity te = world.getTileEntity(pos);
-		//((TileEntityRadio) te).owner = placer.getUniqueID().toString();
 		return this.getDefaultState().withProperty(PROPERTYFACING, enumfacing);
 	}
 
