@@ -106,6 +106,9 @@ public class BlockRadio extends Block implements ITileEntityProvider, IPeriphera
 	@Override
 	public void breakBlock(World world, int x, int y, int z, Block block, int p_149749_6_) {
 		TileEntityRadio t = (TileEntityRadio)world.getTileEntity(x, y, z);
+		if(t==null)
+			return;
+		
 		dropContent(t, world, t.xCoord, t.yCoord, t.zCoord);
 		ArrayList<ItemStack> items = new ArrayList<ItemStack>();
 		if (t instanceof TileEntityRadio) {
