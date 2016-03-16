@@ -2,6 +2,7 @@ package pcl.OpenFM.TileEntity;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -246,8 +247,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 			if ((scheduleRedstoneInput) && (listenToRedstone)) {
 				if ((!scheduledRedstoneInput) && (redstoneInput)) {
 					isPlaying = (!isPlaying);
-					PacketHandler.INSTANCE.sendToAll(new MessageTERadioBlock(xCoord, yCoord, zCoord,
-							getWorldObj(), streamURL, isPlaying, volume, 1));
+					PacketHandler.INSTANCE.sendToAll(new MessageTERadioBlock(xCoord, yCoord, zCoord, this.world, streamURL, isPlaying, volume, 1));
 				}
 
 				redstoneInput = scheduledRedstoneInput;
@@ -492,6 +492,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 		getListenRedstone, //No args
 		isPlaying, //No args
 		stop, //No args
+		play,
 		start, //No args
 		greet, //No args
 		setURL, //String
@@ -562,7 +563,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 			getDescriptionPacket();
 			return new Object[]{ true };
-
+		case play:
 		case start:
 			try {
 				startStream();
@@ -615,7 +616,10 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 			if(args.length != 1) {
 				return new Object[]{false, "Insufficient number of arguments, expected 1"};
 			}
-			float v2 = (float)(args[0]);
+			float    v2;
+			Double  x = new Double((double) args[0]);
+			v2    = x.floatValue() / 10 + 0.0001F;
+
 			if ((v2 > 0.0F) && (v2 <= 1.0F)) {
 				setVolume(v2);
 				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
@@ -632,7 +636,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 			if(args.length != 1) {
 				return new Object[]{false, "Insufficient number of arguments, expected 1"};
 			}
-			streamURL = (String) args[0];
+			streamURL = new String((byte[]) args[0], StandardCharsets.UTF_8);
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 			getDescriptionPacket();
 			return new Object[] { true };
@@ -644,8 +648,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 
 	@Override
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] invoke(final String method, final Context context,
-			final Arguments args) throws Exception {
+	public Object[] invoke(final String method, final Context context, final Arguments args) throws Exception {
 		final Object[] arguments = new Object[args.count()];
 		for (int i = 0; i < args.count(); ++i) {
 			arguments[i] = args.checkAny(i);
@@ -786,7 +789,6 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	}
 
 	public void writeDataToCard() {
-		System.out.println("-_-");
 		if (getStackInSlot(0) != null) {
 			RadioItemStack[0] = new ItemStack(ContentRegistry.itemMemoryCard);
 			RadioItemStack[0].setTagCompound(new NBTTagCompound());
@@ -800,7 +802,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 			}
 			RadioItemStack[0].setStackDisplayName(this.screenText);
 		}
-		
+
 	}
 
 	public void readDataFromCard() {
