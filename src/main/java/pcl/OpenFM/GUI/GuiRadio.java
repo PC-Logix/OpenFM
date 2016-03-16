@@ -281,14 +281,16 @@ public class GuiRadio extends GuiRadioBase {
 	@cpw.mods.fml.relauncher.SideOnly(cpw.mods.fml.relauncher.Side.CLIENT)
 	protected void actionPerformed(int buttonID) {
 		if (buttonID == 0) { //Play button
-			if (this.streamTextBox.getText().toLowerCase().endsWith(".m3u")) {
-				this.radio.streamURL = takeFirstEntryFromM3U(this.streamTextBox.getText());
-			} else if (this.streamTextBox.getText().toLowerCase().endsWith(".pls")) {
-				this.radio.streamURL = parsePls(this.streamTextBox.getText());
-			} else {
-				this.radio.streamURL = this.streamTextBox.getText();
+			if(this.streamTextBox.getText() != null && !this.streamTextBox.getText().isEmpty()) {
+				if (this.streamTextBox.getText().toLowerCase().endsWith(".m3u")) {
+					this.radio.streamURL = takeFirstEntryFromM3U(this.streamTextBox.getText());
+				} else if (this.streamTextBox.getText().toLowerCase().endsWith(".pls")) {
+					this.radio.streamURL = parsePls(this.streamTextBox.getText());
+				} else {
+					this.radio.streamURL = this.streamTextBox.getText();
+				}
+				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, !this.radio.isPlaying(), this.radio.getVolume(), 1));
 			}
-			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, !this.radio.isPlaying(), this.radio.getVolume(), 1));
 		}
 		if (buttonID == 1) { //VolUp
 			this.saving = false;
@@ -319,9 +321,10 @@ public class GuiRadio extends GuiRadioBase {
 			}
 			catch (Exception localException) {}
 		} if (buttonID == 7) { //Save
-			this.radio.addStation(this.streamTextBox.getText());
-			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, 42));
-
+			if(this.streamTextBox.getText() != null && !this.streamTextBox.getText().isEmpty()) {
+				this.radio.addStation(this.streamTextBox.getText());
+				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, 42));
+			}
 		} if (buttonID == 8) { //Delete 
 			this.radio.delStation(this.streamTextBox.getText());
 			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, 43));
