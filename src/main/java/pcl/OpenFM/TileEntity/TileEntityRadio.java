@@ -1,7 +1,9 @@
 package pcl.OpenFM.TileEntity;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -115,7 +117,6 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 					OkHttpClient client = new OkHttpClient();
 					Request request = new Request.Builder().url(streamURL).build();
 					Response response = null;
-
 					AudioFileFormat baseFileFormat = null;
 					try {
 						response = client.newCall(request).execute();
@@ -125,12 +126,13 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 						stopStream();
 					}
 					try {
-						InputStream stream = response.body().byteStream();
-						baseFileFormat = AudioSystem.getAudioFileFormat(stream);
+						BufferedInputStream bis = new BufferedInputStream(response.body().byteStream());
+						baseFileFormat = AudioSystem.getAudioFileFormat(bis);
 					} catch (IOException | UnsupportedAudioFileException e1) {
 						isValid = false;
 						streamURL = null;
 						stopStream();
+						OpenFM.logger.info(e1);
 					}
 					if (isValid) {
 						// Audio type such as MPEG1 Layer3, or Layer 2, or ...

@@ -1,5 +1,6 @@
 package pcl.OpenFM.player;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 
 
@@ -15,6 +16,7 @@ import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
+
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -50,8 +52,8 @@ public class OGGPlayer {
 		
 		Response response = client.newCall(request).execute();
 		InputStream stream = response.body().byteStream();
-		
-		try (final AudioInputStream in = getAudioInputStream(stream)) {
+		BufferedInputStream bis = new BufferedInputStream(response.body().byteStream());
+		try (final AudioInputStream in = getAudioInputStream(bis)) {
 
 			final AudioFormat outFormat = getOutFormat(in.getFormat());
 			final Info info = new Info(SourceDataLine.class, outFormat);
