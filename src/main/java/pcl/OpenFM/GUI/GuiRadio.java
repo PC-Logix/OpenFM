@@ -33,7 +33,7 @@ public class GuiRadio extends GuiRadioBase {
 	@SuppressWarnings("unchecked")
 	public void initGui() {
 		super.initGui();
-		
+
 		org.lwjgl.input.Keyboard.enableRepeatEvents(true);
 
 		this.OFMbuttonList.clear();
@@ -70,7 +70,7 @@ public class GuiRadio extends GuiRadioBase {
 		if (this.radio.getWorldObj().provider.dimensionId == 0) {
 			this.OFMbuttonList.add(this.redstoneBtn);
 		}
-		
+
 		this.OFMbuttonList.add(this.lockedBtn);
 
 		this.updateColor = new OFMGuiButton(12, 0, 0, 0, 0, 0, 0, "", OFMGuiButton.guiLocation); //Update Color
@@ -80,13 +80,13 @@ public class GuiRadio extends GuiRadioBase {
 
 		this.streamTextBox = new OFMGuiTextField(this.fontRendererObj, this.width / 2 - 100, this.height / 2 - 5 + 17 - 45, 200, 20);
 		this.streamTextBox.setMaxStringLength(1000);
-		
+
 		if (!(this.radio.streamURL == null) || !this.radio.streamURL.equals("")) {
 			this.streamTextBox.setText(this.radio.streamURL);
 		} else {
 			this.streamTextBox.setText(OFMConfiguration.defaultURL);
 		}
-		
+
 		this.volumeBox = new OFMGuiTextField(this.fontRendererObj, this.width / 2 - 6, this.height / 2 - 5 + 4 - 45, 50, 20);
 		this.volumeBox.setMaxStringLength(2);
 
@@ -98,14 +98,14 @@ public class GuiRadio extends GuiRadioBase {
 		this.screenTextBox = new OFMGuiTextField(this.fontRendererObj, this.width / 2 - 17, this.height / 2 - 5 + 72 - 45, 200, 20);
 		this.screenTextBox.setText(this.radio.getScreenText());
 		this.screenTextBox.setTextColor(this.radio.getScreenColor());
-		
-		
+
+
 		this.saveToMemoryCard = new OFMGuiButton(15,  this.width / 2 - 12 - 83, this.height / 2 + 31 - 5 - 40, 8, 8, 127, 24, "", OFMGuiButton.guiLocation); //Update Color
 		this.OFMbuttonList.add(this.saveToMemoryCard);
 		this.loadFromMemoryCard = new OFMGuiButton(16,  this.width / 2 - 12 - 83, this.height / 2 + 41 - 5 - 40, 8, 8, 135, 24, "", OFMGuiButton.guiLocation); //Update Text
 		this.OFMbuttonList.add(this.loadFromMemoryCard);
 
-		
+
 	}
 
 	public static String toHexString(int decimal) {
@@ -115,53 +115,53 @@ public class GuiRadio extends GuiRadioBase {
 	@SuppressWarnings("unchecked")
 	public void updateScreen() {
 		super.updateScreen();
-		
+
 		this.streamTextBox.updateCursorCounter();
 		this.volumeBox.updateCursorCounter();
 		this.colorBox.updateCursorCounter();
-		
+
 		if (this.radio.isInvalid()) {
 			this.mc.displayGuiScreen((net.minecraft.client.gui.GuiScreen)null);
 			this.mc.setIngameFocus();
 		}
-		
+
 		this.volumeBox.setText(" " + (int)(this.radio.getVolume() * 10.0F));
-		
+
 		if ((this.radio.isPlaying()) && (!this.playButtonPlayingState)) {
 			this.playButtonPlayingState = true;
 			this.OFMbuttonList.remove(this.playBtn);
 			this.playBtn = new OFMGuiButton(0, this.width / 2 - 12, this.height / 2 + 28 - 5 - 45, 24, 24, 24, 0, "", OFMGuiButton.guiLocation);
 			this.OFMbuttonList.add(this.playBtn);
 		}
-		
+
 		if ((!this.radio.isPlaying()) && (this.playButtonPlayingState)) {
 			this.playButtonPlayingState = false;
 			this.OFMbuttonList.remove(this.playBtn);
 			this.playBtn = new OFMGuiButton(0, this.width / 2 - 12, this.height / 2 + 28 - 5 - 45, 24, 24, 0, 0, "", OFMGuiButton.guiLocation);
 			this.OFMbuttonList.add(this.playBtn);
 		}
-		
+
 		if ((this.radio.isListeningToRedstoneInput() & !this.redstoneButtonState)) {
 			this.redstoneButtonState = true;
 			this.OFMbuttonList.remove(this.redstoneBtn);
 			this.redstoneBtn = new OFMGuiButton(10, this.width / 2 + 100 - 13, this.height / 2 + 3 - 5 - 45, 8, 8, 95, 24, "", OFMGuiButton.guiLocation);
 			this.OFMbuttonList.add(this.redstoneBtn);
 		}
-		
+
 		if ((!this.radio.isListeningToRedstoneInput() & this.redstoneButtonState)) {
 			this.redstoneButtonState = false;
 			this.OFMbuttonList.remove(this.redstoneBtn);
 			this.redstoneBtn = new OFMGuiButton(10, this.width / 2 + 100 - 13, this.height / 2 + 3 - 5 - 45, 8, 8, 87, 24, "", OFMGuiButton.guiLocation);
 			this.OFMbuttonList.add(this.redstoneBtn);
 		}
-		
+
 		if ((this.radio.isLocked & !this.lockedButtonState)) {
 			this.lockedButtonState = true;
 			this.OFMbuttonList.remove(this.lockedBtn);
 			this.lockedBtn = new OFMGuiButton(11, this.width / 2 + 100 - 4, this.height / 2 + 30 - 45, 12, 16, 103, 24, "", OFMGuiButton.guiLocation);
 			this.OFMbuttonList.add(this.lockedBtn);
 		}
-		
+
 		if ((!this.radio.isLocked & this.lockedButtonState)) {
 			this.lockedButtonState = false;
 			this.OFMbuttonList.remove(this.lockedBtn);
@@ -173,12 +173,12 @@ public class GuiRadio extends GuiRadioBase {
 	@cpw.mods.fml.relauncher.SideOnly(cpw.mods.fml.relauncher.Side.CLIENT)
 	public void drawScreen(int par1, int par2, float par3) {
 		super.drawScreen(par1, par2, par3);
-		
+
 		this.streamTextBox.drawTextBox();
 		this.volumeBox.drawTextBox();
 		this.colorBox.drawTextBox();
 		this.screenTextBox.drawTextBox();
-		
+
 		for (int k = 0; k < this.OFMbuttonList.size(); k++) {
 			OFMGuiButton btn = (OFMGuiButton)this.OFMbuttonList.get(k);
 			if (btn.func_146115_a()) { // Tells you if the button is hovered by mouse
@@ -276,7 +276,7 @@ public class GuiRadio extends GuiRadioBase {
 	}
 
 	@Override
-    public void drawDefaultBackground() {}
+	public void drawDefaultBackground() {}
 
 	@cpw.mods.fml.relauncher.SideOnly(cpw.mods.fml.relauncher.Side.CLIENT)
 	protected void actionPerformed(int buttonID) {
@@ -362,7 +362,9 @@ public class GuiRadio extends GuiRadioBase {
 			}
 		}
 		if (buttonID == 15) { //Write to card
-			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, 50));
+			if(this.radio.RadioItemStack[0] != null) {
+				PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, 50));
+			}
 		}
 	}
 
