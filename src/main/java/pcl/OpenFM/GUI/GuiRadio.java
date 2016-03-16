@@ -349,14 +349,16 @@ public class GuiRadio extends GuiRadioBase {
 			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, this.screenTextBox.getText(), 49, 0));
 		}
 		if (buttonID == 16) { //Read from card
-			//PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, 51));
-			if (this.radio.RadioItemStack[0].hasTagCompound()) {
-				this.screenTextBox.setText(this.radio.RadioItemStack[0].getTagCompound().getString("screenText"));
-				this.colorBox.setText(toHexString(this.radio.RadioItemStack[0].getTagCompound().getInteger("screenColor")));
-				this.streamTextBox.setText(this.radio.RadioItemStack[0].getTagCompound().getString("streamURL"));
-				actionPerformed(0);
-				actionPerformed(13);
-				actionPerformed(14);
+			if(this.radio.RadioItemStack[0] != null) {
+				//PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.radio.xCoord, this.radio.yCoord, this.radio.zCoord, this.radio.getWorldObj(), this.radio.streamURL, 51));
+				if (this.radio.RadioItemStack[0].hasTagCompound()) {
+					this.screenTextBox.setText(this.radio.RadioItemStack[0].getTagCompound().getString("screenText"));
+					this.colorBox.setText(toHexString(this.radio.RadioItemStack[0].getTagCompound().getInteger("screenColor")));
+					this.streamTextBox.setText(this.radio.RadioItemStack[0].getTagCompound().getString("streamURL"));
+					actionPerformed(0);
+					actionPerformed(13);
+					actionPerformed(14);
+				}
 			}
 		}
 		if (buttonID == 15) { //Write to card
