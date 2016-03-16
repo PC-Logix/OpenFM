@@ -95,8 +95,10 @@ public class OpenFM {
 	}
 
 	public static void killAllStreams() {
-		for (PlayerDispatcher p : playerList) {
-			p.stop();
+		if (playerList != null) {
+			for (PlayerDispatcher p : playerList) {
+				p.stop();
+			}
 		}
 	}
 }
