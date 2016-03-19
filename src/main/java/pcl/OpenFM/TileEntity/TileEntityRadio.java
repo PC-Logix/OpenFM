@@ -268,7 +268,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	}
 
 	public void addStation(String station) {
-		if (!stations.contains(station)) {
+		if (station != null && !stations.contains(station)) {
 			stations.add(station);
 			PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this.xCoord, this.yCoord, this.zCoord, this.worldObj, station, 42), getWorldObj().provider.dimensionId);
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
@@ -278,7 +278,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	}
 
 	public void delStation(String station) {
-		if (stations.contains(station)) {
+		if (station != null && stations.contains(station)) {
 			stations.remove(station);
 			PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this.xCoord, this.yCoord, this.zCoord, this.worldObj, station, 43), getWorldObj().provider.dimensionId);
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
@@ -386,14 +386,11 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 		for (Speaker s :speakers) {
 			PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this.xCoord, this.yCoord, this.zCoord, this.worldObj, "", false, 1.0F, 15, s.x, s.y, s.z), getWorldObj().provider.dimensionId);
 		}
-
 		PacketHandler.INSTANCE.sendToAllAround(new MessageTERadioBlock(this), new NetworkRegistry.TargetPoint(getWorldObj().provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 30.0D));
 		//PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this), getWorldObj().provider.dimensionId);
-
-
 		NBTTagCompound tagCom = new NBTTagCompound();
 		this.writeToNBT(tagCom);
-		return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, this.blockMetadata, tagCom);
+		return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 6, tagCom);
 	}
 
 	@Override
@@ -447,16 +444,19 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	public void writeToNBT(NBTTagCompound nbt)
 	{
 		super.writeToNBT(nbt);
-		nbt.setString("streamurl", this.streamURL);
+		if (this.streamURL != null)
+			nbt.setString("streamurl", this.streamURL);
 		nbt.setFloat("volume", this.volume);
 		nbt.setBoolean("input", this.listenToRedstone);
 		nbt.setBoolean("lastInput", this.redstoneInput);
 		nbt.setBoolean("lastState", this.isPlaying);
 		nbt.setInteger("speakersCount", this.speakers.size());
 		nbt.setInteger("screenColor", this.screenColor);
-		nbt.setString("screenText", this.screenText);
+		if (this.screenText != null)
+			nbt.setString("screenText", this.screenText);
 		nbt.setBoolean("isLocked", this.isLocked);
-		nbt.setString("owner", this.owner);
+		if (this.owner != null)
+			nbt.setString("owner", this.owner);
 		for (int i = 0; i < this.speakers.size(); i++) {
 			nbt.setDouble("speakerX" + i, ((Speaker)this.speakers.get(i)).x);
 			nbt.setDouble("speakerY" + i, ((Speaker)this.speakers.get(i)).y);
@@ -467,8 +467,10 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 			String s = stations.get(i);
 			if(s != null)
 			{
-				nbt.setString("station" + i, s);
-				nbt.setInteger("stationCount", i + 1);
+				if (s != null) {
+					nbt.setString("station" + i, s);
+					nbt.setInteger("stationCount", i + 1);
+				}
 			}
 		}
 		NBTTagList var2 = new NBTTagList();
@@ -638,10 +640,19 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 			if(args.length != 1) {
 				return new Object[]{false, "Insufficient number of arguments, expected 1"};
 			}
-			streamURL = new String((byte[]) args[0], StandardCharsets.UTF_8);
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-			getDescriptionPacket();
-			return new Object[] { true };
+			if (args[0] != null) {
+				String tempURL = new String((byte[]) args[0], StandardCharsets.UTF_8);
+				if (tempURL != null && tempURL.length() > 1) {
+					streamURL = tempURL;
+				} else {
+					return new Object[] { false, "Error parsing URL in packet" };
+				}
+				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+				getDescriptionPacket();
+				return new Object[] { true };
+			}
+			return new Object[] { false, "Error parsing URL in packet" };
+
 
 		default: return new Object[]{false, "Not implemented."};
 		}

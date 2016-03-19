@@ -118,13 +118,17 @@ public class BlockRadio extends Block implements ITileEntityProvider, IPeriphera
 				if (!stack.hasTagCompound()) {
 					stack.setTagCompound(new NBTTagCompound());
 				}
-				stack.getTagCompound().setString("streamurl", t.streamURL);
-				stack.getTagCompound().setString("screenText", t.getScreenText());
+				if(t.streamURL != null)
+					stack.getTagCompound().setString("streamurl", t.streamURL);
+				if(t.getScreenText() != null)
+					stack.getTagCompound().setString("screenText", t.getScreenText());
 				stack.getTagCompound().setInteger("screenColor", t.getScreenColor());
 				for(int i = 0; i < t.getStationCount(); i++)
 				{
-					stack.getTagCompound().setString("station" + i, t.stations.get(i));
-					stack.getTagCompound().setInteger("stationCount", i + 1);
+					if (t.stations.get(i) != null) {
+						stack.getTagCompound().setString("station" + i, t.stations.get(i));
+						stack.getTagCompound().setInteger("stationCount", i + 1);
+					}
 				}
 				items.add(stack);
 				world.spawnEntityInWorld(new EntityItem(world, x, y, z, items.get(0)));
