@@ -108,6 +108,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	}
 
 	public void startStream() throws Exception {
+		isValid = true;
 		OFMConfiguration.init(OpenFM.configFile);
 		if (OFMConfiguration.enableStreams) {
 			Side side = FMLCommonHandler.instance().getEffectiveSide();
@@ -386,7 +387,9 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 		for (Speaker s :speakers) {
 			PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this.xCoord, this.yCoord, this.zCoord, this.worldObj, "", false, 1.0F, 15, s.x, s.y, s.z), getWorldObj().provider.dimensionId);
 		}
-		PacketHandler.INSTANCE.sendToAllAround(new MessageTERadioBlock(this), new NetworkRegistry.TargetPoint(getWorldObj().provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 30.0D));
+		if(this.streamURL != null) {
+			PacketHandler.INSTANCE.sendToAllAround(new MessageTERadioBlock(this), new NetworkRegistry.TargetPoint(getWorldObj().provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 30.0D));			
+		}
 		//PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this), getWorldObj().provider.dimensionId);
 		NBTTagCompound tagCom = new NBTTagCompound();
 		this.writeToNBT(tagCom);
