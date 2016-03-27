@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 
 
-import java.io.InputStream;
 import java.util.Deque;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
@@ -51,7 +50,6 @@ public class OGGPlayer {
 		.build();
 		
 		Response response = client.newCall(request).execute();
-		InputStream stream = response.body().byteStream();
 		BufferedInputStream bis = new BufferedInputStream(response.body().byteStream());
 		try (final AudioInputStream in = getAudioInputStream(bis)) {
 

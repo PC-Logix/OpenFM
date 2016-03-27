@@ -17,7 +17,6 @@ import pcl.OpenFM.Handler.ClientEvent;
 import pcl.OpenFM.Handler.ServerEvent;
 import pcl.OpenFM.network.PacketHandler;
 import pcl.OpenFM.player.PlayerDispatcher;
-import pcl.OpenFM.player.OGGPlayer;
 import cpw.mods.fml.client.GuiIngameModOptions;
 import cpw.mods.fml.client.GuiModList;
 import cpw.mods.fml.client.event.ConfigChangedEvent;

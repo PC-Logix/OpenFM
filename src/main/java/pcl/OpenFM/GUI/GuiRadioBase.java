@@ -10,7 +10,6 @@ import java.util.List;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -67,6 +66,7 @@ public class GuiRadioBase extends GuiContainer {
 		Keyboard.enableRepeatEvents(false);
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	public void drawScreen(int par1, int par2, float par3){
 		int k = (this.width - this.gui_width) / 2;
@@ -187,6 +187,7 @@ public class GuiRadioBase extends GuiContainer {
 		return out;
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float p_146976_1_, int p_146976_2_, int p_146976_3_) {
 		int x = (width - xSize) / 2;

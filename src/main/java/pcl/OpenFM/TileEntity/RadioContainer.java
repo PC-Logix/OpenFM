@@ -8,9 +8,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-
-import java.util.ArrayList;
-import java.util.List;
 /**
  * @author Caitlyn
  *
@@ -21,6 +18,7 @@ public class RadioContainer extends Container {
 	private final int HOTBAR_SLOT_COUNT = 9;
 	private final int PLAYER_INVENTORY_ROW_COUNT = 3;
 	private final int PLAYER_INVENTORY_COLUMN_COUNT = 9;
+	@SuppressWarnings("unused")
 	private final int PLAYER_INVENTORY_SLOT_COUNT = PLAYER_INVENTORY_COLUMN_COUNT * PLAYER_INVENTORY_ROW_COUNT;
 	private final int TE_INVENTORY_SLOT_COUNT = 1;
 

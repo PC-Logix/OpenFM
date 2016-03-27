@@ -43,7 +43,6 @@ import java.util.zip.ZipFile;
  * This is really unoriginal, mostly ripped off FML, credits to cpw.
  * I stole this from ChickenBones, who stole it from cpw.
  */
-@SuppressWarnings("restriction")
 public class DepLoader implements IFMLLoadingPlugin, IFMLCallHook {
     private static ByteBuffer downloadBuffer = ByteBuffer.allocateDirect(1 << 23);
     private static final String owner = "OpenFM DepLoader";
