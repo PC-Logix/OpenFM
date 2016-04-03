@@ -2,7 +2,7 @@
 
 Streaming radio for Minecraft, with OpenComputers, and ComputerCraft support.
 
-fm = components.openfm_radio
+fm = component.openfm_radio
 
 fm.setURL("http://listen.radionomy.com/DeepHouse")
 
