@@ -113,7 +113,9 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 			if (!OpenFM.playerList.contains(mp3Player)) {
 				if (side == Side.CLIENT) {
 					OkHttpClient client = new OkHttpClient();
-					Request request = new Request.Builder().url(streamURL).build();
+					Request request = new Request.Builder().url(streamURL)
+							//.addHeader("Icy-MetaData", "1")
+							.build();
 					Response response = null;
 					AudioFileFormat baseFileFormat = null;
 					try {
@@ -247,7 +249,8 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 			if ((scheduleRedstoneInput) && (listenToRedstone)) {
 				if ((!scheduledRedstoneInput) && (redstoneInput)) {
 					isPlaying = (!isPlaying);
-					PacketHandler.INSTANCE.sendToAll(new MessageTERadioBlock(xCoord, yCoord, zCoord, this.world, streamURL, isPlaying, volume, 1));
+					if (getWorldObj() != null)
+						PacketHandler.INSTANCE.sendToAll(new MessageTERadioBlock(xCoord, yCoord, zCoord, getWorldObj(), streamURL, isPlaying, volume, 1));
 				}
 
 				redstoneInput = scheduledRedstoneInput;
