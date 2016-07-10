@@ -7,13 +7,13 @@ import li.cil.oc.api.network.Message;
 import li.cil.oc.api.network.Node;
 import li.cil.oc.api.network.Visibility;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.gui.IUpdatePlayerListBox;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ITickable;
 
 @Optional.InterfaceList(value={
 		@Optional.Interface(iface = "li.cil.oc.api.network.Environment", modid = "OpenComputers")
 })
-public class TileEntitySpeaker extends TileEntity implements Environment, IUpdatePlayerListBox {
+public class TileEntitySpeaker extends TileEntity implements Environment, ITickable {
 	
 	protected Node node;
 		
