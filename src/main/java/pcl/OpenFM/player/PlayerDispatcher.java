@@ -11,7 +11,7 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.world.World;
 import pcl.OpenFM.OpenFM;
 import pcl.OpenFM.network.PacketHandler;
-import pcl.OpenFM.network.Message.MessageTERadioBlock;
+import pcl.OpenFM.network.message.MessageRadioPlaying;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class PlayerDispatcher extends PlaybackListener implements Runnable {
@@ -68,7 +68,7 @@ public class PlayerDispatcher extends PlaybackListener implements Runnable {
 		}
 		catch (Exception e)
 		{
-			PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.x, this.y, this.z, this.world, this.streamURL, !isPlaying(), 0.1F, 1));
+			PacketHandler.INSTANCE.sendToServer(new MessageRadioPlaying(this.x, this.y, this.z, false).wrap());
 			FMLClientHandler.instance().getClient().thePlayer.addChatMessage(new ChatComponentTranslation("msg.OpenFM.invalid_link", new Object[0]));
 			OpenFM.logger.error(e);
 		}
@@ -86,8 +86,10 @@ public class PlayerDispatcher extends PlaybackListener implements Runnable {
 		}
 	}
 
+	@Override
 	public void playbackStarted(PlayBackEvent evt) {}
 
+	@Override
 	public void playbackFinished(PlayBackEvent evt) {}
 
 	public boolean isPlaying()

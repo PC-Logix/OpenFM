@@ -12,7 +12,7 @@ import pcl.OpenFM.Block.BlockSpeaker;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
 import pcl.OpenFM.misc.Speaker;
 import pcl.OpenFM.network.PacketHandler;
-import pcl.OpenFM.network.Message.MessageTERadioBlock;
+import pcl.OpenFM.network.message.MessageRadioAddSpeaker;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -52,7 +52,7 @@ public class ItemTuner extends Item {
                     if (canAdd == 0) {
                         // It can, so send a packet.
                         player.addChatMessage(new ChatComponentTranslation("msg.OpenFM.added_speaker"));
-                        PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(pos.getX(), pos.getY(), pos.getZ(), world, radio.streamURL, radio.isPlaying(), radio.getVolume(), 15, speaker.x, speaker.y, speaker.z));
+                        PacketHandler.INSTANCE.sendToServer(new MessageRadioAddSpeaker(radio, speaker).wrap());
                     } else if (canAdd == 1) {
                         // Too many speakers linked.
                         player.addChatMessage(new ChatComponentTranslation("msg.OpenFM.failed_adding_speaker_limit"));
