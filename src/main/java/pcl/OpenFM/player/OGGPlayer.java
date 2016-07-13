@@ -1,8 +1,10 @@
 package pcl.OpenFM.player;
 
+import static javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED;
+import static javax.sound.sampled.AudioSystem.getAudioInputStream;
+
+import java.io.BufferedInputStream;
 import java.io.IOException;
-
-
 import java.io.InputStream;
 import java.util.Deque;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -15,20 +17,17 @@ import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
+
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import pcl.OpenFM.OpenFM;
+import pcl.OpenFM.network.PacketHandler;
+import pcl.OpenFM.network.message.MessageRadioPlaying;
+
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.world.World;
-import pcl.OpenFM.OpenFM;
-import pcl.OpenFM.network.PacketHandler;
-
-import pcl.OpenFM.network.message.MessageRadioPlaying;
-
-import static javax.sound.sampled.AudioSystem.getAudioInputStream;
-import static javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED;
 
 public class OGGPlayer {
 
@@ -53,7 +52,8 @@ public class OGGPlayer {
 		Response response = client.newCall(request).execute();
 		InputStream stream = response.body().byteStream();
 		
-		try (final AudioInputStream in = getAudioInputStream(stream)) {
+		BufferedInputStream bis = new BufferedInputStream(response.body().byteStream());		 
+		try (final AudioInputStream in = getAudioInputStream(bis)) {
 
 			final AudioFormat outFormat = getOutFormat(in.getFormat());
 			final Info info = new Info(SourceDataLine.class, outFormat);

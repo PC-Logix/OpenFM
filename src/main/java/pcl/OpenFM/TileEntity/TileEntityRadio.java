@@ -1,7 +1,8 @@
 package pcl.OpenFM.TileEntity;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,10 +11,6 @@ import java.util.Map;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
-
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Context;
@@ -34,6 +31,11 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ITickable;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Optional;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import pcl.OpenFM.ContentRegistry;
 import pcl.OpenFM.OFMConfiguration;
 import pcl.OpenFM.OpenFM;
@@ -41,14 +43,17 @@ import pcl.OpenFM.Block.BlockSpeaker;
 import pcl.OpenFM.Items.ItemMemoryCard;
 import pcl.OpenFM.misc.Speaker;
 import pcl.OpenFM.network.PacketHandler;
-import pcl.OpenFM.network.message.*;
-import pcl.OpenFM.player.PlayerDispatcher;
+import pcl.OpenFM.network.message.MessageRadioAddSpeaker;
+import pcl.OpenFM.network.message.MessageRadioAddStation;
+import pcl.OpenFM.network.message.MessageRadioDelStation;
+import pcl.OpenFM.network.message.MessageRadioPlaying;
+import pcl.OpenFM.network.message.MessageRadioSync;
 import pcl.OpenFM.player.OGGPlayer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
+import pcl.OpenFM.player.PlayerDispatcher;
+
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 @Optional.InterfaceList({
 	@Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "OpenComputers"),
@@ -122,8 +127,8 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 						stopStream();
 					}
 					try {
-						InputStream stream = response.body().byteStream();
-						baseFileFormat = AudioSystem.getAudioFileFormat(stream);
+						BufferedInputStream bis = new BufferedInputStream(response.body().byteStream());
+						baseFileFormat = AudioSystem.getAudioFileFormat(bis);
 					} catch (IOException | UnsupportedAudioFileException e1) {
 						isValid = false;
 						streamURL = null;
@@ -245,7 +250,8 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 			if ((scheduleRedstoneInput) && (listenToRedstone)) {
 				if ((!scheduledRedstoneInput) && (redstoneInput)) {
 					isPlaying = (!isPlaying);
-					PacketHandler.INSTANCE.sendToAll(new MessageRadioPlaying(this, isPlaying).wrap());
+					if (getWorld() != null)
+						PacketHandler.INSTANCE.sendToAll(new MessageRadioPlaying(this, isPlaying).wrap());
 				}
 
 				redstoneInput = scheduledRedstoneInput;
@@ -264,7 +270,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	}
 
 	public void addStation(String station) {
-		if (!stations.contains(station)) {
+		if (station != null && !stations.contains(station)) {
 			stations.add(station);
 			PacketHandler.INSTANCE.sendToDimension(new MessageRadioAddStation(this, station).wrap(), getWorld().provider.getDimensionId());
 			worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
@@ -274,7 +280,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	}
 
 	public void delStation(String station) {
-		if (stations.contains(station)) {
+		if (station != null && stations.contains(station)) {
 			stations.remove(station);
 			PacketHandler.INSTANCE.sendToDimension(new MessageRadioDelStation(this, station).wrap(), getWorld().provider.getDimensionId());
 			worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
@@ -382,8 +388,9 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 		for (Speaker s :speakers) {
 			PacketHandler.INSTANCE.sendToDimension(new MessageRadioAddSpeaker(this, s).wrap(), getWorld().provider.getDimensionId());
 		}
-
-		PacketHandler.INSTANCE.sendToAllAround(new MessageRadioSync(this).wrap(), new NetworkRegistry.TargetPoint(getWorld().provider.getDimensionId(), this.pos.getX(), this.pos.getY(), this.pos.getZ(), 30.0D));
+		if(this.streamURL != null) {
+			PacketHandler.INSTANCE.sendToAllAround(new MessageRadioSync(this).wrap(), new NetworkRegistry.TargetPoint(getWorld().provider.getDimensionId(), this.pos.getX(), this.pos.getY(), this.pos.getZ(), 30.0D));
+		}
 		//PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this), getWorldObj().provider.dimensionId);
 
 		NBTTagCompound tagCom = new NBTTagCompound();
@@ -444,16 +451,19 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	public void writeToNBT(NBTTagCompound nbt)
 	{
 		super.writeToNBT(nbt);
-		nbt.setString("streamurl", this.streamURL);
+		if (this.streamURL != null)
+			nbt.setString("streamurl", this.streamURL);
 		nbt.setFloat("volume", this.volume);
 		nbt.setBoolean("input", this.listenToRedstone);
 		nbt.setBoolean("lastInput", this.redstoneInput);
 		nbt.setBoolean("lastState", this.isPlaying);
 		nbt.setInteger("speakersCount", this.speakers.size());
 		nbt.setInteger("screenColor", this.screenColor);
-		nbt.setString("screenText", this.screenText);
+		if (this.screenText != null)
+			nbt.setString("screenText", this.screenText);
 		nbt.setBoolean("isLocked", this.isLocked);
-		nbt.setString("owner", this.owner);
+		if (this.owner != null)
+			nbt.setString("owner", this.owner);
 		for (int i = 0; i < this.speakers.size(); i++) {
 			nbt.setInteger("speakerX" + i, this.speakers.get(i).x);
 			nbt.setInteger("speakerY" + i, this.speakers.get(i).y);
@@ -462,8 +472,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 		for(int i = 0; i < stations.size(); i++)
 		{
 			String s = stations.get(i);
-			if(s != null)
-			{
+			if(s != null) {
 				nbt.setString("station" + i, s);
 				nbt.setInteger("stationCount", i + 1);
 			}
@@ -631,10 +640,18 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 			if(args.length != 1) {
 				return new Object[]{false, "Insufficient number of arguments, expected 1"};
 			}
-			streamURL = (String) args[0];
-			worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
-			getDescriptionPacket();
-			return new Object[] { true };
+			if (args[0] != null) {
+				String tempURL = new String((byte[]) args[0], StandardCharsets.UTF_8);
+				if (tempURL != null && tempURL.length() > 1) {
+					streamURL = tempURL;
+				} else {
+					return new Object[] { false, "Error parsing URL in packet" };
+				}
+				worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
+				getDescriptionPacket();
+				return new Object[] { true };
+			}
+			return new Object[] { false, "Error parsing URL in packet" };
 
 		default: return new Object[]{false, "Not implemented."};
 		}
@@ -742,7 +759,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 			}
 			RadioItemStack[0].setStackDisplayName(this.screenText);
 		}
-		
+
 	}
 
 	public void readDataFromCard() {
@@ -784,13 +801,13 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	@Override
 	public void openInventory(EntityPlayer player) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void closeInventory(EntityPlayer player) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -802,7 +819,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	@Override
 	public void setField(int id, int value) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -814,6 +831,6 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	@Override
 	public void clear() {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

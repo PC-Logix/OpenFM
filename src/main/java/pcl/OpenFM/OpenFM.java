@@ -5,20 +5,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import net.minecraft.client.gui.GuiIngameMenu;
-import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
-import pcl.OpenFM.GUI.OFMGuiHandler;
-import pcl.OpenFM.Handler.ClientEvent;
-import pcl.OpenFM.Handler.ServerEvent;
-import pcl.OpenFM.network.PacketHandler;
-import pcl.OpenFM.player.PlayerDispatcher;
-import pcl.OpenFM.player.OGGPlayer;
-import net.minecraftforge.fml.client.GuiModList;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -26,11 +14,17 @@ import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import pcl.OpenFM.GUI.OFMGuiHandler;
+import pcl.OpenFM.Handler.ClientEvent;
+import pcl.OpenFM.Handler.ServerEvent;
+import pcl.OpenFM.network.PacketHandler;
+import pcl.OpenFM.player.PlayerDispatcher;
 
 @Mod(modid=BuildInfo.modID, name=BuildInfo.modName, version=BuildInfo.versionNumber + "." + BuildInfo.buildNumber, dependencies = "", guiFactory = "pcl.OpenFM.GUI.OFMGuiFactory")
 public class OpenFM {
@@ -98,8 +92,10 @@ public class OpenFM {
 	}
 
 	public static void killAllStreams() {
-		for (PlayerDispatcher p : playerList) {
-			p.stop();
+		if (playerList != null) {
+			for (PlayerDispatcher p : playerList) {
+				p.stop();
+			}
 		}
 	}
 }

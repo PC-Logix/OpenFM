@@ -10,7 +10,6 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,18 +22,15 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import pcl.OpenFM.OpenFM;
-import pcl.OpenFM.GUI.GuiRadio;
-import pcl.OpenFM.GUI.GuiRadioBase;
-import pcl.OpenFM.TileEntity.TileEntityRadio;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.common.Optional;
+import net.minecraftforge.fml.relauncher.Side;
+import pcl.OpenFM.OpenFM;
+import pcl.OpenFM.GUI.GuiRadioBase;
+import pcl.OpenFM.TileEntity.TileEntityRadio;
 
 @Optional.InterfaceList({
 	@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheralProvider", modid = "ComputerCraft"),
@@ -69,6 +65,9 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 	@Override
 	public void breakBlock(World world, BlockPos pos, IBlockState state) {
 		TileEntityRadio t = (TileEntityRadio)world.getTileEntity(pos);
+		if(t==null)
+			return;
+		
 		dropContent(t, world, t.getPos().getX(), t.getPos().getY(), t.getPos().getZ());
 		ArrayList<ItemStack> items = new ArrayList<ItemStack>();
 		if (t instanceof TileEntityRadio) {
@@ -78,13 +77,17 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 				if (!stack.hasTagCompound()) {
 					stack.setTagCompound(new NBTTagCompound());
 				}
-				stack.getTagCompound().setString("streamurl", t.streamURL);
-				stack.getTagCompound().setString("screenText", t.getScreenText());
+				if(t.streamURL != null)
+					stack.getTagCompound().setString("streamurl", t.streamURL);
+				if(t.getScreenText() != null)
+					stack.getTagCompound().setString("screenText", t.getScreenText());
 				stack.getTagCompound().setInteger("screenColor", t.getScreenColor());
 				for(int i = 0; i < t.getStationCount(); i++)
 				{
-					stack.getTagCompound().setString("station" + i, t.stations.get(i));
-					stack.getTagCompound().setInteger("stationCount", i + 1);
+					if (t.stations.get(i) != null) {
+						stack.getTagCompound().setString("station" + i, t.stations.get(i));
+						stack.getTagCompound().setInteger("stationCount", i + 1);
+					}
 				}
 				items.add(stack);
 				world.spawnEntityInWorld(new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), items.get(0)));
@@ -105,7 +108,7 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 	@Override
 	public int getMetaFromState(IBlockState state)
 	{
-		EnumFacing facing = (EnumFacing)state.getValue(PROPERTYFACING);
+		EnumFacing facing = state.getValue(PROPERTYFACING);
 		int facingbits = facing.getHorizontalIndex();
 		return facingbits;
 	}
@@ -173,12 +176,12 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 						stackSize = itemstack.stackSize;
 
 					itemstack.stackSize -= stackSize;
-					entityitem = new EntityItem(world, (double)((float)xCoord + offsetX), (double)((float)yCoord + offsetY), (double)((float)zCoord + offsetZ), new ItemStack(itemstack.getItem(), stackSize, itemstack.getItemDamage()));
+					entityitem = new EntityItem(world, xCoord + offsetX, yCoord + offsetY, zCoord + offsetZ, new ItemStack(itemstack.getItem(), stackSize, itemstack.getItemDamage()));
 
 					float velocity = 0.05F;
-					entityitem.motionX = (double)((float)random.nextGaussian() * velocity);
-					entityitem.motionY = (double)((float)random.nextGaussian() * velocity + 0.2F);
-					entityitem.motionZ = (double)((float)random.nextGaussian() * velocity);
+					entityitem.motionX = (float)random.nextGaussian() * velocity;
+					entityitem.motionY = (float)random.nextGaussian() * velocity + 0.2F;
+					entityitem.motionZ = (float)random.nextGaussian() * velocity;
 
 					if (itemstack.hasTagCompound())
 						entityitem.getEntityItem().setTagCompound((NBTTagCompound)itemstack.getTagCompound().copy());
@@ -191,6 +194,7 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 		return true;
 	}
 
+	@Override
 	public TileEntity createNewTileEntity(World world, int meta) {
 		return new TileEntityRadio(world);
 	}

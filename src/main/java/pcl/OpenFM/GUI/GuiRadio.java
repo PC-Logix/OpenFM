@@ -3,17 +3,27 @@ package pcl.OpenFM.GUI;
 import java.util.Arrays;
 import java.util.List;
 
-import org.lwjgl.input.Keyboard;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import org.lwjgl.input.Keyboard;
+
 import pcl.OpenFM.OFMConfiguration;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
 import pcl.OpenFM.network.PacketHandler;
-import pcl.OpenFM.network.message.*;
+import pcl.OpenFM.network.message.MessageRadioAddStation;
+import pcl.OpenFM.network.message.MessageRadioDelStation;
+import pcl.OpenFM.network.message.MessageRadioLocked;
+import pcl.OpenFM.network.message.MessageRadioPlaying;
+import pcl.OpenFM.network.message.MessageRadioRedstone;
+import pcl.OpenFM.network.message.MessageRadioScreenColor;
+import pcl.OpenFM.network.message.MessageRadioScreenText;
+import pcl.OpenFM.network.message.MessageRadioStreamURL;
+import pcl.OpenFM.network.message.MessageRadioVolume;
+import pcl.OpenFM.network.message.MessageRadioWriteCard;
 
 public class GuiRadio extends GuiRadioBase {
 	private OFMGuiButton playBtn;
@@ -36,7 +46,7 @@ public class GuiRadio extends GuiRadioBase {
 	@SuppressWarnings("unchecked")
 	public void initGui() {
 		super.initGui();
-		
+
 		org.lwjgl.input.Keyboard.enableRepeatEvents(true);
 
 		this.OFMbuttonList.clear();
@@ -73,7 +83,7 @@ public class GuiRadio extends GuiRadioBase {
 		if (this.radio.getWorld().provider.getDimensionId() == 0) {
 			this.OFMbuttonList.add(this.redstoneBtn);
 		}
-		
+
 		this.OFMbuttonList.add(this.lockedBtn);
 
 		this.updateColor = new OFMGuiButton(12, 0, 0, 0, 0, 0, 0, "", OFMGuiButton.guiLocation); //Update Color
@@ -83,13 +93,13 @@ public class GuiRadio extends GuiRadioBase {
 
 		this.streamTextBox = new OFMGuiTextField(1, this.fontRendererObj, this.width / 2 - 100, this.height / 2 - 5 + 17 - 45, 200, 20);
 		this.streamTextBox.setMaxStringLength(1000);
-		
+
 		if (!(this.radio.streamURL == null) && !this.radio.streamURL.equals("")) {
 			this.streamTextBox.setText(this.radio.streamURL);
 		} else {
 			this.streamTextBox.setText(OFMConfiguration.defaultURL);
 		}
-		
+
 		this.volumeBox = new OFMGuiTextField(1,this.fontRendererObj, this.width / 2 - 6, this.height / 2 - 5 + 4 - 45, 50, 20);
 		this.volumeBox.setMaxStringLength(2);
 
@@ -101,14 +111,14 @@ public class GuiRadio extends GuiRadioBase {
 		this.screenTextBox = new OFMGuiTextField(1,this.fontRendererObj, this.width / 2 - 17, this.height / 2 - 5 + 72 - 45, 200, 20);
 		this.screenTextBox.setText(this.radio.getScreenText());
 		this.screenTextBox.setTextColor(this.radio.getScreenColor());
-		
-		
+
+
 		this.saveToMemoryCard = new OFMGuiButton(15,  this.width / 2 - 12 - 83, this.height / 2 + 31 - 5 - 40, 8, 8, 127, 24, "", OFMGuiButton.guiLocation); //Update Color
 		this.OFMbuttonList.add(this.saveToMemoryCard);
 		this.loadFromMemoryCard = new OFMGuiButton(16,  this.width / 2 - 12 - 83, this.height / 2 + 41 - 5 - 40, 8, 8, 135, 24, "", OFMGuiButton.guiLocation); //Update Text
 		this.OFMbuttonList.add(this.loadFromMemoryCard);
 
-		
+
 	}
 
 	public static String toHexString(int decimal) {
@@ -119,53 +129,53 @@ public class GuiRadio extends GuiRadioBase {
 	@SuppressWarnings("unchecked")
 	public void updateScreen() {
 		super.updateScreen();
-		
+
 		this.streamTextBox.updateCursorCounter();
 		this.volumeBox.updateCursorCounter();
 		this.colorBox.updateCursorCounter();
-		
+
 		if (this.radio.isInvalid()) {
 			this.mc.displayGuiScreen((net.minecraft.client.gui.GuiScreen)null);
 			this.mc.setIngameFocus();
 		}
-		
+
 		this.volumeBox.setText(" " + (int)(this.radio.getVolume() * 10.0F));
-		
+
 		if ((this.radio.isPlaying()) && (!this.playButtonPlayingState)) {
 			this.playButtonPlayingState = true;
 			this.OFMbuttonList.remove(this.playBtn);
 			this.playBtn = new OFMGuiButton(0, this.width / 2 - 12, this.height / 2 + 28 - 5 - 45, 24, 24, 24, 0, "", OFMGuiButton.guiLocation);
 			this.OFMbuttonList.add(this.playBtn);
 		}
-		
+
 		if ((!this.radio.isPlaying()) && (this.playButtonPlayingState)) {
 			this.playButtonPlayingState = false;
 			this.OFMbuttonList.remove(this.playBtn);
 			this.playBtn = new OFMGuiButton(0, this.width / 2 - 12, this.height / 2 + 28 - 5 - 45, 24, 24, 0, 0, "", OFMGuiButton.guiLocation);
 			this.OFMbuttonList.add(this.playBtn);
 		}
-		
+
 		if ((this.radio.isListeningToRedstoneInput() & !this.redstoneButtonState)) {
 			this.redstoneButtonState = true;
 			this.OFMbuttonList.remove(this.redstoneBtn);
 			this.redstoneBtn = new OFMGuiButton(10, this.width / 2 + 100 - 13, this.height / 2 + 3 - 5 - 45, 8, 8, 95, 24, "", OFMGuiButton.guiLocation);
 			this.OFMbuttonList.add(this.redstoneBtn);
 		}
-		
+
 		if ((!this.radio.isListeningToRedstoneInput() & this.redstoneButtonState)) {
 			this.redstoneButtonState = false;
 			this.OFMbuttonList.remove(this.redstoneBtn);
 			this.redstoneBtn = new OFMGuiButton(10, this.width / 2 + 100 - 13, this.height / 2 + 3 - 5 - 45, 8, 8, 87, 24, "", OFMGuiButton.guiLocation);
 			this.OFMbuttonList.add(this.redstoneBtn);
 		}
-		
+
 		if ((this.radio.isLocked & !this.lockedButtonState)) {
 			this.lockedButtonState = true;
 			this.OFMbuttonList.remove(this.lockedBtn);
 			this.lockedBtn = new OFMGuiButton(11, this.width / 2 + 100 - 4, this.height / 2 + 30 - 45, 12, 16, 103, 24, "", OFMGuiButton.guiLocation);
 			this.OFMbuttonList.add(this.lockedBtn);
 		}
-		
+
 		if ((!this.radio.isLocked & this.lockedButtonState)) {
 			this.lockedButtonState = false;
 			this.OFMbuttonList.remove(this.lockedBtn);
@@ -178,12 +188,12 @@ public class GuiRadio extends GuiRadioBase {
 	@SideOnly(Side.CLIENT)
 	public void drawScreen(int par1, int par2, float par3) {
 		super.drawScreen(par1, par2, par3);
-		
+
 		this.streamTextBox.drawTextBox();
 		this.volumeBox.drawTextBox();
 		this.colorBox.drawTextBox();
 		this.screenTextBox.drawTextBox();
-		
+
 		for (int k = 0; k < this.OFMbuttonList.size(); k++) {
 			OFMGuiButton btn = (OFMGuiButton)this.OFMbuttonList.get(k);
 			if (btn.isMouseOver()) { // Tells you if the button is hovered by mouse
@@ -281,25 +291,27 @@ public class GuiRadio extends GuiRadioBase {
 	}
 
 	@Override
-    public void drawDefaultBackground() {}
+	public void drawDefaultBackground() {}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	protected void actionPerformed(int buttonID) {
 		if (buttonID == 0) { //Play button
-			if (this.streamTextBox.getText().toLowerCase().endsWith(".m3u")) {
-				this.radio.streamURL = takeFirstEntryFromM3U(this.streamTextBox.getText());
-			} else if (this.streamTextBox.getText().toLowerCase().endsWith(".pls")) {
-				this.radio.streamURL = parsePls(this.streamTextBox.getText());
-			} else {
-				this.radio.streamURL = this.streamTextBox.getText();
-			}
-			if (this.radio.isPlaying) {
-				PacketHandler.INSTANCE.sendToServer(new MessageRadioPlaying(this.radio, !this.radio.isPlaying).wrap());
-				PacketHandler.INSTANCE.sendToServer(new MessageRadioStreamURL(this.radio, this.radio.streamURL).wrap());
-			} else {
-				PacketHandler.INSTANCE.sendToServer(new MessageRadioStreamURL(this.radio, this.radio.streamURL).wrap());
-				PacketHandler.INSTANCE.sendToServer(new MessageRadioPlaying(this.radio, !this.radio.isPlaying).wrap());
+			if(this.streamTextBox.getText() != null && !this.streamTextBox.getText().isEmpty()) {
+				if (this.streamTextBox.getText().toLowerCase().endsWith(".m3u")) {
+					this.radio.streamURL = takeFirstEntryFromM3U(this.streamTextBox.getText());
+				} else if (this.streamTextBox.getText().toLowerCase().endsWith(".pls")) {
+					this.radio.streamURL = parsePls(this.streamTextBox.getText());
+				} else {
+					this.radio.streamURL = this.streamTextBox.getText();
+				}
+				if (this.radio.isPlaying) {
+					PacketHandler.INSTANCE.sendToServer(new MessageRadioPlaying(this.radio, !this.radio.isPlaying).wrap());
+					PacketHandler.INSTANCE.sendToServer(new MessageRadioStreamURL(this.radio, this.radio.streamURL).wrap());
+				} else {
+					PacketHandler.INSTANCE.sendToServer(new MessageRadioStreamURL(this.radio, this.radio.streamURL).wrap());
+					PacketHandler.INSTANCE.sendToServer(new MessageRadioPlaying(this.radio, !this.radio.isPlaying).wrap());
+				}
 			}
 		}
 		if (buttonID == 1) { //VolUp
@@ -331,8 +343,10 @@ public class GuiRadio extends GuiRadioBase {
 			}
 			catch (Exception localException) {}
 		} if (buttonID == 7) { //Save
-			this.radio.addStation(this.streamTextBox.getText());
-			PacketHandler.INSTANCE.sendToServer(new MessageRadioAddStation(this.radio, this.radio.streamURL).wrap());
+			if(this.streamTextBox.getText() != null && !this.streamTextBox.getText().isEmpty()) {
+				this.radio.addStation(this.streamTextBox.getText());
+				PacketHandler.INSTANCE.sendToServer(new MessageRadioAddStation(this.radio, this.radio.streamURL).wrap());
+			}
 		} if (buttonID == 8) { //Delete 
 			this.radio.delStation(this.streamTextBox.getText());
 			PacketHandler.INSTANCE.sendToServer(new MessageRadioDelStation(this.radio, this.radio.streamURL).wrap());
@@ -363,7 +377,9 @@ public class GuiRadio extends GuiRadioBase {
 			}
 		}
 		if (buttonID == 15) { //Write to card
-			PacketHandler.INSTANCE.sendToServer(new MessageRadioWriteCard(this.radio).wrap());
+			if(this.radio.RadioItemStack[0] != null) {
+				PacketHandler.INSTANCE.sendToServer(new MessageRadioWriteCard(this.radio).wrap());
+			}
 		}
 	}
 
