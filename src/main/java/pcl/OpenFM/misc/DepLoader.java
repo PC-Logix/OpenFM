@@ -1,13 +1,15 @@
 package pcl.OpenFM.misc;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
 
-import net.minecraftforge.fml.relauncher.IFMLCallHook;
-import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
+import pcl.OpenFM.BuildInfo;
+import cpw.mods.fml.relauncher.IFMLCallHook;
+import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 
 public class DepLoader implements IFMLLoadingPlugin, IFMLCallHook {
 	public void load() {
@@ -30,6 +32,7 @@ public class DepLoader implements IFMLLoadingPlugin, IFMLCallHook {
 			}
 		}
 	}
+
 
 	@Override
 	public String[] getASMTransformerClass() {
