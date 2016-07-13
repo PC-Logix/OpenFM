@@ -33,8 +33,8 @@ public class MessageRadioAddSpeaker extends BaseRadioMessage {
 	@Override
 	public void toBytes(ByteBuf buf) {
 		super.toBytes(buf);
-		buf.writeDouble(tx);
-		buf.writeDouble(ty);
-		buf.writeDouble(tz);
+		buf.writeInt(tx);
+		buf.writeInt(ty);
+		buf.writeInt(tz);
 	}
 }
