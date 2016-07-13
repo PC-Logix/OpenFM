@@ -43,11 +43,7 @@ import pcl.OpenFM.Block.BlockSpeaker;
 import pcl.OpenFM.Items.ItemMemoryCard;
 import pcl.OpenFM.misc.Speaker;
 import pcl.OpenFM.network.PacketHandler;
-import pcl.OpenFM.network.message.MessageRadioAddSpeaker;
-import pcl.OpenFM.network.message.MessageRadioAddStation;
-import pcl.OpenFM.network.message.MessageRadioDelStation;
-import pcl.OpenFM.network.message.MessageRadioPlaying;
-import pcl.OpenFM.network.message.MessageRadioSync;
+import pcl.OpenFM.network.message.*;
 import pcl.OpenFM.player.OGGPlayer;
 import pcl.OpenFM.player.PlayerDispatcher;
 
@@ -84,12 +80,13 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	public ItemStack[] RadioItemStack = new ItemStack[1];
 	public TileEntityRadio(World w) {
 		world = w;
-		if (isPlaying)
+		if (isPlaying) {
 			try {
 				startStream();
 			} catch (Exception e) {
 				stopStream();
 			}
+		}
 	}
 
 	public TileEntityRadio() {
@@ -196,7 +193,9 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 				for (Speaker s : speakers) {
 					IBlockState sb = getWorld().getBlockState(new BlockPos(s.x, s.y, s.z));
 					if (!(sb instanceof BlockSpeaker)) {
-						if (!getWorld().getChunkFromBlockCoords(new BlockPos(s.x, s.y, s.z)).isLoaded()) break;
+						if (!getWorld().getChunkFromBlockCoords(new BlockPos(s.x, s.y, s.z)).isLoaded()) {
+							break;
+						}
 						speakers.remove(s);
 						break;
 					}
@@ -205,22 +204,25 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 			if ((Minecraft.getMinecraft().thePlayer != null) && (mp3Player != null || oggPlayer != null) && (!isInvalid())) {
 				vol = getClosest();
 				if (vol > 10000.0F * volume) {
-					if (mp3Player != null)
+					if (mp3Player != null) {
 						mp3Player.setVolume(0.0F);
-					else if (oggPlayer != null)
+					} else if (oggPlayer != null) {
 						oggPlayer.setVolume(0.0f);
+					}
 				} else {
 					float v2 = 10000.0F / vol / 100.0F;
 					if (v2 > 1.0F) {
-						if (mp3Player != null)
+						if (mp3Player != null) {
 							mp3Player.setVolume(1.0F * volume * volume);
-						else if (oggPlayer != null)
+						} else if (oggPlayer != null) {
 							oggPlayer.setVolume(1.0F * volume * volume);
+						}
 					} else {
-						if (mp3Player != null)
+						if (mp3Player != null) {
 							mp3Player.setVolume(v2 * volume * volume);
-						else if (oggPlayer != null)
+						} else if (oggPlayer != null) {
 							oggPlayer.setVolume(v2 * volume * volume);
+						}
 					}
 				}
 				if (vol == 0.0F) {
@@ -239,7 +241,9 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 				if (th >= 60) {
 					for (Speaker s : speakers) {
 						if (!(worldObj.getBlockState(new BlockPos(s.x, s.y, s.z)) instanceof BlockSpeaker)) {
-							if (!worldObj.getChunkFromBlockCoords(new BlockPos(s.x, s.y, s.z)).isLoaded()) break;
+							if (!worldObj.getChunkFromBlockCoords(new BlockPos(s.x, s.y, s.z)).isLoaded()) {
+								break;
+							}
 							speakers.remove(s);
 							break;
 						}
@@ -250,8 +254,9 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 			if ((scheduleRedstoneInput) && (listenToRedstone)) {
 				if ((!scheduledRedstoneInput) && (redstoneInput)) {
 					isPlaying = (!isPlaying);
-					if (getWorld() != null)
+					if (getWorld() != null) {
 						PacketHandler.INSTANCE.sendToAll(new MessageRadioPlaying(this, isPlaying).wrap());
+					}
 				}
 
 				redstoneInput = scheduledRedstoneInput;
@@ -291,13 +296,17 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 
 	public String getNext(String uid) {
 		int idx = stations.indexOf(uid);
-		if (idx < 0 || idx+1 == stations.size()) return uid;
+		if (idx < 0 || idx+1 == stations.size()) {
+			return uid;
+		}
 		return stations.get(idx + 1);
 	}
 
 	public String getPrevious(String uid) {
 		int idx = stations.indexOf(uid);
-		if (idx <= 0 || idx-1 == stations.size()) return uid;
+		if (idx <= 0 || idx-1 == stations.size()) {
+			return uid;
+		}
 		return stations.get(idx - 1);
 	}
 
@@ -340,11 +349,14 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	}
 
 	public int canAddSpeaker(World w, int x, int y, int z) {
-		if (speakers.size() >= 10)
+		if (speakers.size() >= 10) {
 			return 1;
-		for (Speaker s : speakers)
-			if ((s.x == x) && (s.y == y) && (s.z == z))
+		}
+		for (Speaker s : speakers) {
+			if ((s.x == x) && (s.y == y) && (s.z == z)) {
 				return 2;
+			}
+		}
 		return 0;
 	}
 
@@ -451,19 +463,22 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	public void writeToNBT(NBTTagCompound nbt)
 	{
 		super.writeToNBT(nbt);
-		if (this.streamURL != null)
+		if (this.streamURL != null) {
 			nbt.setString("streamurl", this.streamURL);
+		}
 		nbt.setFloat("volume", this.volume);
 		nbt.setBoolean("input", this.listenToRedstone);
 		nbt.setBoolean("lastInput", this.redstoneInput);
 		nbt.setBoolean("lastState", this.isPlaying);
 		nbt.setInteger("speakersCount", this.speakers.size());
 		nbt.setInteger("screenColor", this.screenColor);
-		if (this.screenText != null)
+		if (this.screenText != null) {
 			nbt.setString("screenText", this.screenText);
+		}
 		nbt.setBoolean("isLocked", this.isLocked);
-		if (this.owner != null)
+		if (this.owner != null) {
 			nbt.setString("owner", this.owner);
+		}
 		for (int i = 0; i < this.speakers.size(); i++) {
 			nbt.setInteger("speakerX" + i, this.speakers.get(i).x);
 			nbt.setInteger("speakerY" + i, this.speakers.get(i).y);

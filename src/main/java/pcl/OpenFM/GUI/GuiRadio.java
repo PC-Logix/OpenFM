@@ -14,16 +14,7 @@ import org.lwjgl.input.Keyboard;
 import pcl.OpenFM.OFMConfiguration;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
 import pcl.OpenFM.network.PacketHandler;
-import pcl.OpenFM.network.message.MessageRadioAddStation;
-import pcl.OpenFM.network.message.MessageRadioDelStation;
-import pcl.OpenFM.network.message.MessageRadioLocked;
-import pcl.OpenFM.network.message.MessageRadioPlaying;
-import pcl.OpenFM.network.message.MessageRadioRedstone;
-import pcl.OpenFM.network.message.MessageRadioScreenColor;
-import pcl.OpenFM.network.message.MessageRadioScreenText;
-import pcl.OpenFM.network.message.MessageRadioStreamURL;
-import pcl.OpenFM.network.message.MessageRadioVolume;
-import pcl.OpenFM.network.message.MessageRadioWriteCard;
+import pcl.OpenFM.network.message.*;
 
 public class GuiRadio extends GuiRadioBase {
 	private OFMGuiButton playBtn;
@@ -438,7 +429,9 @@ public class GuiRadio extends GuiRadioBase {
 				actionPerformed(14);
 			}
 		}
-		if(!( par2== Keyboard.KEY_E  &&  this.screenTextBox.isFocused() || this.streamTextBox.isFocused() || this.colorBox.isFocused())) super.keyTyped(par1, par2);
+		if(!( par2== Keyboard.KEY_E  &&  this.screenTextBox.isFocused() || this.streamTextBox.isFocused() || this.colorBox.isFocused())) {
+			super.keyTyped(par1, par2);
+		}
 	}
 
 	public static boolean betweenExclusive(int x, int min, int max)
