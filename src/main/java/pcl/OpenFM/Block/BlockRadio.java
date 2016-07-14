@@ -45,7 +45,6 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 		super(Material.wood);
 		setHardness(2.0F);
 		setResistance(10.0F);
-		//setBlockName("OpenFM.Radio");
 		setUnlocalizedName("OpenFM.Radio");
 		setStepSound(Block.soundTypeWood);
 		random = new Random();
@@ -135,11 +134,17 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 
 	@Override
 	public IBlockState onBlockPlaced(World world, BlockPos pos, EnumFacing blockFaceClickedOn, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+		super.onBlockPlaced(world, pos, blockFaceClickedOn, hitX, hitY, hitZ, meta, placer);
 		EnumFacing enumfacing = (placer == null) ? EnumFacing.NORTH : EnumFacing.fromAngle(placer.rotationYaw);
-		TileEntity te = world.getTileEntity(pos);
-		((TileEntityRadio) te).owner = placer.getUniqueID().toString();
 		return this.getDefaultState().withProperty(PROPERTYFACING, enumfacing);
 	}
+	
+    @Override
+    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+    	super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
+    	TileEntity te = worldIn.getTileEntity(pos);
+		((TileEntityRadio) te).setOwner(placer.getUniqueID().toString());
+    }
 
 	public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) {
 		return true;
@@ -197,7 +202,7 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 			}
 		}
 	}
-
+	
 	public boolean shouldCheckWeakPower(IBlockAccess world, int x, int y, int z, int side) {
 		return true;
 	}

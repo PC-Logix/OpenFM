@@ -851,4 +851,9 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 		// TODO Auto-generated method stub
 
 	}
+
+	public void setOwner(String inOwner) {
+		this.owner = inOwner;
+		
+	}
 }
