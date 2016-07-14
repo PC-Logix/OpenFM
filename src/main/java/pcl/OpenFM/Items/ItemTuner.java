@@ -25,28 +25,22 @@ public class ItemTuner extends Item {
     public ItemTuner() {
         setMaxStackSize(1);
         setUnlocalizedName("OpenFM.Tuner");
-        //setTextureName("openfm:ItemTuner");
     }
 
     @Override
     public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
         // Item can only be used by client.
         if (FMLCommonHandler.instance().getEffectiveSide() != Side.SERVER) {
-
             // If clicked block is a speaker, keep a reference to it.
             if ((world.getBlockState(pos).getBlock() instanceof BlockSpeaker)) {
-
                 // TODO: one speaker should only be able to be linked to exactly one radio.
                 boundSpeakers.put(stack, new Speaker(pos.getX(), pos.getY(), pos.getZ(), world));
                 player.addChatMessage(new ChatComponentTranslation("msg.OpenFM.selected_speaker"));
-
             } else if ((world.getBlockState(pos).getBlock() instanceof BlockRadio)) {
-
                 // Else, it it's a radio, try to link it to the speaker.
                 if (boundSpeakers.get(stack) != null) {
                     Speaker speaker = boundSpeakers.get(stack);
                     TileEntityRadio radio = (TileEntityRadio) player.getEntityWorld().getTileEntity(pos);
-
                     // Check if the speaker can be added to the radio.
                     int canAdd = radio.canAddSpeaker(player.getEntityWorld(), speaker.x, speaker.y, speaker.z);
                     if (canAdd == 0) {
@@ -60,13 +54,11 @@ public class ItemTuner extends Item {
                         // Speaker is already linked.
                         player.addChatMessage(new ChatComponentTranslation("msg.OpenFM.failed_adding_speaker_exists"));
                     }
-
                 } else {
                     // Apparently no speaker is bound.
                     player.addChatMessage(new ChatComponentTranslation("msg.OpenFM.failed_adding_speaker_not_selected"));
                 }
             }
-
         }
         return true;
     }
