@@ -65,8 +65,9 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 	@Override
 	public void breakBlock(World world, BlockPos pos, IBlockState state) {
 		TileEntityRadio t = (TileEntityRadio)world.getTileEntity(pos);
-		if(t==null)
+		if(t==null) {
 			return;
+		}
 		
 		dropContent(t, world, t.getPos().getX(), t.getPos().getY(), t.getPos().getZ());
 		ArrayList<ItemStack> items = new ArrayList<ItemStack>();
@@ -77,10 +78,12 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 				if (!stack.hasTagCompound()) {
 					stack.setTagCompound(new NBTTagCompound());
 				}
-				if(t.streamURL != null)
+				if(t.streamURL != null) {
 					stack.getTagCompound().setString("streamurl", t.streamURL);
-				if(t.getScreenText() != null)
+				}
+				if(t.getScreenText() != null) {
 					stack.getTagCompound().setString("screenText", t.getScreenText());
+				}
 				stack.getTagCompound().setInteger("screenColor", t.getScreenColor());
 				for(int i = 0; i < t.getStationCount(); i++)
 				{
@@ -133,6 +136,8 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 	@Override
 	public IBlockState onBlockPlaced(World world, BlockPos pos, EnumFacing blockFaceClickedOn, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
 		EnumFacing enumfacing = (placer == null) ? EnumFacing.NORTH : EnumFacing.fromAngle(placer.rotationYaw);
+		TileEntity te = world.getTileEntity(pos);
+		((TileEntityRadio) te).owner = placer.getUniqueID().toString();
 		return this.getDefaultState().withProperty(PROPERTYFACING, enumfacing);
 	}
 
@@ -158,8 +163,9 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 	}
 
 	public void dropContent(IInventory chest, World world, int xCoord, int yCoord, int zCoord) {
-		if (chest == null)
+		if (chest == null) {
 			return;
+		}
 
 		for (int i1 = 0; i1 < chest.getSizeInventory(); ++i1) {
 			ItemStack itemstack = chest.getStackInSlot(i1);
@@ -172,8 +178,9 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 
 				for (; itemstack.stackSize > 0; world.spawnEntityInWorld(entityitem)) {
 					int stackSize = random.nextInt(21) + 10;
-					if (stackSize > itemstack.stackSize)
+					if (stackSize > itemstack.stackSize) {
 						stackSize = itemstack.stackSize;
+					}
 
 					itemstack.stackSize -= stackSize;
 					entityitem = new EntityItem(world, xCoord + offsetX, yCoord + offsetY, zCoord + offsetZ, new ItemStack(itemstack.getItem(), stackSize, itemstack.getItemDamage()));
@@ -183,8 +190,9 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 					entityitem.motionY = (float)random.nextGaussian() * velocity + 0.2F;
 					entityitem.motionZ = (float)random.nextGaussian() * velocity;
 
-					if (itemstack.hasTagCompound())
+					if (itemstack.hasTagCompound()) {
 						entityitem.getEntityItem().setTagCompound((NBTTagCompound)itemstack.getTagCompound().copy());
+					}
 				}
 			}
 		}
