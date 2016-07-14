@@ -78,6 +78,10 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	public boolean isLocked;
 	public String owner = "";
 	public ItemStack[] RadioItemStack = new ItemStack[1];
+	
+	int th = 0;
+	int loops = 0;
+	
 	public TileEntityRadio(World w) {
 		world = w;
 		if (isPlaying) {
@@ -185,14 +189,13 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	public void update() {
 		Side side = FMLCommonHandler.instance().getEffectiveSide();
 		float vol;
-		int th = 0;
-		int loops = 0;
+
 		if (side == Side.CLIENT) {
 			th += 1;
 			if (th >= 10) {
 				for (Speaker s : speakers) {
 					IBlockState sb = getWorld().getBlockState(new BlockPos(s.x, s.y, s.z));
-					if (!(sb instanceof BlockSpeaker)) {
+					if (!(sb.getBlock() instanceof BlockSpeaker)) {
 						if (!getWorld().getChunkFromBlockCoords(new BlockPos(s.x, s.y, s.z)).isLoaded()) {
 							break;
 						}
@@ -240,7 +243,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 				th += 1;
 				if (th >= 60) {
 					for (Speaker s : speakers) {
-						if (!(worldObj.getBlockState(new BlockPos(s.x, s.y, s.z)) instanceof BlockSpeaker)) {
+						if (!(worldObj.getBlockState(new BlockPos(s.x, s.y, s.z)).getBlock() instanceof BlockSpeaker)) {
 							if (!worldObj.getChunkFromBlockCoords(new BlockPos(s.x, s.y, s.z)).isLoaded()) {
 								break;
 							}
