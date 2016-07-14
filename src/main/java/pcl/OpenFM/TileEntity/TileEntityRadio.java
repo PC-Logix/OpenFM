@@ -561,7 +561,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 				return new Object[]{false, "Insufficient number of arguments, expected 1"};
 			}
 			setScreenColor((int)Math.round((Double)args[0]));
-			worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
+			worldObj.markBlockForUpdate(pos);
 			getDescriptionPacket();
 			markDirty();
 			return new Object[]{ true };
@@ -585,7 +585,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 		case stop:
 			stopStream();
 			isPlaying = false;
-			worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
+			worldObj.markBlockForUpdate(pos);
 			getDescriptionPacket();
 			return new Object[]{ true };
 
@@ -595,7 +595,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
+			worldObj.markBlockForUpdate(pos);
 			getDescriptionPacket();
 			return new Object[]{ true };
 
@@ -610,7 +610,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 				return new Object[]{false, "Insufficient number of arguments, expected 1"};
 			}
 			setScreenText((String) args[0]);
-			worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
+			worldObj.markBlockForUpdate(pos);
 			getDescriptionPacket();
 			markDirty(); // Marks the chunk as dirty, so that it is saved properly on changes. Not required for the sync specifically, but usually goes alongside the former.
 			return new Object[] { true } ;
@@ -619,7 +619,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 			float v = (float)(this.volume - 0.1D);
 			if ((v > 0.0F) && (v <= 1.0F)) {
 				setVolume(v);
-				worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
+				worldObj.markBlockForUpdate(pos);
 				getDescriptionPacket();
 				return new Object[] { getVolume() };
 			} else {
@@ -630,7 +630,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 			float v1 = (float)(this.volume + 0.1D);
 			if ((v1 > 0.0F) && (v1 <= 1.0F)) {
 				setVolume(v1);
-				worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
+				worldObj.markBlockForUpdate(pos);
 				getDescriptionPacket();
 				return new Object[] { getVolume() };
 			} else {
@@ -644,7 +644,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 			float v2 = (float)(args[0]);
 			if ((v2 > 0.0F) && (v2 <= 1.0F)) {
 				setVolume(v2);
-				worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
+				worldObj.markBlockForUpdate(pos);
 				getDescriptionPacket();
 				return new Object[] { getVolume() };
 			} else {
@@ -665,7 +665,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 				} else {
 					return new Object[] { false, "Error parsing URL in packet" };
 				}
-				worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
+				worldObj.markBlockForUpdate(pos);
 				getDescriptionPacket();
 				return new Object[] { true };
 			}
