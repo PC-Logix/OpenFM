@@ -97,6 +97,9 @@ curseforge {
 }
 
 processResources {
+
+    inputs.property "mcversion", project.minecraft.version
+
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
