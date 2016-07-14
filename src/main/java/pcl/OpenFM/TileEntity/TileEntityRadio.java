@@ -79,6 +79,10 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	public boolean isLocked;
 	public String owner = "";
 	public ItemStack[] RadioItemStack = new ItemStack[1];
+	
+	int th = 0;
+	int loops = 0;
+	
 	public TileEntityRadio(World w) {
 		world = w;
 		if (isPlaying)
@@ -186,8 +190,6 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	public void updateEntity() {
 		Side side = FMLCommonHandler.instance().getEffectiveSide();
 		float vol;
-		int th = 0;
-		int loops = 0;
 		if (side == Side.CLIENT) {
 			th += 1;
 			if (th >= 10) {
