@@ -147,7 +147,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 						if (decoder != null && isValid) {
 							isPlaying = true;
 							OpenFM.logger.info("Starting Stream: " + streamURL + " at X:" + pos.getX() + " Y:" + pos.getY() + " Z:" + pos.getZ());
-							mp3Player = new PlayerDispatcher(decoder, streamURL, world, pos.getX(), pos.getY(), pos.getZ());
+							mp3Player = new PlayerDispatcher(decoder, streamURL, this.worldObj, pos.getX(), pos.getY(), pos.getZ());
 							OpenFM.playerList.add(mp3Player);	
 						}
 					}
@@ -323,7 +323,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 
 	public void setScreenColor(Integer color) {
 		this.screenColor = color;
-		worldObj.markBlockForUpdate(new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
+		worldObj.markBlockForUpdate(pos);
 		getDescriptionPacket();
 		markDirty();
 	}
@@ -337,6 +337,9 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 
 	public void setScreenText(String text) {
 		this.screenText = text;
+		worldObj.markBlockForUpdate(pos);
+		getDescriptionPacket();
+		markDirty();
 	}
 
 	public String getScreenText() {
@@ -609,10 +612,11 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 			if(args.length != 1) {
 				return new Object[]{false, "Insufficient number of arguments, expected 1"};
 			}
-			setScreenText((String) args[0]);
+			String tempString = new String((byte[]) args[0], StandardCharsets.UTF_8);
+			setScreenText(tempString);
 			worldObj.markBlockForUpdate(pos);
 			getDescriptionPacket();
-			markDirty(); // Marks the chunk as dirty, so that it is saved properly on changes. Not required for the sync specifically, but usually goes alongside the former.
+			markDirty(); // Marks the chunk as dirty, so that it is saved properly on changes. Not required for the sync specifically, but usually goes alongside the former.	
 			return new Object[] { true } ;
 
 		case volDown:
@@ -763,7 +767,6 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	}
 
 	public void writeDataToCard() {
-		System.out.println("-_-");
 		if (getStackInSlot(0) != null) {
 			RadioItemStack[0] = new ItemStack(ContentRegistry.itemMemoryCard);
 			RadioItemStack[0].setTagCompound(new NBTTagCompound());

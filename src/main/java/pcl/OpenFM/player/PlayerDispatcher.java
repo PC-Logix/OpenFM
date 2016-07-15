@@ -1,6 +1,7 @@
 package pcl.OpenFM.player;
 
 import java.io.InputStream;
+
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -43,15 +44,14 @@ public class PlayerDispatcher extends PlaybackListener implements Runnable {
 		}
 	}
 
+	@Override
 	public void run()
 	{
 		try
 		{
 			if (decoder.equals("mp3")) {
 				OkHttpClient client = new OkHttpClient();
-				Request request = new Request.Builder()
-				.url(streamURL)
-				.build();
+				Request request = new Request.Builder().url(streamURL).build();
 				
 				Response response = client.newCall(request).execute();
 				InputStream stream = response.body().byteStream();

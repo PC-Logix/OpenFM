@@ -424,6 +424,7 @@ public class GuiRadio extends GuiRadioBase {
 			}
 		} else if (this.screenTextBox.isFocused()) {
 			this.screenTextBox.textboxKeyTyped(par1, par2);
+			actionPerformed(14);
 			if (par1 == '\r')
 			{
 				actionPerformed(14);
