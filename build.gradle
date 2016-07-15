@@ -68,11 +68,11 @@ jar {
     }
 }
 
-jar.classifier = "${ext.buildNumber}"
 jar.manifest = manifest { attributes(
 	"FMLCorePlugin": "pcl.OpenFM.misc.OFMDepLoader",
 	"FMLCorePluginContainsFMLMod": "icanhazfmlmodpweeze"
 ) }
+
 def curseforge_key = 0
 def curse_changlog = "default"
 if (project.hasProperty('opensecurity_curseforge_key')) {
@@ -90,9 +90,6 @@ curseforge {
 }
 
 processResources {
-
-    inputs.property "mcversion", project.minecraft.version
-
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
@@ -113,3 +110,4 @@ idea {
         outputDir = file('build/classes/main')
     }
 }
+
