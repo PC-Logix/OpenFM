@@ -60,7 +60,7 @@ minecraft {
 	replace "@VERSION@", project.version
 	replace "@BUILD@", project.ext.buildNumber
 }
-
+version = "${version}.${project.ext.buildNumber}"
 jar {
     configurations.shade.each { dep ->
         from(project.zipTree(dep)){
