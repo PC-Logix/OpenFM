@@ -55,6 +55,7 @@ archivesBaseName = "OpenFM-1.9.4"
 minecraft {
     version = "1.9.4-12.17.0.1976"
     runDir = "run"
+	makeObfSourceJar = false
     mappings = "snapshot_20160518"
 	replace "@VERSION@", project.version
 	replace "@BUILD@", project.ext.buildNumber
