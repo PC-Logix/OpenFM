@@ -86,7 +86,7 @@ public class OpenFM {
 
 	@SubscribeEvent
 	public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
-		if(eventArgs.modID.equals(BuildInfo.modID)){
+		if(eventArgs.getModID().equals(BuildInfo.modID)){
 			OFMConfiguration.sync();
 		}
 	}

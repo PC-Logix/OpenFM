@@ -3,12 +3,14 @@ package pcl.OpenFM.Block;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
@@ -20,8 +22,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -42,17 +45,17 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 
 	public BlockRadio()
 	{
-		super(Material.wood);
+		super(Material.WOOD);
 		setHardness(2.0F);
 		setResistance(10.0F);
 		setUnlocalizedName("OpenFM.Radio");
-		setStepSound(Block.soundTypeWood);
+		//setStepSound(Block.soundTypeWood);
 		random = new Random();
 	}
 
 
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
 		TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity == null || player.isSneaking()) {
 			return false;
@@ -93,7 +96,8 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 				}
 				items.add(stack);
 				world.spawnEntityInWorld(new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), items.get(0)));
-				world.setBlockState(pos, Blocks.air.getDefaultState());
+				//world.setBlockState(pos, Blocks.air.getDefaultState());
+				super.breakBlock(world, pos, state);;
 			}
 		}
 	}
@@ -122,9 +126,9 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 	}
 
 	@Override
-	protected BlockState createBlockState()
+	protected BlockStateContainer createBlockState()
 	{
-		return new BlockState(this, new IProperty[] {PROPERTYFACING});
+		return new BlockStateContainer(this, new IProperty[] {PROPERTYFACING});
 	}
 
 	@Override
@@ -154,10 +158,10 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 		boolean flag = world.isBlockPowered(pos);
 		try {
 			Side side = FMLCommonHandler.instance().getEffectiveSide();
-			if (block.canProvidePower()) {
+			if (block.canProvidePower((IBlockState) block.getBlockState())) {
 				TileEntity tileEntity;
 				if (side == Side.SERVER) {
-					tileEntity = MinecraftServer.getServer().getEntityWorld().getTileEntity(pos);
+					tileEntity = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getTileEntity(pos);
 				} else {
 					tileEntity = FMLClientHandler.instance().getClient().theWorld.getTileEntity(pos);
 				}

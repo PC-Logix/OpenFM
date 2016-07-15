@@ -15,7 +15,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -84,8 +84,8 @@ public class GuiRadioBase extends GuiContainer {
 		}
 		this.mc.fontRendererObj.drawString("OpenFM", this.width / 2 - 16, this.height / 2 + 90 - 45, this.radio.getScreenColor());
 
-		this.mc.fontRendererObj.drawString(StatCollector.translateToLocal("gui.string.OpenFM.ScreenColor"), this.width / 2 - 101, this.height / 2 + 55 - 45, 0xFFFFFF);
-		this.mc.fontRendererObj.drawString(StatCollector.translateToLocal("gui.string.OpenFM.ScreenText"), this.width / 2 - 20, this.height / 2 + 55 - 45, 0xFFFFFF);
+		this.mc.fontRendererObj.drawString(I18n.translateToLocal("gui.string.OpenFM.ScreenColor"), this.width / 2 - 101, this.height / 2 + 55 - 45, 0xFFFFFF);
+		this.mc.fontRendererObj.drawString(I18n.translateToLocal("gui.string.OpenFM.ScreenText"), this.width / 2 - 20, this.height / 2 + 55 - 45, 0xFFFFFF);
 
 		super.drawScreen(par1, par2, par3);
 		RenderHelper.disableStandardItemLighting();
@@ -118,10 +118,10 @@ public class GuiRadioBase extends GuiContainer {
 					GuiScreenEvent.ActionPerformedEvent.Pre event = new GuiScreenEvent.ActionPerformedEvent.Pre(this, guibutton, this.OFMbuttonList);
 					if (MinecraftForge.EVENT_BUS.post(event))
 						break;
-					event.button.playPressSound(this.mc.getSoundHandler());
-					actionPerformed(event.button.id);
+					event.getButton().playPressSound(this.mc.getSoundHandler());
+					actionPerformed(event.getButton().id);
 					if (equals(this.mc.currentScreen))
-						MinecraftForge.EVENT_BUS.post(new GuiScreenEvent.ActionPerformedEvent.Post(this, event.button, this.OFMbuttonList));
+						MinecraftForge.EVENT_BUS.post(new GuiScreenEvent.ActionPerformedEvent.Post(this, event.getButton(), this.OFMbuttonList));
 				}
 			} 
 		}

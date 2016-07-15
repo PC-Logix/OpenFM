@@ -1,13 +1,13 @@
 package pcl.OpenFM;
 
 import net.minecraft.block.Block;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import pcl.OpenFM.Block.BlockRadio;
@@ -53,18 +53,18 @@ public class ContentRegistry {
 		GameRegistry.registerBlock(blockRadio, ItemBlockRadio.class, "Radio");
 		GameRegistry.registerTileEntity(TileEntityRadio.class, "OpenFMRadio");
 		GameRegistry.addRecipe(new ItemStack(blockRadio), "  y", "xyx", "xzx",
-				'x', new ItemStack(Blocks.planks),
-				'y', new ItemStack(Items.iron_ingot),
-				'z', new ItemStack(Items.diamond));
+				'x', new ItemStack(Blocks.PLANKS),
+				'y', new ItemStack(Items.IRON_INGOT),
+				'z', new ItemStack(Items.DIAMOND));
 		blockRadio.setCreativeTab(creativeTab);
 
 		blockSpeaker = new BlockSpeaker();
 		GameRegistry.registerBlock(blockSpeaker, "Speaker");
 		GameRegistry.registerTileEntity(TileEntitySpeaker.class, "OpenFMSpeaker");
 		GameRegistry.addRecipe(new ItemStack(blockSpeaker), "xxx", "xyx", "xzx",
-				'x', new ItemStack(Blocks.planks),
-				'y', new ItemStack(Items.iron_ingot),
-				'z', new ItemStack(Items.redstone));
+				'x', new ItemStack(Blocks.PLANKS),
+				'y', new ItemStack(Items.IRON_INGOT),
+				'z', new ItemStack(Items.REDSTONE));
 		blockSpeaker.setCreativeTab(creativeTab);
 	}
 
@@ -74,17 +74,17 @@ public class ContentRegistry {
         GameRegistry.registerItem(itemRadioTuner, "RadioTuner");
         itemRadioTuner.setCreativeTab(creativeTab);
         GameRegistry.addRecipe(new ItemStack(itemRadioTuner), "  x", "  y", "  z",
-                'x', new ItemStack(Items.redstone),
-                'y', new ItemStack(Items.redstone),
-                'z', new ItemStack(Items.stick));
+                'x', new ItemStack(Items.REDSTONE),
+                'y', new ItemStack(Items.REDSTONE),
+                'z', new ItemStack(Items.STICK));
         
         itemMemoryCard = new ItemMemoryCard();
         GameRegistry.registerItem(itemMemoryCard, "MemoryCard");
         itemMemoryCard.setCreativeTab(creativeTab);
         GameRegistry.addRecipe(new ItemStack(itemMemoryCard), "  x", "  y", "  z",
-                'x', new ItemStack(Items.redstone),
-                'y', new ItemStack(Items.redstone),
-                'z', new ItemStack(Items.paper));
+                'x', new ItemStack(Items.REDSTONE),
+                'y', new ItemStack(Items.REDSTONE),
+                'z', new ItemStack(Items.PAPER));
         
 	}
 
@@ -102,7 +102,7 @@ public class ContentRegistry {
 
 			@SideOnly(Side.CLIENT)
 			public String getTranslatedTabLabel() {
-				return StatCollector.translateToLocal("itemGroup.OpenFM.tabOpenFM");
+				return I18n.translateToLocal("itemGroup.OpenFM.tabOpenFM");
 			}
 		};
 	}

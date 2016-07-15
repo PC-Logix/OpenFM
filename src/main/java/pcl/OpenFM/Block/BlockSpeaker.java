@@ -5,14 +5,13 @@ import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pcl.OpenFM.TileEntity.TileEntitySpeaker;
@@ -20,11 +19,11 @@ import pcl.OpenFM.TileEntity.TileEntitySpeaker;
 public class BlockSpeaker extends Block implements ITileEntityProvider {
 
 	public BlockSpeaker() {
-		super(Material.wood);
+		super(Material.WOOD);
 		setHardness(2.0F);
 		setResistance(10.0F);
 		setUnlocalizedName("OpenFM.Speaker");
-		setStepSound(Block.soundTypeWood);
+		//setStepSound(Block.soundTypeWood);
 	}
 
 	public static final PropertyDirection PROPERTYFACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
@@ -51,9 +50,9 @@ public class BlockSpeaker extends Block implements ITileEntityProvider {
 	}
 
 	@Override
-	protected BlockState createBlockState()
+	protected BlockStateContainer createBlockState()
 	{
-		return new BlockState(this, new IProperty[] {PROPERTYFACING});
+		return new BlockStateContainer(this, new IProperty[] {PROPERTYFACING});
 	}
 
 	@Override

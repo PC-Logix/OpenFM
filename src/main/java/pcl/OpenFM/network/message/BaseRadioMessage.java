@@ -1,7 +1,7 @@
 package pcl.OpenFM.network.message;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
 import pcl.OpenFM.network.MessageRadioBase;

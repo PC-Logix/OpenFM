@@ -18,7 +18,8 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import pcl.OpenFM.OpenFM;
@@ -73,7 +74,7 @@ public class OGGPlayer {
 
 		} catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
 			PacketHandler.INSTANCE.sendToServer(new MessageRadioPlaying(this.posX, this.posY, this.posZ, false).wrap());
-			FMLClientHandler.instance().getClient().thePlayer.addChatMessage(new ChatComponentTranslation("msg.OpenFM.invalid_link", new Object[0]));
+			FMLClientHandler.instance().getClient().thePlayer.addChatMessage(new TextComponentString(I18n.translateToLocal("msg.OpenFM.invalid_link")));
 			OpenFM.logger.error(e);
 			throw new IllegalStateException(e);
 		}

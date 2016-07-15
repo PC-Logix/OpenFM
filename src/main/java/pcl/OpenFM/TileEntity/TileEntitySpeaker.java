@@ -70,13 +70,14 @@ public class TileEntitySpeaker extends TileEntity implements Environment, ITicka
 
 	@Optional.Method(modid = "OpenComputers")
 	@Override
-	public void writeToNBT(NBTTagCompound nbt) {
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
 		if (node != null && node.host() == this) {
 			final NBTTagCompound nodeNbt = new NBTTagCompound();
 			node.save(nodeNbt);
 			nbt.setTag("oc:node", nodeNbt);
 		}
+		return nbt;
 	}
 
 	@Optional.Method(modid = "OpenComputers")

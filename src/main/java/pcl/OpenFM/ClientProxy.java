@@ -5,7 +5,7 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import pcl.OpenFM.TileEntity.RadioRenderer;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 
 public class ClientProxy extends CommonProxy {

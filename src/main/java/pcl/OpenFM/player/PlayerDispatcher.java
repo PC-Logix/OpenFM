@@ -7,8 +7,9 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SoundCategory;
-import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import pcl.OpenFM.OpenFM;
 import pcl.OpenFM.network.PacketHandler;
@@ -69,7 +70,7 @@ public class PlayerDispatcher extends PlaybackListener implements Runnable {
 		catch (Exception e)
 		{
 			PacketHandler.INSTANCE.sendToServer(new MessageRadioPlaying(this.x, this.y, this.z, false).wrap());
-			FMLClientHandler.instance().getClient().thePlayer.addChatMessage(new ChatComponentTranslation("msg.OpenFM.invalid_link", new Object[0]));
+			FMLClientHandler.instance().getClient().thePlayer.addChatMessage(new TextComponentString(I18n.translateToLocal("msg.OpenFM.invalid_link")));
 			OpenFM.logger.error(e);
 		}
 	}
