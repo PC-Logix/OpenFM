@@ -1,6 +1,8 @@
 package pcl.OpenFM.misc;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -11,10 +13,9 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
 public class OFMDepLoader implements IFMLLoadingPlugin, IFMLCallHook {
 	public void load() {
+		System.out.println("Unpacking Sound plugins to mods directory");
 		File jar = null;
 		File f = new File("mods/");
-		if (!f.exists()) {
-			f.mkdirs();
 			try {
 				jar = new File(OFMDepLoader.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
 			} catch (URISyntaxException e) {
@@ -23,12 +24,16 @@ public class OFMDepLoader implements IFMLLoadingPlugin, IFMLCallHook {
 			}
 					
 			try {
-				FileUtils.copyResourcesRecursively(new URL("file://" + jar  + "/assets/openfm/deps/"), f);
+				URL url = new URL("jar:file:" + jar + "!/assets/openfm/deps/");
+				JarURLConnection jarConnection = (JarURLConnection)url.openConnection();
+				FileUtils.copyJarResourcesRecursively(f, jarConnection);
 			} catch (MalformedURLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		}
 	}
 
 	@Override

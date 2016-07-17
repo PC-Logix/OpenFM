@@ -69,10 +69,11 @@ jar {
     }
 }
 
-jar.manifest = manifest { attributes(
-	"FMLCorePlugin": "pcl.OpenFM.misc.OFMDepLoader",
-	"FMLCorePluginContainsFMLMod": "icanhazfmlmodpweeze"
-) }
+def commonManifest = {
+		mainAttributes( "FMLCorePlugin": "pcl.OpenFM.misc.OFMDepLoader",
+						"FMLCorePluginContainsFMLMod": true) 
+}
+jar.manifest commonManifest
 
 def curseforge_key = 0
 def curse_changlog = "default"
