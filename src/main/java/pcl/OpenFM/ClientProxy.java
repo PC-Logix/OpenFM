@@ -3,6 +3,7 @@ package pcl.OpenFM;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import pcl.OpenFM.TileEntity.RadioRenderer;
+import pcl.OpenFM.TileEntity.TileEntityRadio;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -12,7 +13,7 @@ public class ClientProxy extends CommonProxy {
 
 	
 	public void registerRenderers() {
-		TileEntitySpecialRenderer radioRenderer = new RadioRenderer();
+		TileEntitySpecialRenderer<TileEntityRadio> radioRenderer = new RadioRenderer();
 		ClientRegistry.bindTileEntitySpecialRenderer(pcl.OpenFM.TileEntity.TileEntityRadio.class, radioRenderer);
 		OpenFM.logger.info("Registering TESR");		
 	}

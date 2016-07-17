@@ -336,11 +336,13 @@ public class GuiRadio extends GuiRadioBase {
 		} if (buttonID == 7) { //Save
 			if(this.streamTextBox.getText() != null && !this.streamTextBox.getText().isEmpty()) {
 				this.radio.addStation(this.streamTextBox.getText());
-				PacketHandler.INSTANCE.sendToServer(new MessageRadioAddStation(this.radio, this.radio.streamURL).wrap());
+				PacketHandler.INSTANCE.sendToServer(new MessageRadioAddStation(this.radio, this.streamTextBox.getText()).wrap());
 			}
 		} if (buttonID == 8) { //Delete 
-			this.radio.delStation(this.streamTextBox.getText());
-			PacketHandler.INSTANCE.sendToServer(new MessageRadioDelStation(this.radio, this.radio.streamURL).wrap());
+			if(this.streamTextBox.getText() != null && !this.streamTextBox.getText().isEmpty()) {
+				this.radio.delStation(this.streamTextBox.getText());
+				PacketHandler.INSTANCE.sendToServer(new MessageRadioDelStation(this.radio, this.streamTextBox.getText()).wrap());
+			}
 		} if (buttonID == 9) { //Close 
 			Minecraft.getMinecraft().displayGuiScreen(null);
 			Minecraft.getMinecraft().setIngameFocus();

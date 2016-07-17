@@ -84,6 +84,8 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	
 	int th = 0;
 	int loops = 0;
+	int ticks = 0;
+	int renderCount = 0;
 	
 	public TileEntityRadio(World w) {
 		world = w;
@@ -192,7 +194,6 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	public void update() {
 		Side side = FMLCommonHandler.instance().getEffectiveSide();
 		float vol;
-
 		if (side == Side.CLIENT) {
 			th += 1;
 			if (th >= 10) {
@@ -849,5 +850,29 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	public void setOwner(String inOwner) {
 		this.owner = inOwner;
 		
+	}
+
+	public void incTicks() {
+		this.ticks++;
+	}
+
+	public int getTicks() {
+		return this.ticks;
+	}
+
+	public int getRenderCount() {
+		return renderCount;
+	}
+	
+	public void incRenderCount() {
+		this.renderCount++;
+	}
+
+	public void resetRenderCount() {
+		this.renderCount = 0;
+	}
+
+	public void resetTicks() {
+		this.ticks = 0;
 	}
 }

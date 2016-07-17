@@ -3,28 +3,20 @@ package pcl.OpenFM.TileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
 
 import org.lwjgl.opengl.GL11;
 
 public class RadioRenderer extends TileEntitySpecialRenderer {
-
-	public Integer ticks = 0;
-	public String text = null;
-	String output = "";
-	int count = 0;
 	
 	private static final Minecraft mc = Minecraft.getMinecraft();
 	
 	@Override
-	public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float f, int p_180535_9_) {
+	public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float partialTick, int destroyStage) {
 		TileEntityRadio radio = (TileEntityRadio) tileEntity;
-		
 		float light = tileEntity.getWorld().getLightBrightness(tileEntity.getPos());
-		Minecraft.getMinecraft().entityRenderer.disableLightmap();
+		mc.entityRenderer.disableLightmap();
 		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, light, light);
 
 		//RenderManager renderMan = RenderManager.instance;
@@ -51,35 +43,32 @@ public class RadioRenderer extends TileEntitySpecialRenderer {
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		++this.ticks;
-		if (this.ticks > 20) {
-			if (radio.getScreenText().length() > 6) {
-				output = scrollText(radio.getScreenText());
-			} else {
-				output = radio.getScreenText();
-			}
-		}
-		mc.getRenderManager().getFontRenderer().drawString(output, -37 / 2, 0, radio.getScreenColor());
+		
+		//This is broken in 1.9.4+ If someone wants to PR a fix to scrollText that doesn't suck please do.
+		
+		//if (radio.getTicks() > 20) {
+			//if (radio.getScreenText().length() > 6) {
+				//mc.getRenderManager().getFontRenderer().drawString(scrollText(radio.getScreenText(), radio), -37 / 2, 0, radio.getScreenColor());
+			//} else {
+				mc.getRenderManager().getFontRenderer().drawString(radio.getScreenText().substring(0, 6), -37 / 2, 0, radio.getScreenColor());
+			//}
+		//}
+		
+		
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glPopMatrix();
 	}
 
-	public String scrollText(String text) {
+	public String scrollText(String text, TileEntityRadio radio) {
+		String output = "";
 		FontRenderer fontRenderer = mc.getRenderManager().getFontRenderer();
 		text = "       " + text + "        ";
-		if (text.length() > count + 6) {
-			output = text.substring(count, count + 6);
+		if (text.length() > radio.getRenderCount() + 6) {
+			output = text.substring(radio.getRenderCount(), radio.getRenderCount() + 6);
 			if (fontRenderer.getStringWidth(output) / 6 < 5) {
-				output = text.substring(count, count + 7);
+				output = text.substring(radio.getRenderCount(), radio.getRenderCount() + 7);
 			}
-			count++;
-			this.ticks = 0;
-			if (count > text.length()) {
-				count = 0;
-			}
-		} else {
-			count = 0;
 		}
 		return output;
 	}
