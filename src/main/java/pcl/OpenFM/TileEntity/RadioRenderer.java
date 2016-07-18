@@ -50,8 +50,13 @@ public class RadioRenderer extends TileEntitySpecialRenderer {
 			//if (radio.getScreenText().length() > 6) {
 				//mc.getRenderManager().getFontRenderer().drawString(scrollText(radio.getScreenText(), radio), -37 / 2, 0, radio.getScreenColor());
 			//} else {
-			if(radio.getScreenText().length() > 6)
-				mc.getRenderManager().getFontRenderer().drawString(radio.getScreenText().substring(0, 6), -37 / 2, 0, radio.getScreenColor());
+			String tempStr = "";
+			if(radio.getScreenText().length() > 6) {
+				tempStr	= radio.getScreenText().substring(0, 6);
+			} else {
+				tempStr = radio.getScreenText();
+			}
+			mc.getRenderManager().getFontRenderer().drawString(tempStr, -37 / 2, 0, radio.getScreenColor());
 			//}
 		//}
 		
