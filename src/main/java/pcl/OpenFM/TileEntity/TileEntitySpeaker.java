@@ -19,7 +19,7 @@ public class TileEntitySpeaker extends TileEntity implements Environment {
 	@Optional.Method(modid = "OpenComputers")
 	@Override
 	public Node node() {
-		node = Network.newNode(this, Visibility.Network).create();
+		if (node == null) node = Network.newNode(this, Visibility.Network).create();
 		return node;
 	}
 	
