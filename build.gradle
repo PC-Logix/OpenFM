@@ -86,6 +86,7 @@ curseforge {
 	apiKey = curseforge_key
 	project {
 		id = "236839"
+		addGameVersion '1.10.2'
 		releaseType = "release"
 		changelog = curse_changlog
 	}
