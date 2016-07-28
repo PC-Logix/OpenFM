@@ -37,7 +37,7 @@ import pcl.OpenFM.TileEntity.TileEntityRadio;
 })
 public class BlockRadio extends Block implements ITileEntityProvider {
 
-	public GuiRadioBase guiRadio;
+	//public GuiRadioBase guiRadio;
 	private Random random;
 
 	public BlockRadio()
