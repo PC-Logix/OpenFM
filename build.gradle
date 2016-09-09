@@ -41,6 +41,7 @@ dependencies {
 	shade "com.googlecode.soundlibs:tritonus-share:0.3.7-2"
 	compile "com.googlecode.soundlibs:mp3spi:1.9.5-1"
 	compile "com.googlecode.soundlibs:vorbisspi:1.0.3-1"
+	compile files('libs/jaad-0.8.5.jar')
 }
 
 if (System.getenv().BUILD_NUMBER != null)
@@ -86,7 +87,6 @@ curseforge {
 	apiKey = curseforge_key
 	project {
 		id = "236839"
-		addGameVersion '1.10.2'
 		releaseType = "release"
 		changelog = curse_changlog
 	}

@@ -18,8 +18,9 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class PlayerDispatcher extends PlaybackListener implements Runnable {
 	private String streamURL;
-	public AdvancedPlayer mp3Player;
+	public MP3Player mp3Player;
 	public OGGPlayer oggPlayer;
+	public AACPlayer aacPlayer;
 	public String decoder;
 	private Thread pThread;
 	private int x;
@@ -48,6 +49,7 @@ public class PlayerDispatcher extends PlaybackListener implements Runnable {
 	@Override
 	public void run()
 	{
+		System.out.println(decoder);
 		try
 		{
 			if (decoder.equals("mp3")) {
@@ -57,7 +59,7 @@ public class PlayerDispatcher extends PlaybackListener implements Runnable {
 				Response response = client.newCall(request).execute();
 				InputStream stream = response.body().byteStream();
 				 
-				this.mp3Player = new AdvancedPlayer(stream);
+				this.mp3Player = new MP3Player(stream);
 				this.mp3Player.setID(this.world, this.x, this.y, this.z);
 				this.mp3Player.setPlayBackListener(this);
 				this.mp3Player.play();
@@ -65,6 +67,10 @@ public class PlayerDispatcher extends PlaybackListener implements Runnable {
 				this.oggPlayer = new OGGPlayer();
 				this.oggPlayer.setID(this.world, this.x, this.y, this.z);
 				this.oggPlayer.play(this.streamURL);
+			} else if (decoder.equals("aac")) {
+				this.aacPlayer = new AACPlayer();
+				this.aacPlayer.setID(this.world, this.x, this.y, this.z);
+				this.aacPlayer.play(this.streamURL);
 			}
 		}
 		catch (Exception e)
@@ -77,12 +83,14 @@ public class PlayerDispatcher extends PlaybackListener implements Runnable {
 
 	public void stop()
 	{
-		if ((this.mp3Player != null || this.oggPlayer != null) && (isPlaying()))
+		if ((this.mp3Player != null || this.oggPlayer != null || this.aacPlayer != null) && (isPlaying()))
 		{
 			if (decoder.equals("mp3")) {
 				this.mp3Player.stop();
 			} else if (decoder.equals("ogg")) {
 				this.oggPlayer.stop();
+			} else if (decoder.equals("aac")) {
+				this.aacPlayer.stop();
 			}
 		}
 	}
@@ -99,6 +107,8 @@ public class PlayerDispatcher extends PlaybackListener implements Runnable {
 			return this.pThread.isAlive();
 		} else if (decoder.equals("ogg")) {
 			return this.oggPlayer.isPlaying();
+		} else if (decoder.equals("aac")) {
+			return this.aacPlayer.isPlaying();
 		} else {
 			return false;
 		}
@@ -111,6 +121,8 @@ public class PlayerDispatcher extends PlaybackListener implements Runnable {
 			this.mp3Player.setVolume(f);
 		} else if (this.oggPlayer != null) {
 			this.oggPlayer.setVolume(f);
+		} else if (this.aacPlayer != null) {
+			this.aacPlayer.setVolume(f);
 		}
 	}
 
@@ -120,7 +132,9 @@ public class PlayerDispatcher extends PlaybackListener implements Runnable {
 			return this.mp3Player.getVolume() / Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS);
 		} else if (decoder.equals("ogg")) {
 			return this.oggPlayer.getVolume() / Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS);
-		} else {
+		} else if (decoder.equals("aac")) {
+			return this.aacPlayer.getVolume() / Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS);
+		}else {
 			return 0;
 		}
 	}

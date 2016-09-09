@@ -81,12 +81,12 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	public boolean isLocked;
 	public String owner = "";
 	public ItemStack[] RadioItemStack = new ItemStack[1];
-	
+
 	int th = 0;
 	int loops = 0;
 	int ticks = 0;
 	int renderCount = 0;
-	
+
 	public TileEntityRadio(World w) {
 		world = w;
 		if (isPlaying) {
@@ -146,6 +146,8 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 						OpenFM.logger.info(type.toString());
 						if (type.toString().equals("MP3")) {
 							decoder = "mp3";
+						} else if (type.toString().equals("AAC")) {
+							decoder = "aac";
 						} else if (type.toString().equals("OGG")) {
 							decoder = "ogg";
 						}
@@ -849,7 +851,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 
 	public void setOwner(String inOwner) {
 		this.owner = inOwner;
-		
+
 	}
 
 	public void incTicks() {
@@ -863,7 +865,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	public int getRenderCount() {
 		return renderCount;
 	}
-	
+
 	public void incRenderCount() {
 		this.renderCount++;
 	}

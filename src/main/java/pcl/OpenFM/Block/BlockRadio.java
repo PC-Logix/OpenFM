@@ -92,13 +92,11 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 					}
 				}
 				world.spawnEntityInWorld(new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), stack));
-				//world.setBlockState(pos, Blocks.air.getDefaultState());
 				super.breakBlock(world, pos, state);;
 			} else {
 				ItemStack stack = new ItemStack(Item.getItemFromBlock(this), 1);
 				world.spawnEntityInWorld(new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), stack));
-				//world.setBlockState(pos, Blocks.air.getDefaultState());
-				super.breakBlock(world, pos, state);;
+				super.breakBlock(world, pos, state);
 			}
 		}
 	}
