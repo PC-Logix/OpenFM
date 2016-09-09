@@ -80,6 +80,7 @@ pip-log.txt
 /build/
 /run/
 /run_client/
+/run_server/
 /eclipse/
 /runtime/
 /server_runtime/
