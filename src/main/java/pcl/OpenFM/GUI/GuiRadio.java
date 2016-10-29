@@ -427,7 +427,7 @@ public class GuiRadio extends GuiRadioBase {
 				actionPerformed(14);
 			}
 		}
-		if(!( par2== Keyboard.KEY_E  &&  this.screenTextBox.isFocused() || this.streamTextBox.isFocused() || this.colorBox.isFocused())) super.keyTyped(par1, par2);
+		if(!( par2 == mc.gameSettings.keyBindInventory.getKeyCode()  &&  this.screenTextBox.isFocused() || this.streamTextBox.isFocused() || this.colorBox.isFocused())) super.keyTyped(par1, par2);
 	}
 
 	public static boolean betweenExclusive(int x, int min, int max)
