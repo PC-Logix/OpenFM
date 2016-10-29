@@ -430,7 +430,7 @@ public class GuiRadio extends GuiRadioBase {
 				actionPerformed(14);
 			}
 		}
-		if(!( par2== Keyboard.KEY_E  &&  this.screenTextBox.isFocused() || this.streamTextBox.isFocused() || this.colorBox.isFocused())) {
+		if(!( par2 == mc.gameSettings.keyBindInventory.getKeyCode()  &&  this.screenTextBox.isFocused() || this.streamTextBox.isFocused() || this.colorBox.isFocused())) {
 			super.keyTyped(par1, par2);
 		}
 	}
