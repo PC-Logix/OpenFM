@@ -11,6 +11,7 @@ public class OFMConfiguration {
 	public static String defaultURL = "StreamURL";
 	public static boolean enableMUD = true;
 	public static boolean enableStreams = true;
+	public static Integer maxSpeakers = 10;
 	public static Configuration config;
 
 	// Called by OpenFM preInit()
@@ -23,6 +24,7 @@ public class OFMConfiguration {
 			defaultURL = config.get("general", "defaultURL", defaultURL, "The default stream of the player.").getString();
 			enableMUD = config.get("general", "enableMUD", enableMUD, "Automatically check for mod updates.").getBoolean();
 			enableStreams = config.get("general", "enableStreams", enableStreams, "Should we try to play streams at all? If false streams will not work in game. (Client side only)").getBoolean();
+			maxSpeakers = config.get("general", "maxSpeakers", maxSpeakers, "Maximum speakers that can be attached to a radio, higher numbers may cause performance issues").getInt(10);
 		} catch(Exception e) {
 			OpenFM.logger.error("OpenFM encountered a problem with loading the config file.");
 		} finally {
