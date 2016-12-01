@@ -192,7 +192,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 		float vol;
 		if (side == Side.CLIENT) {
 			th += 1;
-			if (th >= 10) {
+			if (th >= OFMConfiguration.maxSpeakers) {
 				for (Speaker s : speakers) {
 					Block sb = getWorldObj().getBlock((int) s.x, (int) s.y, (int) s.z);
 					if (!(sb instanceof BlockSpeaker)) {
