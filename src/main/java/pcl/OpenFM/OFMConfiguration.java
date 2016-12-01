@@ -11,6 +11,7 @@ public class OFMConfiguration {
 	public static String defaultURL = "StreamURL";
 	public static boolean enableMUD = true;
 	public static boolean enableStreams = true;
+	public static Integer maxSpeakers = 10;
 	public static Configuration config;
 
 	// Called by OpenFM preInit()

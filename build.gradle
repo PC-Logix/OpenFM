@@ -89,6 +89,7 @@ curseforge {
 		id = "236839"
 		releaseType = "release"
 		changelog = curse_changlog
+		addGameVersion '1.10.2'
 	}
 }
 
