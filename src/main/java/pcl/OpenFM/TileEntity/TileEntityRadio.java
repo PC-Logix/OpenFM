@@ -192,7 +192,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 
 		if (side == Side.CLIENT) {
 			th += 1;
-			if (th >= 10) {
+			if (th >= OFMConfiguration.maxSpeakers) {
 				for (Speaker s : speakers) {
 					IBlockState sb = getWorld().getBlockState(new BlockPos(s.x, s.y, s.z));
 					if (!(sb.getBlock() instanceof BlockSpeaker)) {
