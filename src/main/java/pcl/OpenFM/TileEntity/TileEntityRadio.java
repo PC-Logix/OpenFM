@@ -890,6 +890,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 		String text = "       " + this.screenText + "        ";
 		if (text.length() > radio.getRenderCount() + 6 && text.trim().length() > 6) {
 			this.incTicks();
+			if(this.getTicks() % 20 == 0) {
 				screenOut = text.substring(radio.getRenderCount(), radio.getRenderCount() + 6);
 				//if (fontRenderer.getStringWidth(output) / 6 < 5) {
 				//	output = text.substring(radio.getRenderCount(), radio.getRenderCount() + 7);
