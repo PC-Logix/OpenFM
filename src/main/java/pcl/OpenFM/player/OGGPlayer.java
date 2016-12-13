@@ -18,6 +18,8 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
@@ -47,12 +49,12 @@ public class OGGPlayer {
 		this.streamURL = streamURL;
 		OkHttpClient client = new OkHttpClient();
 		Request request = new Request.Builder()
-		.url(streamURL)
-		.build();
-		
+				.url(streamURL)
+				.build();
+
 		Response response = client.newCall(request).execute();
 		InputStream stream = response.body().byteStream();
-		
+
 		BufferedInputStream bis = new BufferedInputStream(response.body().byteStream());		 
 		try (final AudioInputStream in = getAudioInputStream(bis)) {
 
@@ -63,6 +65,7 @@ public class OGGPlayer {
 				this.line = line;
 				if (line != null) {
 					line.open(outFormat);
+					setVolume(this.volume);
 					linesPlaying.add(line);
 					line.start();
 					stream(getAudioInputStream(outFormat, in), line);
@@ -71,7 +74,6 @@ public class OGGPlayer {
 					linesPlaying.remove(line);
 				}
 			}
-
 		} catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
 			PacketHandler.INSTANCE.sendToServer(new MessageRadioPlaying(this.posX, this.posY, this.posZ, false).wrap());
 			FMLClientHandler.instance().getClient().thePlayer.addChatMessage(new TextComponentString(I18n.translateToLocal("msg.OpenFM.invalid_link")));
@@ -88,39 +90,46 @@ public class OGGPlayer {
 
 	private void stream(AudioInputStream in, SourceDataLine line) throws IOException {
 		final byte[] buffer = new byte[65536];
+
 		for (int n = 0; n != -1; n = in.read(buffer, 0, buffer.length)) {
-			line.write(buffer, 0, n);
+			try {
+				line.write(buffer, 0, n);
+			}
+			catch (ArrayIndexOutOfBoundsException|IllegalArgumentException e) {
+				OpenFM.logger.error(e);
+			}
 		}
 	}
 
 	public void stop() {
 		while (linesPlaying.peek() != null) {
 			try (final SourceDataLine line = linesPlaying.pop()) {
+				line.flush();
 				line.stop();
+				//line.close();
 				linesPlaying.clear();
 			}
 		}
 	}
-	
+
 	public void setVolume(float f) {
 		this.volume = f;
-        if (line != null && line.isOpen()) {
-            try {
-                    FloatControl volumeControl = (FloatControl)line.getControl(FloatControl.Type.MASTER_GAIN);
-                    if (this.volume == 0) {
-                            volumeControl.setValue(volumeControl.getMinimum());
-                    } else {                                        
-                            float minimum = volumeControl.getMinimum();
-                            float maximum = volumeControl.getMaximum();
-    
-                            double db = Math.log10(this.volume) * 20; //Map linear volume to logarithmic dB scale
-                            
-                            volumeControl.setValue(Math.max(minimum, Math.min(maximum, (float)db)));
-                    }
-            } catch (IllegalArgumentException iae) {
-                    throw new RuntimeException(iae);
-            }
-    }
+		if (line != null && line.isOpen()) {
+			try {
+				FloatControl volumeControl = (FloatControl)line.getControl(FloatControl.Type.MASTER_GAIN);
+				if (this.volume == 0) {
+					volumeControl.setValue(volumeControl.getMinimum());
+				} else {                                        
+					float minimum = volumeControl.getMinimum();
+					float maximum = volumeControl.getMaximum();
+
+					double db = Math.log10(this.volume * (Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS) * Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.MASTER))) * 20; //Map linear volume to logarithmic dB scale
+					volumeControl.setValue(Math.max(minimum, Math.min(maximum, (float)db)));
+				}
+			} catch (IllegalArgumentException iae) {
+				throw new RuntimeException(iae);
+			}
+		}
 	}
 
 	public float getVolume() {
