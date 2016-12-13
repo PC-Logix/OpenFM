@@ -55,7 +55,7 @@ public class OGGPlayer {
 		Response response = client.newCall(request).execute();
 		InputStream stream = response.body().byteStream();
 
-		BufferedInputStream bis = new BufferedInputStream(response.body().byteStream());		 
+		BufferedInputStream bis = new BufferedInputStream(stream);		 
 		try (final AudioInputStream in = getAudioInputStream(bis)) {
 
 			final AudioFormat outFormat = getOutFormat(in.getFormat());

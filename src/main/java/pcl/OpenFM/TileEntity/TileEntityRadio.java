@@ -18,6 +18,7 @@ import li.cil.oc.api.network.ManagedPeripheral;
 import li.cil.oc.api.network.SimpleComponent;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -76,6 +77,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	public ArrayList<Speaker> speakers = new ArrayList<Speaker>();
 	public int screenColor = 0x0000FF;
 	public String screenText = "OpenFM";
+	public String screenOut = "";
 	public List<String> stations = new ArrayList<String>();
 	private int stationCount = 0;
 	public boolean isLocked;
@@ -194,6 +196,11 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 
 	@Override
 	public void update() {
+		if (this.getTicks() > 20) {
+			if (this.getScreenText().length() > 6) {
+				//scrollText(this);
+			}
+		}
 		Side side = FMLCommonHandler.instance().getEffectiveSide();
 		float vol;
 		if (side == Side.CLIENT) {
@@ -876,5 +883,28 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 
 	public void resetTicks() {
 		this.ticks = 0;
+	}
+	
+	public String scrollText(TileEntityRadio radio) {
+		//FontRenderer fontRenderer = mc.getRenderManager().getFontRenderer();
+		String text = "       " + this.screenText + "        ";
+		if (text.length() > radio.getRenderCount() + 6 && text.trim().length() > 6) {
+			this.incTicks();
+				screenOut = text.substring(radio.getRenderCount(), radio.getRenderCount() + 6);
+				//if (fontRenderer.getStringWidth(output) / 6 < 5) {
+				//	output = text.substring(radio.getRenderCount(), radio.getRenderCount() + 7);
+				//}
+				radio.incRenderCount();
+				radio.resetTicks();
+				if (radio.getRenderCount() > text.length()) {
+					radio.resetRenderCount();
+				}
+			}
+		} else if (text.trim().length() <= 6) {
+			screenOut = this.screenText;
+		} else {
+			radio.resetRenderCount();
+		}
+		return screenOut;
 	}
 }
