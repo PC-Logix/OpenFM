@@ -236,9 +236,9 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 			if (isPlaying()) {
 				if (loops >= 40) {
 					PacketHandler.INSTANCE.sendToAllAround(new MessageRadioSync(this).wrap(), new NetworkRegistry.TargetPoint(getWorld().provider.getDimensionId(), this.pos.getX(), this.pos.getY(), this.pos.getZ(), 50.0D));
-					loops++;
-				} else {
 					loops = 0;
+				} else {
+					loops++;
 				}
 				th += 1;
 				if (th >= 60) {
