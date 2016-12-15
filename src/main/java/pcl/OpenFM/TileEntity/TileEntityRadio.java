@@ -231,9 +231,9 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 			if (isPlaying()) {
 				if (loops >= 40) {
 					PacketHandler.INSTANCE.sendToAllAround(new MessageTERadioBlock(this), new NetworkRegistry.TargetPoint(getWorldObj().provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 50.0D));
-					loops++;
-				} else {
 					loops = 0;
+				} else {
+					loops++;
 				}
 				th += 1;
 				if (th >= 60) {
