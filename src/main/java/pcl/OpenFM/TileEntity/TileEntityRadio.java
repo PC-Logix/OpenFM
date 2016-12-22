@@ -149,7 +149,10 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 						if (type.toString().equals("MP3")) {
 							decoder = "mp3";
 						} else if (type.toString().equals("AAC")) {
-							decoder = "aac";
+							//decoder = "aac";
+							isValid = false;
+							stopStream();
+							OpenFM.logger.error("Stopping AAC Stream before catastrophic failure");
 						} else if (type.toString().equals("OGG")) {
 							decoder = "ogg";
 						}
@@ -204,7 +207,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 		Side side = FMLCommonHandler.instance().getEffectiveSide();
 		float vol;
 		if (side == Side.CLIENT) {
-			th += 1;
+			th++;
 			if (th >= OFMConfiguration.maxSpeakers) {
 				for (Speaker s : speakers) {
 					IBlockState sb = getWorld().getBlockState(new BlockPos(s.x, s.y, s.z));
@@ -216,6 +219,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 						break;
 					}
 				}
+				th = 0;
 			}
 			if ((Minecraft.getMinecraft().thePlayer != null) && (mp3Player != null || oggPlayer != null) && (!isInvalid())) {
 				vol = getClosest();
@@ -254,7 +258,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 					loops++;
 					
 				}
-				th += 1;
+				th++;
 				if (th >= 60) {
 					for (Speaker s : speakers) {
 						if (!(worldObj.getBlockState(new BlockPos(s.x, s.y, s.z)).getBlock() instanceof BlockSpeaker)) {
@@ -265,6 +269,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 							break;
 						}
 					}
+					th = 0;
 				}
 			}
 

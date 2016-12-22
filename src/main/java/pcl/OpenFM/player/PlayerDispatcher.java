@@ -68,9 +68,9 @@ public class PlayerDispatcher extends PlaybackListener implements Runnable {
 				this.oggPlayer.setID(this.world, this.x, this.y, this.z);
 				this.oggPlayer.play(this.streamURL);
 			} else if (decoder.equals("aac")) {
-				this.aacPlayer = new AACPlayer();
-				this.aacPlayer.setID(this.world, this.x, this.y, this.z);
-				this.aacPlayer.play(this.streamURL);
+				//this.aacPlayer = new AACPlayer();
+				//this.aacPlayer.setID(this.world, this.x, this.y, this.z);
+				//this.aacPlayer.play(this.streamURL);
 			}
 		}
 		catch (Exception e)
