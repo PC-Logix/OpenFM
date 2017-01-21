@@ -341,7 +341,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	}
 
 	public int canAddSpeaker(World w, double x, double y, double z) {
-		if (speakers.size() >= 10)
+		if (speakers.size() >= OFMConfiguration.maxSpeakers)
 			return 1;
 		for (Speaker s : speakers)
 			if ((s.x == x) && (s.y == y) && (s.z == z))
