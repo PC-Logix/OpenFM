@@ -355,7 +355,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	}
 
 	public int canAddSpeaker(World w, int x, int y, int z) {
-		if (speakers.size() >= 10) {
+		if (speakers.size() >= OFMConfiguration.maxSpeakers) {
 			return 1;
 		}
 		for (Speaker s : speakers) {
