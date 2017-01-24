@@ -51,8 +51,8 @@ public class OpenFM {
 			logger.info("Registering mod with OpenUpdater.");
 			try {
 				Class.forName("pcl.mud.OpenUpdater").getDeclaredMethod("registerMod", ModContainer.class, URL.class, URL.class).invoke(null, FMLCommonHandler.instance().findContainerFor(this),
-						new URL("http://PC-Logix.com/OpenFM/get_latest_build.php?mcver=1.7.10"),
-						new URL("http://PC-Logix.com/OpenFM/changelog.php?mcver=1.7.10"));
+						new URL("http://PC-Logix.com/OpenFM/get_latest_build.php?mcver=1.9.4"),
+						new URL("http://PC-Logix.com/OpenFM/changelog.php?mcver=1.9.4"));
 			} catch (Throwable e) {
 				logger.info("OpenUpdater is not installed, not registering.");
 			}

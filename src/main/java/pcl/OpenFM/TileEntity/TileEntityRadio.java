@@ -145,6 +145,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 					if (isValid) {
 						// Audio type such as MPEG1 Layer3, or Layer 2, or ...
 						AudioFileFormat.Type type = baseFileFormat.getType();
+						OpenFM.logger.info(baseFileFormat.getFormat());
 						OpenFM.logger.info(type.toString());
 						if (type.toString().equals("MP3")) {
 							decoder = "mp3";
@@ -299,9 +300,11 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	public void addStation(String station) {
 		if (station != null && !stations.contains(station)) {
 			stations.add(station);
-			PacketHandler.INSTANCE.sendToDimension(new MessageRadioAddStation(this, station).wrap(), getWorld().provider.getDimension());
-			getUpdateTag();
-			markDirty();
+			if(stations.size() > 0) {
+				PacketHandler.INSTANCE.sendToDimension(new MessageRadioAddStation(this, station).wrap(), getWorld().provider.getDimension());
+				getUpdateTag();
+				markDirty();
+			}
 		}
 	}
 
