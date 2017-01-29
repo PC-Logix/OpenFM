@@ -369,17 +369,22 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	public int addSpeaker(World w, int x, int y, int z) {
 		int ret = canAddSpeaker(w, x, y, z);
 		if (ret == 0) {
+			OpenFM.logger.info("Adding speaker to system");
 			speakers.add(new Speaker(x, y, z, w));
 		}
 		return ret;
 	}
 
 	public int canAddSpeaker(World w, int x, int y, int z) {
+		OpenFM.logger.info("Checking if able to add speaker:");
+		OpenFM.logger.info("Current number of speakers: " + speakers.size() + " Max speakers allowed in config: " + OFMConfiguration.maxSpeakers);
 		if (speakers.size() >= OFMConfiguration.maxSpeakers) {
+			OpenFM.logger.info("There are too many speakers");
 			return 1;
 		}
 		for (Speaker s : speakers) {
 			if ((s.x == x) && (s.y == y) && (s.z == z)) {
+				OpenFM.logger.info("This speaker is already added");
 				return 2;
 			}
 		}

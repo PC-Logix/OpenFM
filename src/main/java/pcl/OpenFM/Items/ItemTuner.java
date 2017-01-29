@@ -10,6 +10,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
+import pcl.OpenFM.OFMConfiguration;
 import pcl.OpenFM.Block.BlockRadio;
 import pcl.OpenFM.Block.BlockSpeaker;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
@@ -52,7 +53,7 @@ public class ItemTuner extends Item {
                         PacketHandler.INSTANCE.sendToServer(new MessageRadioAddSpeaker(radio, speaker).wrap());
                     } else if (canAdd == 1) {
                         // Too many speakers linked.
-                        player.addChatMessage(new TextComponentString(I18n.translateToLocal("msg.OpenFM.failed_adding_speaker_limit")));
+                        player.addChatMessage(new TextComponentString(I18n.translateToLocal("msg.OpenFM.failed_adding_speaker_limit").replaceFirst("10", Integer.toString(OFMConfiguration.maxSpeakers))));
                     } else if (canAdd == 2) {
                         // Speaker is already linked.
                         player.addChatMessage(new TextComponentString(I18n.translateToLocal("msg.OpenFM.failed_adding_speaker_exists")));
