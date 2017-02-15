@@ -5,6 +5,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import pcl.OpenFM.OpenFM;
 import pcl.OpenFM.player.MP3Player;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundCategory;
@@ -66,7 +67,7 @@ public class PlayerDispatcher extends PlaybackListener implements Runnable {
 		{
 			//PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.x, this.y, this.z, this.world, this.streamURL, !isPlaying(), 0.1F, 1));
 			//FMLClientHandler.instance().getClient().thePlayer.addChatMessage(new ChatComponentTranslation("msg.OpenFM.invalid_link", new Object[0]));
-			//OpenFM.logger.error(e);
+			OpenFM.logger.error(e.getMessage());
 		}
 	}
 
