@@ -5,13 +5,14 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import pcl.OpenFM.player.MP3Player;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.world.World;
 
 public class PlayerDispatcher extends PlaybackListener implements Runnable {
 	private String streamURL;
-	public AdvancedPlayer mp3Player;
+	public MP3Player mp3Player;
 	public OGGPlayer oggPlayer;
 	public String decoder;
 	private Thread pThread;
@@ -51,7 +52,7 @@ public class PlayerDispatcher extends PlaybackListener implements Runnable {
 				Response response = client.newCall(request).execute();
 				InputStream stream = response.body().byteStream();
 				 
-				this.mp3Player = new AdvancedPlayer(stream);
+				this.mp3Player = new MP3Player(stream);
 				this.mp3Player.setID(this.world, this.x, this.y, this.z);
 				this.mp3Player.setPlayBackListener(this);
 				this.mp3Player.play();

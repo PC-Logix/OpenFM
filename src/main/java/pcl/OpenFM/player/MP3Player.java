@@ -16,7 +16,7 @@ import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.world.World;
 import pcl.OpenFM.ContentRegistry;
 
-public class AdvancedPlayer {
+public class MP3Player {
 	private Bitstream bitstream;
 	private Decoder decoder;
 	private AudioDevice audio;
@@ -27,7 +27,7 @@ public class AdvancedPlayer {
 	private int posZ;
 	private World world;
 	public InputStream ourStream = null;
-	public AdvancedPlayer(InputStream stream) throws JavaLayerException {
+	public MP3Player(InputStream stream) throws JavaLayerException {
 		this(stream, null);
 	}
 
@@ -38,7 +38,7 @@ public class AdvancedPlayer {
 		this.world = w;
 	}
 
-	public AdvancedPlayer(InputStream stream, AudioDevice device) throws JavaLayerException {
+	public MP3Player(InputStream stream, AudioDevice device) throws JavaLayerException {
 		ourStream = stream;
 		this.bitstream = new Bitstream(stream);
 		if (device != null)
