@@ -21,6 +21,8 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.world.World;
 import pcl.OpenFM.OpenFM;
@@ -101,23 +103,22 @@ public class OGGPlayer {
 	
 	public void setVolume(float f) {
 		this.volume = f;
-        if (line != null && line.isOpen()) {
-            try {
-                    FloatControl volumeControl = (FloatControl)line.getControl(FloatControl.Type.MASTER_GAIN);
-                    if (this.volume == 0) {
-                            volumeControl.setValue(volumeControl.getMinimum());
-                    } else {                                        
-                            float minimum = volumeControl.getMinimum();
-                            float maximum = volumeControl.getMaximum();
-    
-                            double db = Math.log10(this.volume) * 20; //Map linear volume to logarithmic dB scale
-                            
-                            volumeControl.setValue(Math.max(minimum, Math.min(maximum, (float)db)));
-                    }
-            } catch (IllegalArgumentException iae) {
-                    throw new RuntimeException(iae);
-            }
-    }
+		if (line != null && line.isOpen()) {
+			try {
+				FloatControl volumeControl = (FloatControl)line.getControl(FloatControl.Type.MASTER_GAIN);
+				if (this.volume == 0) {
+					volumeControl.setValue(volumeControl.getMinimum());
+				} else {                                        
+					float minimum = volumeControl.getMinimum();
+					float maximum = volumeControl.getMaximum();
+
+					double db = Math.log10(this.volume * (Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.RECORDS) * Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.MASTER))) * 20; //Map linear volume to logarithmic dB scale
+					volumeControl.setValue(Math.max(minimum, Math.min(maximum, (float)db)));
+				}
+			} catch (IllegalArgumentException iae) {
+				throw new RuntimeException(iae);
+			}
+		}
 	}
 
 	public float getVolume() {
