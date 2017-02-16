@@ -7,6 +7,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -22,6 +23,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.fml.common.Loader;
 
 public class ContentRegistry {
@@ -49,28 +51,26 @@ public class ContentRegistry {
 	public static void registerBlocks() {
 
 		blockRadio = new BlockRadio();
-		for (String s : OreDictionary.getOreNames()) {
-			System.out.println(s);
-		}
 		
-		ItemStack woodPlank = OreDictionary.getOres("plankWood").get(0);
 		//Rename these to lowercase and keep in world
 		// GameRegistry.addSubstitutionAlias("minecraft:end_stone", GameRegistry.Type.BLOCK, testBlock);
 		GameRegistry.registerBlock(blockRadio, ItemBlockRadio.class, "Radio");
 		GameRegistry.registerTileEntity(TileEntityRadio.class, "OpenFMRadio");
-		GameRegistry.addRecipe(new ItemStack(blockRadio), "  y", "xyx", "xzx",
-				'x', woodPlank,
+		IRecipe radioRecipe = new ShapedOreRecipe(blockRadio, "  y", "xyx", "xzx",
+				'x', "plankWood",
 				'y', Items.IRON_INGOT,
 				'z', Items.DIAMOND);
+		GameRegistry.addRecipe(radioRecipe);
 		blockRadio.setCreativeTab(creativeTab);
 
 		blockSpeaker = new BlockSpeaker();
 		GameRegistry.registerBlock(blockSpeaker, "Speaker");
-		GameRegistry.registerTileEntity(TileEntitySpeaker.class, "OpenFMSpeaker");
-		GameRegistry.addRecipe(new ItemStack(blockSpeaker), "xxx", "xyx", "xzx",
-				'x', woodPlank,
+		IRecipe speakerRecipe = new ShapedOreRecipe(blockSpeaker, "  y", "xyx", "xzx",
+				'x', "plankWood",
 				'y', Items.IRON_INGOT,
-				'z', Items.REDSTONE);
+				'z', Items.DIAMOND);
+		GameRegistry.addRecipe(speakerRecipe);
+		GameRegistry.registerTileEntity(TileEntitySpeaker.class, "OpenFMSpeaker");
 		blockSpeaker.setCreativeTab(creativeTab);
 	}
 
