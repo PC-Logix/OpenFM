@@ -194,7 +194,8 @@ public class MP3Player {
 	}
 
 	public void stop() {
-		this.listener.playbackFinished(createEvent(PlayBackEvent.STOPPED));
+		if(this.audio != null)
+			this.listener.playbackFinished(createEvent(PlayBackEvent.STOPPED));
 		close();
 	}
 
