@@ -21,6 +21,7 @@ import pcl.OpenFM.TileEntity.TileEntitySpeaker;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.fml.common.Loader;
 
 public class ContentRegistry {
@@ -48,23 +49,28 @@ public class ContentRegistry {
 	public static void registerBlocks() {
 
 		blockRadio = new BlockRadio();
+		for (String s : OreDictionary.getOreNames()) {
+			System.out.println(s);
+		}
+		
+		ItemStack woodPlank = OreDictionary.getOres("plankWood").get(0);
 		//Rename these to lowercase and keep in world
 		// GameRegistry.addSubstitutionAlias("minecraft:end_stone", GameRegistry.Type.BLOCK, testBlock);
 		GameRegistry.registerBlock(blockRadio, ItemBlockRadio.class, "Radio");
 		GameRegistry.registerTileEntity(TileEntityRadio.class, "OpenFMRadio");
 		GameRegistry.addRecipe(new ItemStack(blockRadio), "  y", "xyx", "xzx",
-				'x', new ItemStack(Blocks.PLANKS),
-				'y', new ItemStack(Items.IRON_INGOT),
-				'z', new ItemStack(Items.DIAMOND));
+				'x', woodPlank,
+				'y', Items.IRON_INGOT,
+				'z', Items.DIAMOND);
 		blockRadio.setCreativeTab(creativeTab);
 
 		blockSpeaker = new BlockSpeaker();
 		GameRegistry.registerBlock(blockSpeaker, "Speaker");
 		GameRegistry.registerTileEntity(TileEntitySpeaker.class, "OpenFMSpeaker");
 		GameRegistry.addRecipe(new ItemStack(blockSpeaker), "xxx", "xyx", "xzx",
-				'x', new ItemStack(Blocks.PLANKS),
-				'y', new ItemStack(Items.IRON_INGOT),
-				'z', new ItemStack(Items.REDSTONE));
+				'x', woodPlank,
+				'y', Items.IRON_INGOT,
+				'z', Items.REDSTONE);
 		blockSpeaker.setCreativeTab(creativeTab);
 	}
 
