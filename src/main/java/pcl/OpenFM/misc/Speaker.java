@@ -3,12 +3,13 @@
  import net.minecraft.world.World;
  
  public class Speaker {
-   public double x;
-   public double y;
-   public double z;
+   public int x;
+   public int y;
+   public int z;
    public World world;
    
-   public Speaker(double x, double y, double z, World w) { this.x = x;
+   public Speaker(int x, int y, int z, World w) {
+     this.x = x;
      this.y = y;
      this.z = z;
      this.world = w;

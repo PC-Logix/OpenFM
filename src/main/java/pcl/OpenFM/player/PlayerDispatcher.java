@@ -5,10 +5,14 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import cpw.mods.fml.client.FMLClientHandler;
 import pcl.OpenFM.OpenFM;
+import pcl.OpenFM.network.PacketHandler;
+import pcl.OpenFM.network.message.MessageRadioPlaying;
 import pcl.OpenFM.player.MP3Player;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundCategory;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.world.World;
 
 public class PlayerDispatcher extends PlaybackListener implements Runnable {
@@ -65,9 +69,9 @@ public class PlayerDispatcher extends PlaybackListener implements Runnable {
 		}
 		catch (Exception e)
 		{
-			//PacketHandler.INSTANCE.sendToServer(new MessageTERadioBlock(this.x, this.y, this.z, this.world, this.streamURL, !isPlaying(), 0.1F, 1));
-			//FMLClientHandler.instance().getClient().thePlayer.addChatMessage(new ChatComponentTranslation("msg.OpenFM.invalid_link", new Object[0]));
-			OpenFM.logger.error(e.getMessage());
+			PacketHandler.INSTANCE.sendToServer(new MessageRadioPlaying(this.x, this.y, this.z, false).wrap());
+			FMLClientHandler.instance().getClient().thePlayer.addChatMessage(new ChatComponentTranslation("msg.OpenFM.invalid_link", new Object[0]));
+			OpenFM.logger.error(e);
 		}
 	}
 
@@ -83,8 +87,10 @@ public class PlayerDispatcher extends PlaybackListener implements Runnable {
 		}
 	}
 
+	@Override
 	public void playbackStarted(PlayBackEvent evt) {}
 
+	@Override
 	public void playbackFinished(PlayBackEvent evt) {}
 
 	public boolean isPlaying()
