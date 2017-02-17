@@ -1,16 +1,11 @@
 package pcl.OpenFM.player;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
-
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 import javazoom.jl.decoder.Bitstream;
 import javazoom.jl.decoder.BitstreamException;
@@ -37,12 +32,13 @@ public class MP3Player {
 	private int posY;
 	private int posZ;
 	private World world;
-	private String streamURL;
 	public InputStream ourStream = null;
 	private boolean playing = false;
 
-	public MP3Player() throws JavaLayerException {
-
+	public MP3Player(InputStream stream) throws JavaLayerException {
+		ourStream = stream;
+		this.bitstream = new Bitstream(stream);
+		this.decoder = new Decoder();
 	}
 
 	public void setID(World w, int x, int y, int z) {
@@ -60,27 +56,11 @@ public class MP3Player {
 		return false;
 	}
 
-	public boolean play(String streamURL) throws JavaLayerException {
-		this.streamURL = streamURL;
+	public boolean play() throws JavaLayerException {
 		return play(Integer.MAX_VALUE);
 	}
 
 	public boolean play(int frames) throws JavaLayerException {
-		InputStream stream = null;
-		OkHttpClient client = new OkHttpClient();
-		Request request = new Request.Builder().url(this.streamURL).build();
-		Response response;
-		try {
-			response = client.newCall(request).execute();
-			stream = response.body().byteStream();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		ourStream = stream;
-		this.bitstream = new Bitstream(stream);
-		this.decoder = new Decoder();
 		boolean ret = true;
 
 		this.source = BufferUtils.createIntBuffer(1);

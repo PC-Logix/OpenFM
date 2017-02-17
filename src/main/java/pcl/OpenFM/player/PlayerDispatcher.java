@@ -52,11 +52,17 @@ public class PlayerDispatcher extends PlaybackListener implements Runnable {
 		System.out.println(decoder);
 		try
 		{
-			if (decoder.equals("mp3")) {	 
-				this.mp3Player = new MP3Player();
+			if (decoder.equals("mp3")) {
+				OkHttpClient client = new OkHttpClient();
+				Request request = new Request.Builder().url(streamURL).build();
+				
+				Response response = client.newCall(request).execute();
+				InputStream stream = response.body().byteStream();
+				 
+				this.mp3Player = new MP3Player(stream);
 				this.mp3Player.setID(this.world, this.x, this.y, this.z);
 				this.mp3Player.setPlayBackListener(this);
-				this.mp3Player.play(streamURL);
+				this.mp3Player.play();
 			} else if (decoder.equals("ogg")) {
 				this.oggPlayer = new OGGPlayer();
 				this.oggPlayer.setID(this.world, this.x, this.y, this.z);
