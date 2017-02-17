@@ -58,8 +58,7 @@ import com.squareup.okhttp.Response;
 })
 
 public class TileEntityRadio extends TileEntity implements SimpleComponent, ManagedPeripheral, IInventory, ITickable {
-	public PlayerDispatcher mp3Player = null;
-	public OGGPlayer oggPlayer = null;
+	public PlayerDispatcher player = null;
 	public boolean useMP3 = true;
 	public boolean isPlaying = false;
 	public boolean isValid = true;
@@ -113,7 +112,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 		if (OFMConfiguration.enableStreams) {
 			Side side = FMLCommonHandler.instance().getEffectiveSide();
 			String decoder = null;
-			if (!OpenFM.playerList.contains(mp3Player)) {
+			if (!OpenFM.playerList.contains(player)) {
 				if (side == Side.CLIENT) {
 					OkHttpClient client = new OkHttpClient();
 					Request request = new Request.Builder().url(streamURL).build();
@@ -147,8 +146,8 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 						if (decoder != null && isValid) {
 							isPlaying = true;
 							OpenFM.logger.info("Starting Stream: " + streamURL + " at X:" + pos.getX() + " Y:" + pos.getY() + " Z:" + pos.getZ());
-							mp3Player = new PlayerDispatcher(decoder, streamURL, this.worldObj, pos.getX(), pos.getY(), pos.getZ());
-							OpenFM.playerList.add(mp3Player);	
+							player = new PlayerDispatcher(decoder, streamURL, this.worldObj, pos.getX(), pos.getY(), pos.getZ());
+							OpenFM.playerList.add(player);	
 						}
 					}
 				} else {
@@ -164,11 +163,11 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 
 	public void stopStream() {
 		Side side = FMLCommonHandler.instance().getEffectiveSide();
-		if (OpenFM.playerList.contains(mp3Player)) {
+		if (OpenFM.playerList.contains(player)) {
 			if (side == Side.CLIENT) {
-				mp3Player.stop();
+				player.stop();
 			}
-			OpenFM.playerList.remove(mp3Player);
+			OpenFM.playerList.remove(player);
 			isPlaying = false;
 		}
 		isPlaying = false;
@@ -204,27 +203,21 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 					}
 				}
 			}
-			if ((Minecraft.getMinecraft().thePlayer != null) && (mp3Player != null || oggPlayer != null) && (!isInvalid())) {
+			if ((Minecraft.getMinecraft().thePlayer != null) && player != null && (!isInvalid())) {
 				vol = getClosest();
 				if (vol > 10000.0F * volume) {
-					if (mp3Player != null) {
-						mp3Player.setVolume(0.0F);
-					} else if (oggPlayer != null) {
-						oggPlayer.setVolume(0.0f);
+					if (player != null) {
+						player.setVolume(0.0F);
 					}
 				} else {
 					float v2 = 10000.0F / vol / 100.0F;
 					if (v2 > 1.0F) {
-						if (mp3Player != null) {
-							mp3Player.setVolume(1.0F * volume * volume);
-						} else if (oggPlayer != null) {
-							oggPlayer.setVolume(1.0F * volume * volume);
+						if (player != null) {
+							player.setVolume(1.0F * volume * volume);
 						}
 					} else {
-						if (mp3Player != null) {
-							mp3Player.setVolume(v2 * volume * volume);
-						} else if (oggPlayer != null) {
-							oggPlayer.setVolume(v2 * volume * volume);
+						if (player != null) {
+							player.setVolume(v2 * volume * volume);
 						}
 					}
 				}
