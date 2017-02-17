@@ -65,10 +65,10 @@ public class ContentRegistry {
 
 		blockSpeaker = new BlockSpeaker();
 		GameRegistry.registerBlock(blockSpeaker, "Speaker");
-		IRecipe speakerRecipe = new ShapedOreRecipe(blockSpeaker, "  y", "xyx", "xzx",
+		IRecipe speakerRecipe = new ShapedOreRecipe(blockSpeaker, "xxx", "xyx", "xzx",
 				'x', "plankWood",
 				'y', Items.IRON_INGOT,
-				'z', Items.DIAMOND);
+				'z', Items.REDSTONE);
 		GameRegistry.addRecipe(speakerRecipe);
 		GameRegistry.registerTileEntity(TileEntitySpeaker.class, "OpenFMSpeaker");
 		blockSpeaker.setCreativeTab(creativeTab);
