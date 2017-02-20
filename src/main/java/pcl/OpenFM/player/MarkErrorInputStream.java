@@ -42,6 +42,7 @@ public class MarkErrorInputStream extends FilterInputStream {
 
 	@Override
 	public int read() throws IOException {
+		limit(1);
 		int ret = super.read();
 		addPos(1);
 		return ret;
