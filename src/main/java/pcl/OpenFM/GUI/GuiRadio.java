@@ -3,7 +3,7 @@ package pcl.OpenFM.GUI;
 import java.util.Arrays;
 import java.util.List;
 
-import org.lwjgl.input.Keyboard;
+import com.squareup.okhttp.HttpUrl;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -189,7 +189,7 @@ public class GuiRadio extends GuiRadioBase {
 			if (btn.func_146115_a()) { // Tells you if the button is hovered by mouse
 				if (btn.id == 0) {
 					String hover;
-					if (!this.radio.isPlaying) {
+					if (!this.radio.isPlaying()) {
 						hover = StatCollector.translateToLocal("gui.string.OpenFM.PlayButton");
 					} else {
 						hover = StatCollector.translateToLocal("gui.string.OpenFM.StopButton");
@@ -295,12 +295,12 @@ public class GuiRadio extends GuiRadioBase {
 				} else {
 					this.radio.streamURL = this.streamTextBox.getText();
 				}
-				if (this.radio.isPlaying) {
-					PacketHandler.INSTANCE.sendToServer(new MessageRadioPlaying(this.radio, !this.radio.isPlaying).wrap());
+				if (this.radio.isPlaying()) {
+					PacketHandler.INSTANCE.sendToServer(new MessageRadioPlaying(this.radio, !this.radio.isPlaying()).wrap());
 					PacketHandler.INSTANCE.sendToServer(new MessageRadioStreamURL(this.radio, this.radio.streamURL).wrap());
-				} else {
+				} else if (HttpUrl.parse(this.radio.streamURL) != null) {
 					PacketHandler.INSTANCE.sendToServer(new MessageRadioStreamURL(this.radio, this.radio.streamURL).wrap());
-					PacketHandler.INSTANCE.sendToServer(new MessageRadioPlaying(this.radio, !this.radio.isPlaying).wrap());
+					PacketHandler.INSTANCE.sendToServer(new MessageRadioPlaying(this.radio, !this.radio.isPlaying()).wrap());
 				}
 			}
 		}

@@ -19,7 +19,7 @@ public class MessageRadioSync extends BaseRadioMessage {
 		this.streamURL = radio.streamURL;
 		this.screenColor = radio.getScreenColor();
 		this.screenText = radio.getScreenText();
-		this.playing = radio.isPlaying;
+		this.playing = radio.isPlaying();
 		this.volume = radio.volume;
 	}
 
@@ -30,12 +30,10 @@ public class MessageRadioSync extends BaseRadioMessage {
 		radio.screenText = screenText;
 		radio.volume = volume;
 		if (playing) {
-			if (radio.isValid) {
-				try {
-					radio.startStream();
-				} catch (Exception e) {
-					radio.stopStream();
-				}
+			try {
+				radio.startStream();
+			} catch (Exception e) {
+				radio.stopStream();
 			}
 		} else {
 			radio.stopStream();

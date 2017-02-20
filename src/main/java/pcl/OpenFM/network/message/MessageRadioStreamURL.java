@@ -21,12 +21,10 @@ public class MessageRadioStreamURL extends BaseRadioMessage {
 			if (radio.isPlaying()) {
 				radio.stopStream();
 				radio.streamURL = streamURL;
-				if (radio.isValid) {
-					try {
-						radio.startStream();
-					} catch (Exception e) {
-						radio.stopStream();
-					}
+				try {
+					radio.startStream();
+				} catch (Exception e) {
+					radio.stopStream();
 				}
 			} else {
 				radio.streamURL = streamURL;

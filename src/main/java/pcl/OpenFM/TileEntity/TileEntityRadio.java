@@ -1,20 +1,10 @@
 package pcl.OpenFM.TileEntity;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.UnsupportedAudioFileException;
-
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Context;
@@ -41,7 +31,6 @@ import pcl.OpenFM.misc.Speaker;
 import pcl.OpenFM.network.PacketHandler;
 import pcl.OpenFM.network.message.*;
 import pcl.OpenFM.player.PlayerDispatcher;
-import pcl.OpenFM.player.OGGPlayer;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -59,9 +48,8 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 })
 
 public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleComponent, ManagedPeripheral, IInventory {
-	public PlayerDispatcher player = null;
-	public boolean isPlaying = false;
-	public boolean isValid = true;
+	private PlayerDispatcher player = null;
+	private boolean isPlaying = false;
 	public String streamURL = "";
 	private World world;
 	public float volume = 0.3F;
@@ -69,7 +57,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	public boolean listenToRedstone = false;
 	private boolean scheduledRedstoneInput = false;
 	private boolean scheduleRedstoneInput = false;
-	public ArrayList<Speaker> speakers = new ArrayList<Speaker>();
+	private ArrayList<Speaker> speakers = new ArrayList<Speaker>();
 	public int screenColor = 0x0000FF;
 	public String screenText = "OpenFM";
 	public List<String> stations = new ArrayList<String>();
@@ -83,12 +71,13 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	
 	public TileEntityRadio(World w) {
 		world = w;
-		if (isPlaying)
+		if (isPlaying) {
 			try {
 				startStream();
 			} catch (Exception e) {
 				stopStream();
 			}
+		}
 	}
 
 	public TileEntityRadio() {
@@ -107,55 +96,14 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	}
 
 	public void startStream() throws Exception {
-		isValid = true;
 		OFMConfiguration.init(OpenFM.configFile);
 		if (OFMConfiguration.enableStreams) {
+			this.isPlaying = true;
 			Side side = FMLCommonHandler.instance().getEffectiveSide();
-			String decoder = null;
-			if (!OpenFM.playerList.contains(player)) {
-				if (side == Side.CLIENT) {
-					OkHttpClient client = new OkHttpClient();
-					Request request = new Request.Builder().url(streamURL)
-							//.addHeader("Icy-MetaData", "1")
-							.build();
-					Response response = null;
-					AudioFileFormat baseFileFormat = null;
-					try {
-						response = client.newCall(request).execute();
-					} catch (IOException e1) {
-						isValid = false;
-						streamURL = null;
-						stopStream();
-					}
-					try {
-						BufferedInputStream bis = new BufferedInputStream(response.body().byteStream());
-						baseFileFormat = AudioSystem.getAudioFileFormat(bis);
-					} catch (IOException | UnsupportedAudioFileException e1) {
-						isValid = false;
-						streamURL = null;
-						stopStream();
-						OpenFM.logger.info(e1);
-					}
-					if (isValid) {
-						// Audio type such as MPEG1 Layer3, or Layer 2, or ...
-						AudioFileFormat.Type type = baseFileFormat.getType();
-						OpenFM.logger.info(type.toString());
-						if (type.toString().equals("MP3")) {
-							decoder = "mp3";
-						} else if (type.toString().equals("OGG")) {
-							decoder = "ogg";
-						}
-						if (decoder != null && isValid) {
-							isPlaying = true;
-							OpenFM.logger.info("Starting Stream: " + streamURL + " at X:" + xCoord + " Y:" + yCoord + " Z:" + zCoord);
-							player = new PlayerDispatcher(decoder, streamURL, world, xCoord, yCoord, zCoord);
-							OpenFM.playerList.add(player);
-						}
-					}
-				} else {
-					if (isValid) {
-						this.isPlaying = true;
-					}
+			if (side == Side.CLIENT) {
+				if (!OpenFM.playerList.contains(player)) {
+					player = new PlayerDispatcher(this, streamURL, world, xCoord, yCoord, zCoord);
+					OpenFM.playerList.add(player);
 				}
 			}
 		} else {
@@ -173,6 +121,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 			isPlaying = false;
 		}
 		isPlaying = false;
+		player = null;
 	}
 
 	public boolean isPlaying() {
