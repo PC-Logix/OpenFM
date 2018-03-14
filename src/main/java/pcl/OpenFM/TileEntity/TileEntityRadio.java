@@ -159,7 +159,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 							isPlaying = true;
 							OpenFM.logger.info("Starting Stream: " + streamURL + " at X:" + pos.getX() + " Y:" + pos.getY() + " Z:" + pos.getZ());
 							player = new PlayerDispatcher(decoder, streamURL, this.worldObj, pos.getX(), pos.getY(), pos.getZ());
-							OpenFM.playerList.add(player);	
+							OpenFM.playerList.add(player);
 						}
 					}
 				} else {
@@ -249,7 +249,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 					loops = 0;
 				} else {
 					loops++;
-					
+
 				}
 				th++;
 				if (th >= 60) {
@@ -266,18 +266,16 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 				}
 			}
 
-			if ((scheduleRedstoneInput) && (listenToRedstone)) {
-				if ((!scheduledRedstoneInput) && (redstoneInput)) {
-					isPlaying = (!isPlaying);
-					if (getWorld() != null) {
-						PacketHandler.INSTANCE.sendToAll(new MessageRadioPlaying(this, isPlaying).wrap());
+			//Change: Can now use a Lever to turn it on or off, instead of push button
+			if (listenToRedstone) {
+					if (isPlaying != scheduledRedstoneInput) {
+						isPlaying =  !(isPlaying && !scheduledRedstoneInput);
+
+						if (getWorld() != null) {
+							PacketHandler.INSTANCE.sendToAll(new MessageRadioPlaying(this,isPlaying).wrap());
+						}
 					}
 				}
-
-				redstoneInput = scheduledRedstoneInput;
-				scheduleRedstoneInput = false;
-				scheduledRedstoneInput = false;
-			}
 		}
 	}
 
@@ -341,10 +339,10 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	}
 
 	public void setRedstoneInput(boolean input) {
-		if (input) {
+		//Change: scheduleRedstoneInput no longer used. Maybe use redstoneInput instead?
+		if (input != this.scheduledRedstoneInput) {
 			this.scheduledRedstoneInput = input;
 		}
-		this.scheduleRedstoneInput = true;
 	}
 
 	public void setScreenText(String text) {
@@ -619,7 +617,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 			String tempString = new String((byte[]) args[0], StandardCharsets.UTF_8);
 			setScreenText(tempString);
 			getUpdateTag();
-			markDirty(); // Marks the chunk as dirty, so that it is saved properly on changes. Not required for the sync specifically, but usually goes alongside the former.	
+			markDirty(); // Marks the chunk as dirty, so that it is saved properly on changes. Not required for the sync specifically, but usually goes alongside the former.
 			return new Object[] { true } ;
 
 		case volDown:
@@ -773,7 +771,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 		if (getStackInSlot(0) != null) {
 			RadioItemStack[0] = new ItemStack(ContentRegistry.itemMemoryCard);
 			RadioItemStack[0].setTagCompound(new NBTTagCompound());
-			RadioItemStack[0].getTagCompound().setString("screenText", this.screenText);	
+			RadioItemStack[0].getTagCompound().setString("screenText", this.screenText);
 			RadioItemStack[0].getTagCompound().setInteger("screenColor", this.screenColor);
 			RadioItemStack[0].getTagCompound().setString("streamURL", this.streamURL);
 			RadioItemStack[0].getTagCompound().setInteger("stationCount", this.stationCount);
@@ -885,7 +883,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	public void resetTicks() {
 		this.ticks = 0;
 	}
-	
+
 	@SideOnly(Side.CLIENT)
 	public String scrollText(TileEntityRadio radio) {
 		Minecraft mc = Minecraft.getMinecraft();
