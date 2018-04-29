@@ -33,6 +33,18 @@ configurations {
     compile.extendsFrom shade
 }
 
+def getGitRef() {
+  try {
+    def stdout = new ByteArrayOutputStream()
+    exec {
+      commandLine 'git', 'rev-parse', '--short', 'HEAD'
+      standardOutput = stdout
+    }
+    return stdout.toString().trim()
+  } catch (Throwable e) {
+    return "unknown"
+  }
+}
 
 dependencies {
     compile "li.cil.oc:OpenComputers:MC1.9.4-1.6.0.52-dev:api"
