@@ -32,14 +32,15 @@ public class ItemTuner extends Item {
     }
 
     @Override
-    public EnumActionResult onItemUseFirst(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
-        // Item can only be used by client.
+    public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
+    	ItemStack stack = player.getActiveItemStack();
+    	// Item can only be used by client.
         if (FMLCommonHandler.instance().getEffectiveSide() != Side.SERVER) {
             // If clicked block is a speaker, keep a reference to it.
             if ((world.getBlockState(pos).getBlock() instanceof BlockSpeaker)) {
                 // TODO: one speaker should only be able to be linked to exactly one radio.
                 boundSpeakers.put(stack, new Speaker(pos.getX(), pos.getY(), pos.getZ(), world));
-                player.addChatMessage(new TextComponentString(I18n.translateToLocal("msg.OpenFM.selected_speaker")));
+                player.sendMessage(new TextComponentString(I18n.translateToLocal("msg.OpenFM.selected_speaker")));
             } else if ((world.getBlockState(pos).getBlock() instanceof BlockRadio)) {
                 // Else, it it's a radio, try to link it to the speaker.
                 if (boundSpeakers.get(stack) != null) {
@@ -49,18 +50,18 @@ public class ItemTuner extends Item {
                     int canAdd = radio.canAddSpeaker(player.getEntityWorld(), speaker.x, speaker.y, speaker.z);
                     if (canAdd == 0) {
                         // It can, so send a packet.
-                        player.addChatMessage(new TextComponentString(I18n.translateToLocal("msg.OpenFM.added_speaker")));
+                        player.sendMessage(new TextComponentString(I18n.translateToLocal("msg.OpenFM.added_speaker")));
                         PacketHandler.INSTANCE.sendToServer(new MessageRadioAddSpeaker(radio, speaker).wrap());
                     } else if (canAdd == 1) {
                         // Too many speakers linked.
-                        player.addChatMessage(new TextComponentString(I18n.translateToLocal("msg.OpenFM.failed_adding_speaker_limit").replaceFirst("10", Integer.toString(OFMConfiguration.maxSpeakers))));
+                        player.sendMessage(new TextComponentString(I18n.translateToLocal("msg.OpenFM.failed_adding_speaker_limit").replaceFirst("10", Integer.toString(OFMConfiguration.maxSpeakers))));
                     } else if (canAdd == 2) {
                         // Speaker is already linked.
-                        player.addChatMessage(new TextComponentString(I18n.translateToLocal("msg.OpenFM.failed_adding_speaker_exists")));
+                        player.sendMessage(new TextComponentString(I18n.translateToLocal("msg.OpenFM.failed_adding_speaker_exists")));
                     }
                 } else {
                     // Apparently no speaker is bound.
-                    player.addChatMessage(new TextComponentString(I18n.translateToLocal("msg.OpenFM.failed_adding_speaker_not_selected")));
+                    player.sendMessage(new TextComponentString(I18n.translateToLocal("msg.OpenFM.failed_adding_speaker_not_selected")));
                 }
             }
         }

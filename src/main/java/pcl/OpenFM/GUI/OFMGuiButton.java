@@ -65,16 +65,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
    
    public void drawButton(Minecraft minecraft, int posX, int posY) {
      if (this.visible) {
-       FontRenderer fontrenderer = minecraft.fontRendererObj;
+       FontRenderer fontrenderer = minecraft.fontRenderer;
        minecraft.getTextureManager().bindTexture(this.OFMbuttonTextures);
        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
        //Check if the button is being hovered over
-       this.hovered = ((posX >= this.xPosition) && (posY >= this.yPosition) && (posX < this.xPosition + this.width) && (posY < this.yPosition + this.height));
+       this.hovered = ((posX >= this.x) && (posY >= this.y) && (posX < this.x + this.width) && (posY < this.y + this.height));
        int k = getHoverState(this.hovered);
        GL11.glEnable(3042);
        OpenGlHelper.glBlendFunc(770, 771, 1, 0);
        GL11.glBlendFunc(770, 771);
-       drawTexturedModalRect(this.xPosition, this.yPosition, this.offx, this.offy + k * Math.round(this.height / 2), this.width, this.height);
+       drawTexturedModalRect(this.x, this.y, this.offx, this.offy + k * Math.round(this.height / 2), this.width, this.height);
        mouseDragged(minecraft, posX, posY);
        int l = 14737632;
        
@@ -91,7 +91,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
          l = 16777120;
        }
        
-       drawCenteredString(fontrenderer, this.displayString, this.xPosition + this.width / 2, this.yPosition + (this.height - 8) / 2, l);
+       drawCenteredString(fontrenderer, this.displayString, this.x + this.width / 2, this.y + (this.height - 8) / 2, l);
      }
    }
  }

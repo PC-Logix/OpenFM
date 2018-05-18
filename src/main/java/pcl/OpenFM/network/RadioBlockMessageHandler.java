@@ -22,7 +22,7 @@ public class RadioBlockMessageHandler {
 			Minecraft.getMinecraft().addScheduledTask(new Runnable() {
 				@Override
 				public void run() {
-					World world = FMLClientHandler.instance().getClient().theWorld;
+					World world = FMLClientHandler.instance().getClient().world;
 					TileEntity tileEntity = world.getTileEntity(new BlockPos(message.x, message.y, message.z));
 					if ((tileEntity instanceof TileEntityRadio)) {
 						message.onMessage((TileEntityRadio) tileEntity, ctx);
@@ -41,10 +41,10 @@ public class RadioBlockMessageHandler {
 			if (message.shouldBroadcast())
 				PacketHandler.INSTANCE.sendToAll(_message);
 
-			((IThreadListener) ctx.getServerHandler().playerEntity.worldObj).addScheduledTask(new Runnable() {
+			((IThreadListener) ctx.getServerHandler().player.world).addScheduledTask(new Runnable() {
 				@Override
 				public void run() {
-					World world = ctx.getServerHandler().playerEntity.worldObj;
+					World world = ctx.getServerHandler().player.world;
 					TileEntity tileEntity = world.getTileEntity(new BlockPos(message.x, message.y, message.z));
 					if ((tileEntity instanceof TileEntityRadio)) {
 						message.onMessage((TileEntityRadio) tileEntity, ctx);

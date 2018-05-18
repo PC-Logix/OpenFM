@@ -158,7 +158,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 						if (decoder != null && isValid) {
 							isPlaying = true;
 							OpenFM.logger.info("Starting Stream: " + streamURL + " at X:" + pos.getX() + " Y:" + pos.getY() + " Z:" + pos.getZ());
-							player = new PlayerDispatcher(decoder, streamURL, this.worldObj, pos.getX(), pos.getY(), pos.getZ());
+							player = new PlayerDispatcher(decoder, streamURL, this.world, pos.getX(), pos.getY(), pos.getZ());
 							OpenFM.playerList.add(player);	
 						}
 					}
@@ -220,7 +220,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 				}
 				th = 0;
 			}
-			if ((Minecraft.getMinecraft().thePlayer != null) && player != null && (!isInvalid())) {
+			if ((Minecraft.getMinecraft().player != null) && player != null && (!isInvalid())) {
 				vol = getClosest();
 				if (vol > 10000.0F * volume) {
 					if (player != null) {
@@ -254,8 +254,8 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 				th++;
 				if (th >= 60) {
 					for (Speaker s : speakers) {
-						if (!(worldObj.getBlockState(new BlockPos(s.x, s.y, s.z)).getBlock() instanceof BlockSpeaker)) {
-							if (!worldObj.getChunkFromBlockCoords(new BlockPos(s.x, s.y, s.z)).isLoaded()) {
+						if (!(world.getBlockState(new BlockPos(s.x, s.y, s.z)).getBlock() instanceof BlockSpeaker)) {
+							if (!world.getChunkFromBlockCoords(new BlockPos(s.x, s.y, s.z)).isLoaded()) {
 								break;
 							}
 							speakers.remove(s);
@@ -383,10 +383,10 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	}
 
 	private float getClosest() {
-		float closest = (float) getDistanceSq(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY, Minecraft.getMinecraft().thePlayer.posZ);
+		float closest = (float) getDistanceSq(Minecraft.getMinecraft().player.posX, Minecraft.getMinecraft().player.posY, Minecraft.getMinecraft().player.posZ);
 		if (!speakers.isEmpty()) {
 			for (Speaker s : speakers) {
-				float distance = (float) Math.pow(Minecraft.getMinecraft().thePlayer.getDistance(s.x, s.y, s.z), 2.0D);
+				float distance = (float) Math.pow(Minecraft.getMinecraft().player.getDistance(s.x, s.y, s.z), 2.0D);
 				if (closest > distance) {
 					closest = distance;
 				}
@@ -755,8 +755,8 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer player) {
-		return worldObj.getTileEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ())) == this && player.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 64;
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return world.getTileEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ())) == this && player.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 64;
 	}
 
 	@Override
@@ -910,5 +910,11 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 			radio.resetRenderCount();
 		}
 		return screenOut;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

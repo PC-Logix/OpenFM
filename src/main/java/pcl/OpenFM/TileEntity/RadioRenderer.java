@@ -13,7 +13,7 @@ public class RadioRenderer extends TileEntitySpecialRenderer {
 	private static final Minecraft mc = Minecraft.getMinecraft();
 
 	@Override
-	public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float partialTick, int destroyStage) {
+	public void render(TileEntity tileEntity, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
 		TileEntityRadio radio = (TileEntityRadio) tileEntity;
 		float light = tileEntity.getWorld().getLightBrightness(tileEntity.getPos());
 		mc.entityRenderer.disableLightmap();

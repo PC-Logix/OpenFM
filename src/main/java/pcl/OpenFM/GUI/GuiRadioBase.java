@@ -82,10 +82,10 @@ public class GuiRadioBase extends GuiContainer {
 		{
 			((OFMGuiButton)this.OFMbuttonList.get(k)).drawButton(this.mc, par1, par2);
 		}
-		this.mc.fontRendererObj.drawString("OpenFM", this.width / 2 - 16, this.height / 2 + 90 - 45, this.radio.getScreenColor());
+		this.mc.fontRenderer.drawString("OpenFM", this.width / 2 - 16, this.height / 2 + 90 - 45, this.radio.getScreenColor());
 
-		this.mc.fontRendererObj.drawString(I18n.translateToLocal("gui.string.OpenFM.ScreenColor"), this.width / 2 - 101, this.height / 2 + 55 - 45, 0xFFFFFF);
-		this.mc.fontRendererObj.drawString(I18n.translateToLocal("gui.string.OpenFM.ScreenText"), this.width / 2 - 20, this.height / 2 + 55 - 45, 0xFFFFFF);
+		this.mc.fontRenderer.drawString(I18n.translateToLocal("gui.string.OpenFM.ScreenColor"), this.width / 2 - 101, this.height / 2 + 55 - 45, 0xFFFFFF);
+		this.mc.fontRenderer.drawString(I18n.translateToLocal("gui.string.OpenFM.ScreenText"), this.width / 2 - 20, this.height / 2 + 55 - 45, 0xFFFFFF);
 
 		super.drawScreen(par1, par2, par3);
 		RenderHelper.disableStandardItemLighting();

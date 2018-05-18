@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pcl.OpenFM.TileEntity.TileEntitySpeaker;
@@ -44,6 +45,11 @@ public class BlockSpeaker extends Block implements ITileEntityProvider {
 	}
 
 	@Override
+	public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
+		return super.getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer, hand).withProperty(PROPERTYFACING, placer.getHorizontalFacing());
+	}
+
+	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
 	{
 		return state;
@@ -55,12 +61,6 @@ public class BlockSpeaker extends Block implements ITileEntityProvider {
 		return new BlockStateContainer(this, new IProperty[] {PROPERTYFACING});
 	}
 
-	@Override
-	  public IBlockState onBlockPlaced(World world, BlockPos pos, EnumFacing blockFaceClickedOn, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-		EnumFacing enumfacing = (placer == null) ? EnumFacing.NORTH : EnumFacing.fromAngle(placer.rotationYaw);
-		return this.getDefaultState().withProperty(PROPERTYFACING, enumfacing);
-	}
-	
 	public TileEntity createNewTileEntity(World world, int metadata) {
 		return new TileEntitySpeaker();
 	}

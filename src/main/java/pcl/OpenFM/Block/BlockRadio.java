@@ -52,7 +52,7 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 
 
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
 		TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity == null || player.isSneaking()) {
 			return false;
@@ -91,11 +91,11 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 						stack.getTagCompound().setInteger("stationCount", i + 1);
 					}
 				}
-				world.spawnEntityInWorld(new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), stack));
+				world.spawnEntity(new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), stack));
 				super.breakBlock(world, pos, state);;
 			} else {
 				ItemStack stack = new ItemStack(Item.getItemFromBlock(this), 1);
-				world.spawnEntityInWorld(new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), stack));
+				world.spawnEntity(new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), stack));
 				super.breakBlock(world, pos, state);
 			}
 		}
@@ -113,9 +113,14 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 	@Override
 	public int getMetaFromState(IBlockState state)
 	{
-		EnumFacing facing = state.getValue(PROPERTYFACING);
+		EnumFacing facing = (EnumFacing)state.getValue(PROPERTYFACING);
 		int facingbits = facing.getHorizontalIndex();
 		return facingbits;
+	}
+
+	@Override
+	public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
+		return super.getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer, hand).withProperty(PROPERTYFACING, placer.getHorizontalFacing());
 	}
 
 	@Override
@@ -128,18 +133,6 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 	protected BlockStateContainer createBlockState()
 	{
 		return new BlockStateContainer(this, new IProperty[] {PROPERTYFACING});
-	}
-
-	@Override
-	public Item getItemDropped(IBlockState state, Random random, int fortune) {
-		return null;
-	}
-
-	@Override
-	public IBlockState onBlockPlaced(World world, BlockPos pos, EnumFacing blockFaceClickedOn, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-		super.onBlockPlaced(world, pos, blockFaceClickedOn, hitX, hitY, hitZ, meta, placer);
-		EnumFacing enumfacing = (placer == null) ? EnumFacing.NORTH : EnumFacing.fromAngle(placer.rotationYaw);
-		return this.getDefaultState().withProperty(PROPERTYFACING, enumfacing);
 	}
 	
     @Override
@@ -162,7 +155,7 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 				if (side == Side.SERVER) {
 					tileEntity = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getTileEntity(pos);
 				} else {
-					tileEntity = FMLClientHandler.instance().getClient().theWorld.getTileEntity(pos);
+					tileEntity = FMLClientHandler.instance().getClient().world.getTileEntity(pos);
 				}
 				((TileEntityRadio)tileEntity).setRedstoneInput(flag);
 			}
@@ -184,7 +177,7 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 				float offsetZ = random.nextFloat() * 0.8F + 0.1F;
 				EntityItem entityitem;
 
-				for (; itemstack.stackSize > 0; world.spawnEntityInWorld(entityitem)) {
+				for (; itemstack.stackSize > 0; world.spawnEntity(entityitem)) {
 					int stackSize = random.nextInt(21) + 10;
 					if (stackSize > itemstack.stackSize) {
 						stackSize = itemstack.stackSize;
@@ -199,7 +192,7 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 					entityitem.motionZ = (float)random.nextGaussian() * velocity;
 
 					if (itemstack.hasTagCompound()) {
-						entityitem.getEntityItem().setTagCompound((NBTTagCompound)itemstack.getTagCompound().copy());
+						entityitem.getItem().setTagCompound((NBTTagCompound)itemstack.getTagCompound().copy());
 					}
 				}
 			}

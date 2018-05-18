@@ -82,7 +82,7 @@ public class GuiRadio extends GuiRadioBase {
 		this.updateText  = new OFMGuiButton(13, 0, 0, 0, 0, 0, 0, "", OFMGuiButton.guiLocation); //Update Text
 		this.OFMbuttonList.add(this.updateText);
 
-		this.streamTextBox = new OFMGuiTextField(1, this.fontRendererObj, this.width / 2 - 100, this.height / 2 - 5 + 17 - 45, 200, 20);
+		this.streamTextBox = new OFMGuiTextField(1, this.fontRenderer, this.width / 2 - 100, this.height / 2 - 5 + 17 - 45, 200, 20);
 		this.streamTextBox.setMaxStringLength(1000);
 
 		if (!(this.radio.streamURL == null) && !this.radio.streamURL.equals("")) {
@@ -91,15 +91,15 @@ public class GuiRadio extends GuiRadioBase {
 			this.streamTextBox.setText(OFMConfiguration.defaultURL);
 		}
 
-		this.volumeBox = new OFMGuiTextField(1,this.fontRendererObj, this.width / 2 - 6, this.height / 2 - 5 + 4 - 45, 50, 20);
+		this.volumeBox = new OFMGuiTextField(1,this.fontRenderer, this.width / 2 - 6, this.height / 2 - 5 + 4 - 45, 50, 20);
 		this.volumeBox.setMaxStringLength(2);
 
-		this.colorBox = new OFMGuiTextField(1,this.fontRendererObj, this.width / 2 - 97, this.height / 2 - 5 + 72 - 45, 200, 20);
+		this.colorBox = new OFMGuiTextField(1,this.fontRenderer, this.width / 2 - 97, this.height / 2 - 5 + 72 - 45, 200, 20);
 		this.colorBox.setText(toHexString(this.radio.getScreenColor()));
 		this.colorBox.setTextColor(this.radio.getScreenColor());
 		this.colorBox.setMaxStringLength(6);
 
-		this.screenTextBox = new OFMGuiTextField(1,this.fontRendererObj, this.width / 2 - 17, this.height / 2 - 5 + 72 - 45, 200, 20);
+		this.screenTextBox = new OFMGuiTextField(1,this.fontRenderer, this.width / 2 - 17, this.height / 2 - 5 + 72 - 45, 200, 20);
 		this.screenTextBox.setText(this.radio.getScreenText());
 		this.screenTextBox.setTextColor(this.radio.getScreenColor());
 
@@ -198,52 +198,52 @@ public class GuiRadio extends GuiRadioBase {
 					String[] desc = { hover };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
-					drawHoveringText(temp, par1, par2, fontRendererObj);
+					drawHoveringText(temp, par1, par2, fontRenderer);
 				} else if (btn.id == 1) {
 					String[] desc = { I18n.translateToLocal("gui.string.OpenFM.VolumeUp") };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
-					drawHoveringText(temp, par1, par2, fontRendererObj);
+					drawHoveringText(temp, par1, par2, fontRenderer);
 				} else if (btn.id == 2) {
 					String[] desc = { I18n.translateToLocal("gui.string.OpenFM.VolumeDown") };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
-					drawHoveringText(temp, par1, par2, fontRendererObj);
+					drawHoveringText(temp, par1, par2, fontRenderer);
 				} else if (btn.id == 3) {
 					String[] desc = { I18n.translateToLocal("gui.string.OpenFM.ScrollLeft") };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
-					drawHoveringText(temp, par1, par2, fontRendererObj);
+					drawHoveringText(temp, par1, par2, fontRenderer);
 				} else if (btn.id == 4) {
 					String[] desc = { I18n.translateToLocal("gui.string.OpenFM.ScrollRight") };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
-					drawHoveringText(temp, par1, par2, fontRendererObj);
+					drawHoveringText(temp, par1, par2, fontRenderer);
 				} else if (btn.id == 5) {
 					String[] desc = { I18n.translateToLocal("gui.string.OpenFM.Clear") };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
-					drawHoveringText(temp, par1, par2, fontRendererObj);
+					drawHoveringText(temp, par1, par2, fontRenderer);
 				} else if (btn.id == 6) {
 					String[] desc = { I18n.translateToLocal("gui.string.OpenFM.Paste") };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
-					drawHoveringText(temp, par1, par2, fontRendererObj);
+					drawHoveringText(temp, par1, par2, fontRenderer);
 				} else if (btn.id == 7) {
 					String[] desc = { I18n.translateToLocal("gui.string.OpenFM.Save") };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
-					drawHoveringText(temp, par1, par2, fontRendererObj);
+					drawHoveringText(temp, par1, par2, fontRenderer);
 				} else if (btn.id == 8) {
 					String[] desc = { I18n.translateToLocal("gui.string.OpenFM.Delete") };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
-					drawHoveringText(temp, par1, par2, fontRendererObj);
+					drawHoveringText(temp, par1, par2, fontRenderer);
 				} else if (btn.id == 9) {
 					String[] desc = { I18n.translateToLocal("gui.string.OpenFM.Close") };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
-					drawHoveringText(temp, par1, par2, fontRendererObj);
+					drawHoveringText(temp, par1, par2, fontRenderer);
 				} else if (btn.id == 10) {
 					String hover;
 					if (!this.radio.isListeningToRedstoneInput()) {
@@ -254,7 +254,7 @@ public class GuiRadio extends GuiRadioBase {
 					String[] desc = { hover };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
-					drawHoveringText(temp, par1, par2, fontRendererObj);
+					drawHoveringText(temp, par1, par2, fontRenderer);
 				} else if (btn.id == 11) {
 					String hover;
 					if (!this.radio.isLocked) {
@@ -265,17 +265,17 @@ public class GuiRadio extends GuiRadioBase {
 					String[] desc = { hover };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
-					drawHoveringText(temp, par1, par2, fontRendererObj);
+					drawHoveringText(temp, par1, par2, fontRenderer);
 				} else if (btn.id == 15) {
 					String[] desc = { I18n.translateToLocal("gui.string.OpenFM.SaveToCard") };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
-					drawHoveringText(temp, par1, par2, fontRendererObj);
+					drawHoveringText(temp, par1, par2, fontRenderer);
 				} else if (btn.id == 16) {
 					String[] desc = { I18n.translateToLocal("gui.string.OpenFM.LoadFromCard") };
 					@SuppressWarnings("rawtypes")
 					List temp = Arrays.asList(desc);
-					drawHoveringText(temp, par1, par2, fontRendererObj);
+					drawHoveringText(temp, par1, par2, fontRenderer);
 				}
 			}
 		}

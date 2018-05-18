@@ -8,7 +8,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
 
@@ -47,7 +47,7 @@ def getGitRef() {
 }
 
 dependencies {
-    compile "li.cil.oc:OpenComputers:MC1.9.4-1.6.0.52-dev:api"
+    deobfCompile "li.cil.oc:OpenComputers:MC1.12.2-1.7.1.+"
 	shade "javazoom:jlayer:1.0.1"
 	shade "com.squareup.okhttp:okhttp:2.5.0"
 	shade "com.googlecode.soundlibs:tritonus-share:0.3.7-2"
@@ -68,13 +68,14 @@ group = "pcl.OpenFM"
 archivesBaseName = "OpenFM-1.9.4"
 
 minecraft {
-    version = "1.9.4-12.17.0.1976"
+    version = "1.12.2-14.23.2.2619"
     runDir = "run"
-	makeObfSourceJar = false
-    mappings = "snapshot_20160518"
+    mappings = "snapshot_20180120"
+    useDepAts = true
 	replace "@VERSION@", project.version
 	replace "@BUILD@", project.ext.buildNumber
 }
+
 version = "${version}.${project.ext.buildNumber}"
 jar {
     configurations.shade.each { dep ->
@@ -94,6 +95,7 @@ def curseforge_key = 0
 def curse_changlog = "default"
 if (project.hasProperty('opensecurity_curseforge_key')) {
 	curseforge_key = project.opensecurity_curseforge_key
+	//curse_changlog = project.promo-changelog
 	curse_changlog = project.changelog
 }
 
@@ -103,7 +105,7 @@ curseforge {
 		id = "236839"
 		releaseType = "release"
 		changelog = curse_changlog
-		addGameVersion '1.10.2'
+		addGameVersion '1.12.2'
 	}
 }
 
