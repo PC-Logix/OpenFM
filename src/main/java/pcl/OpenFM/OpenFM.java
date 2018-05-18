@@ -37,11 +37,11 @@ public class OpenFM {
 	public Configuration config;
 	public static final Logger logger = LogManager.getFormatterLogger(BuildInfo.modID);
 	public static File configFile;
-	
+	private static ContentRegistry contentRegistry = new ContentRegistry();
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		PacketHandler.init();
-
+		MinecraftForge.EVENT_BUS.register(contentRegistry);
 		// Load config
 		configFile = new File(event.getModConfigurationDirectory() + "/openfm/openfm.cfg");
 		OFMConfiguration.init(configFile);

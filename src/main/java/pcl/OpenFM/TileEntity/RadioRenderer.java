@@ -15,7 +15,8 @@ public class RadioRenderer extends TileEntitySpecialRenderer {
 	@Override
 	public void render(TileEntity tileEntity, double x, double y, double z, float partialTick, int destroyStage, float alpha) {
 		TileEntityRadio radio = (TileEntityRadio) tileEntity;
-		float light = tileEntity.getWorld().getLightBrightness(tileEntity.getPos());
+		//float light = tileEntity.getWorld().getLightBrightness(tileEntity.getPos());
+		float light = 1f;
 		mc.entityRenderer.disableLightmap();
 		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, light, light);
 		String output;

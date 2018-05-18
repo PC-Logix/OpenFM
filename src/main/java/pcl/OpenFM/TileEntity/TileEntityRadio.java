@@ -31,9 +31,11 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldProvider;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import pcl.OpenFM.ContentRegistry;
@@ -42,6 +44,7 @@ import pcl.OpenFM.OpenFM;
 import pcl.OpenFM.Block.BlockSpeaker;
 import pcl.OpenFM.Items.ItemMemoryCard;
 import pcl.OpenFM.misc.Speaker;
+import pcl.OpenFM.network.MessageRadioBase;
 import pcl.OpenFM.network.PacketHandler;
 import pcl.OpenFM.network.message.MessageRadioAddSpeaker;
 import pcl.OpenFM.network.message.MessageRadioAddStation;
@@ -418,7 +421,12 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 			PacketHandler.INSTANCE.sendToDimension(new MessageRadioAddSpeaker(this, s).wrap(), getWorld().provider.getDimension());
 		}
 		if(this.streamURL != null) {
-			PacketHandler.INSTANCE.sendToAllAround(new MessageRadioSync(this).wrap(), new NetworkRegistry.TargetPoint(getWorld().provider.getDimension(), this.pos.getX(), this.pos.getY(), this.pos.getZ(), 30.0D));
+			//MessageRadioBase message = new MessageRadioSync(this).wrap();
+			//World world = ;
+			//WorldProvider provider = world.provider;
+			//int dimID = provider.getDimension();
+			//TargetPoint point = new NetworkRegistry.TargetPoint(dimID, this.pos.getX(), this.pos.getY(), this.pos.getZ(), 30.0D);
+			//PacketHandler.INSTANCE.sendToAllAround(message, point);
 		}
 		//PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this), getWorldObj().provider.dimensionId);
 

@@ -1,5 +1,5 @@
 {
-    "type": "crafting_shaped",
+    "type": "minecraft:crafting_shaped",
     "pattern": [
         "#",
         "#",
@@ -14,7 +14,7 @@
         }
     },
     "result": {
-        "item": "openfm:itemMemoryCard",
+        "item": "openfm:memorycard",
         "count": 1
     },
     "group": "openfm"

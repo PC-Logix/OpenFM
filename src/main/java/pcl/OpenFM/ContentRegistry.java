@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -19,9 +20,11 @@ import pcl.OpenFM.TileEntity.TileEntitySpeaker;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 @SuppressWarnings("deprecation")
+@Mod.EventBusSubscriber
 public class ContentRegistry {
 	
 	
@@ -73,6 +76,9 @@ public class ContentRegistry {
 	public void registerItems(RegistryEvent.Register<Item> register) {
 		register.getRegistry().register(itemRadioTuner);
 		register.getRegistry().register(itemMemoryCard);
+		register.getRegistry().register(new ItemBlock(blockRadio).setCreativeTab(creativeTab).setRegistryName(blockRadio.getRegistryName()));
+		register.getRegistry().register(new ItemBlock(blockSpeaker).setCreativeTab(creativeTab).setRegistryName(blockSpeaker.getRegistryName()));
+
 	}
 
 	public static void registerEvents() {

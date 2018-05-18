@@ -1,5 +1,5 @@
 {
-    "type": "crafting_shaped",
+    "type": "minecraft:crafting_shaped",
     "pattern": [
         "#",
         "#",
@@ -14,7 +14,7 @@
         }
     },
     "result": {
-        "item": "openfm:itemRadioTuner",
+        "item": "openfm:radiotuner",
         "count": 1
     },
     "group": "openfm"

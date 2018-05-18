@@ -1,7 +1,7 @@
 {
     "parent": "builtin/generated",
     "textures": {
-        "layer0": "openfm:items/ItemTuner"
+        "layer0": "openfm:items/itemtuner"
     },
     "display": {
         "thirdperson": {
