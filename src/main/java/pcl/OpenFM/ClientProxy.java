@@ -20,10 +20,10 @@ public class ClientProxy extends CommonProxy {
 
 	@Override
 	public void registerItemRenderers() {
-		registerBlockItem(ContentRegistry.blockRadio, 0, "Radio");
-		registerBlockItem(ContentRegistry.blockSpeaker, 0, "Speaker");
-		registerItem(ContentRegistry.itemMemoryCard, "MemoryCard");
-		registerItem(ContentRegistry.itemRadioTuner, "RadioTuner");
+		registerBlockItem(ContentRegistry.blockRadio, 0, "radio");
+		registerBlockItem(ContentRegistry.blockSpeaker, 0, "speaker");
+		registerItem(ContentRegistry.itemMemoryCard, "memorycard");
+		registerItem(ContentRegistry.itemRadioTuner, "radiotuner");
 	}
 	
 	public static void registerBlockItem(final Block block, int meta, final String blockName)

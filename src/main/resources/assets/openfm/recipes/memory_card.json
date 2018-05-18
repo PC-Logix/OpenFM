@@ -1,0 +1,21 @@
+{
+    "type": "crafting_shaped",
+    "pattern": [
+        "#",
+        "#",
+        "P"
+    ],
+    "key": {
+        "#": {
+            "item": "minecraft:redstone"
+        },
+        "P": {
+            "item": "minecraft:paper"
+        }
+    },
+    "result": {
+        "item": "openfm:itemMemoryCard",
+        "count": 1
+    },
+    "group": "openfm"
+}

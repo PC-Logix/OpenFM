@@ -52,7 +52,7 @@ public class RadioContainer extends Container {
 	 */
 	@Override
 	public boolean canInteractWith(EntityPlayer player) {
-		return tileEntity.isUseableByPlayer(player);
+		return tileEntity.isUsableByPlayer(player);
 	}
 
     @Override
@@ -76,16 +76,16 @@ public class RadioContainer extends Container {
                             return null;
                     }
 
-                    if (stackInSlot.stackSize == 0) {
+                    if (stackInSlot.isEmpty()) {
                             slotObject.putStack(null);
                     } else {
                             slotObject.onSlotChanged();
                     }
 
-                    if (stackInSlot.stackSize == stack.stackSize) {
-                            return null;
-                    }
-                    slotObject.onPickupFromSlot(player, stackInSlot);
+                    if (stackInSlot.getCount() == stack.getCount()) {
+                        return ItemStack.EMPTY;
+                }
+                    slotObject.onTake(player, stackInSlot);
             }
             return stack;
     }

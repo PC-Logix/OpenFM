@@ -164,9 +164,8 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 	}
 
 	public void dropContent(IInventory chest, World world, int xCoord, int yCoord, int zCoord) {
-		if (chest == null) {
+		if (chest == null)
 			return;
-		}
 
 		for (int i1 = 0; i1 < chest.getSizeInventory(); ++i1) {
 			ItemStack itemstack = chest.getStackInSlot(i1);
@@ -177,23 +176,23 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 				float offsetZ = random.nextFloat() * 0.8F + 0.1F;
 				EntityItem entityitem;
 
-				for (; itemstack.stackSize > 0; world.spawnEntity(entityitem)) {
+				for (; itemstack.getCount() > 0; world.spawnEntity(entityitem)) {
 					int stackSize = random.nextInt(21) + 10;
-					if (stackSize > itemstack.stackSize) {
-						stackSize = itemstack.stackSize;
-					}
+					if (stackSize > itemstack.getCount())
+						stackSize = itemstack.getCount();
 
-					itemstack.stackSize -= stackSize;
-					entityitem = new EntityItem(world, xCoord + offsetX, yCoord + offsetY, zCoord + offsetZ, new ItemStack(itemstack.getItem(), stackSize, itemstack.getItemDamage()));
+					itemstack.setCount(itemstack.getCount() - stackSize);
+					ItemStack stack = new ItemStack(itemstack.getItem(), stackSize, itemstack.getItemDamage());
+					if (itemstack.hasTagCompound())
+						stack.setTagCompound(itemstack.getTagCompound().copy());
+					
+					entityitem = new EntityItem(world, (double)((float)xCoord + offsetX), (double)((float)yCoord + offsetY), (double)((float)zCoord + offsetZ), stack);
 
 					float velocity = 0.05F;
-					entityitem.motionX = (float)random.nextGaussian() * velocity;
-					entityitem.motionY = (float)random.nextGaussian() * velocity + 0.2F;
-					entityitem.motionZ = (float)random.nextGaussian() * velocity;
-
-					if (itemstack.hasTagCompound()) {
-						entityitem.getItem().setTagCompound((NBTTagCompound)itemstack.getTagCompound().copy());
-					}
+					entityitem.motionX = (double)((float)random.nextGaussian() * velocity);
+					entityitem.motionY = (double)((float)random.nextGaussian() * velocity + 0.2F);
+					entityitem.motionZ = (double)((float)random.nextGaussian() * velocity);
+					
 				}
 			}
 		}

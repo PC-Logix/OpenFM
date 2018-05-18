@@ -466,7 +466,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 			NBTTagCompound var4 = var2.getCompoundTagAt(var3);
 			byte var5 = var4.getByte("Slot");
 			if (var5 >= 0 && var5 < this.RadioItemStack.length) {
-				this.RadioItemStack[var5] = ItemStack.loadItemStackFromNBT(var4);
+				this.RadioItemStack[var5] = new ItemStack(var4);
 			}
 		}
 	}
@@ -717,13 +717,13 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	@Override
 	public ItemStack decrStackSize(int slot, int amt) {
 		ItemStack stack = getStackInSlot(slot);
-		if (stack != null) {
-			if (stack.stackSize <= amt) {
-				setInventorySlotContents(slot, null);
+		if (!stack.isEmpty()) {
+			if (stack.getCount() <= amt) {
+				setInventorySlotContents(slot, ItemStack.EMPTY);
 			} else {
 				stack = stack.splitStack(amt);
-				if (stack.stackSize == 0) {
-					setInventorySlotContents(slot, null);
+				if (stack.getCount() == 0) {
+					setInventorySlotContents(slot, ItemStack.EMPTY);
 				}
 			}
 		}
@@ -744,8 +744,9 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	@Override
 	public void setInventorySlotContents(int i, ItemStack itemstack) {
 		this.RadioItemStack[i] = itemstack;
-		if (itemstack != null && itemstack.stackSize > this.getInventoryStackLimit()) {
-			itemstack.stackSize = this.getInventoryStackLimit();
+		if (!itemstack.isEmpty() && itemstack.getCount() > this.getInventoryStackLimit())
+		{
+			itemstack.setCount(this.getInventoryStackLimit());
 		}
 	}
 

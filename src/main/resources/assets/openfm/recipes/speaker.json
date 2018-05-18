@@ -1,0 +1,25 @@
+{
+    "type": "crafting_shaped",
+    "pattern": [
+        "###",
+        "#i#",
+        "#R#"
+    ],
+    "key": {
+        "#": {
+			"type": "forge:ore_dict",
+			"ore": "plankWood"
+        },
+        "i": {
+            "item": "minecraft:iron_ingot"
+        },
+        "R": {
+            "item": "minecraft:redstone"
+        }
+    },
+    "result": {
+        "item": "openfm:speaker",
+        "count": 1
+    },
+    "group": "openfm"
+}

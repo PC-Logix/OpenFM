@@ -26,7 +26,7 @@ import pcl.OpenFM.Handler.ServerEvent;
 import pcl.OpenFM.network.PacketHandler;
 import pcl.OpenFM.player.PlayerDispatcher;
 
-@Mod(modid=BuildInfo.modID, name=BuildInfo.modName, version=BuildInfo.versionNumber + "." + BuildInfo.buildNumber, dependencies = "", guiFactory = "pcl.OpenFM.GUI.OFMGuiFactory", acceptedMinecraftVersions = "1.9.4, 1.10, 1.10.2")
+@Mod(modid=BuildInfo.modID, name=BuildInfo.modName, version=BuildInfo.versionNumber + "." + BuildInfo.buildNumber, dependencies = "", guiFactory = "pcl.OpenFM.GUI.OFMGuiFactory", acceptedMinecraftVersions = "1.12.2")
 public class OpenFM {
 	public static final String MODID = "openfm";
 	@Mod.Instance(BuildInfo.modID)
@@ -57,21 +57,12 @@ public class OpenFM {
 				logger.info("OpenUpdater is not installed, not registering.");
 			}
 		}
-		ContentRegistry.init();
+		ContentRegistry.preInit();
 		proxy.initTileEntities();
 		proxy.registerItemRenderers();
 		
 	}
-
-/*
-	@SideOnly(Side.CLIENT)
-	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void onEvent(GuiOpenEvent event) {
-		if (event.gui instanceof GuiIngameModOptions) {
-			event.gui = new GuiModList(new GuiIngameMenu());
-		}
-	}
-*/	
+	
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent evt) {
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new OFMGuiHandler());

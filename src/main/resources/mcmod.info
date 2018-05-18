@@ -13,8 +13,8 @@
     "logoFile": "/OpenFM.logo.png",
     "screenshots": [ ],
     "parent": "",
-    "requiredMods": [ "Forge" ],
-    "dependencies": [ "OpenComputers" ],
+    "requiredMods": [ "forge" ],
+    "dependencies": [ "opencomputers" ],
     "useDependencyInformation": true
   }]
 }
