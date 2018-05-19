@@ -417,21 +417,22 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 
 	@Override
 	public NBTTagCompound getUpdateTag() {
+		NBTTagCompound tagCom = new NBTTagCompound();
+		this.writeToNBT(tagCom);
+		
 		for (Speaker s :speakers) {
 			PacketHandler.INSTANCE.sendToDimension(new MessageRadioAddSpeaker(this, s).wrap(), getWorld().provider.getDimension());
 		}
 		if(this.streamURL != null) {
-			//MessageRadioBase message = new MessageRadioSync(this).wrap();
-			//World world = ;
-			//WorldProvider provider = world.provider;
-			//int dimID = provider.getDimension();
-			//TargetPoint point = new NetworkRegistry.TargetPoint(dimID, this.pos.getX(), this.pos.getY(), this.pos.getZ(), 30.0D);
-			//PacketHandler.INSTANCE.sendToAllAround(message, point);
+			MessageRadioBase message = new MessageRadioSync(this).wrap();
+			World world = getWorld();
+			WorldProvider provider = world.provider;
+			int dimID = provider.getDimension();
+			TargetPoint point = new NetworkRegistry.TargetPoint(dimID, this.pos.getX(), this.pos.getY(), this.pos.getZ(), 30.0D);
+			PacketHandler.INSTANCE.sendToAllAround(message, point);
 		}
 		//PacketHandler.INSTANCE.sendToDimension(new MessageTERadioBlock(this), getWorldObj().provider.dimensionId);
 
-		NBTTagCompound tagCom = new NBTTagCompound();
-		this.writeToNBT(tagCom);
 		return tagCom;
 	}
 

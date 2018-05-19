@@ -47,7 +47,7 @@ def getGitRef() {
 }
 
 dependencies {
-    deobfCompile "li.cil.oc:OpenComputers:MC1.12.2-1.7.1.+"
+    deobfCompile "li.cil.oc:OpenComputers:MC1.12.2-1.7.2.+"
 	shade "javazoom:jlayer:1.0.1"
 	shade "com.squareup.okhttp:okhttp:2.5.0"
 	shade "com.googlecode.soundlibs:tritonus-share:0.3.7-2"
@@ -68,7 +68,7 @@ group = "pcl.OpenFM"
 archivesBaseName = "OpenFM-1.9.4"
 
 minecraft {
-    version = "1.12.2-14.23.2.2619"
+    version = "1.12.2-14.23.3.2698"
     runDir = "run"
     mappings = "snapshot_20180120"
     useDepAts = true
