@@ -1,11 +1,15 @@
 package pcl.OpenFM;
 
-public class CommonProxy{
-  public void registerRenderers() {}
-  
-  public void initTileEntities() {}
+import net.minecraft.item.Item;
 
-  public void registerItemRenderers() {}
+public class CommonProxy{
+	public void registerRenderers() {}
+
+	public void initTileEntities() {}
+
+	public void registerItemRenderers() {}
+
+	public void registerItemRenderer(Item itemBlock, int i, String name) {}
 
 }
 

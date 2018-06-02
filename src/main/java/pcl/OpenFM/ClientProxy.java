@@ -1,7 +1,9 @@
 package pcl.OpenFM;
 
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import pcl.OpenFM.TileEntity.RadioRenderer;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
 import net.minecraft.block.Block;
@@ -17,7 +19,7 @@ public class ClientProxy extends CommonProxy {
 		ClientRegistry.bindTileEntitySpecialRenderer(pcl.OpenFM.TileEntity.TileEntityRadio.class, radioRenderer);
 		OpenFM.logger.info("Registering TESR");		
 	}
-
+	
 	@Override
 	public void registerItemRenderers() {
 		registerBlockItem(ContentRegistry.blockRadio, 0, "radio");
