@@ -1,8 +1,8 @@
-tile.OpenFM.Radio.name=Radio
-tile.OpenFM.Speaker.name=Speaker
-item.OpenFM.Tuner.name=Radio Tuner
-item.OpenFM.MemoryCard.name=Memory Card
-itemGroup.OpenFM.tabOpenFM=OpenFM
+tile.radio.name=Radio
+tile.speaker.name=Speaker
+item.radiotuner.name=Radio Tuner
+item.memorycard.name=Memory Card
+itemgroup.tabopenfm=OpenFM
 gui.string.OpenFM.PlayButton=Play
 gui.string.OpenFM.StopButton=Stop
 gui.string.OpenFM.VolumeUp=Volume Up

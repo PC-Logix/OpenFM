@@ -1,8 +1,8 @@
-tile.OpenFM.Radio.name=Радио
-tile.OpenFM.Speaker.name=Динамик
-item.OpenFM.Tuner.name=Радио-тюнер
-item.OpenFM.MemoryCard.name=Карта памяти
-itemGroup.OpenFM.tabOpenFM=OpenFM
+tile.radio.name=Радио
+tile.speaker.name=Динамик
+item.radiotuner.name=Радио-тюнер
+item.memorycard.name=Карта памяти
+itemgroup.tabopenfm=OpenFM
 gui.string.OpenFM.PlayButton=Играть
 gui.string.OpenFM.StopButton=Стоп
 gui.string.OpenFM.VolumeUp=Увеличить громкость

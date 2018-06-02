@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -16,6 +17,7 @@ import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Context;
 import li.cil.oc.api.network.ManagedPeripheral;
 import li.cil.oc.api.network.SimpleComponent;
+import li.cil.oc.common.block.Item;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -27,17 +29,21 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 import pcl.OpenFM.ContentRegistry;
 import pcl.OpenFM.OFMConfiguration;
 import pcl.OpenFM.OpenFM;
@@ -64,7 +70,7 @@ import com.squareup.okhttp.Response;
 	@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = "ComputerCraft")
 })
 
-public class TileEntityRadio extends TileEntity implements SimpleComponent, ManagedPeripheral, IInventory, ITickable {
+public class TileEntityRadio extends TileEntity implements SimpleComponent, ManagedPeripheral, ITickable {
 	public PlayerDispatcher player = null;
 	public boolean isPlaying = false;
 	public boolean isValid = true;
@@ -82,8 +88,9 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	private int stationCount = 0;
 	public boolean isLocked;
 	public String owner = "";
-	public ItemStack[] RadioItemStack = new ItemStack[1];
-
+	
+	public ItemStackHandler inventory = new ItemStackHandler(1);
+	//public ItemStack[] RadioItemStack = new ItemStack[1];
 	int th = 0;
 	int loops = 0;
 	int ticks = 0;
@@ -109,6 +116,17 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 		}
 	}
 
+	@Override
+	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+		return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
+	}
+	
+	@Nullable
+	@Override
+	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+		return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? (T)inventory : super.getCapability(capability, facing);
+	}
+	
 	public void startStream() throws Exception {
 		OFMConfiguration.init(OpenFM.configFile);
 		if (OFMConfiguration.enableStreams) {
@@ -462,15 +480,8 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 		for(int i = 0; i < this.getStationCount(); i++) {
 			stations.add(nbt.getString("station" + i));
 		}
-		NBTTagList var2 = nbt.getTagList("Items",nbt.getId());
-		this.RadioItemStack = new ItemStack[this.getSizeInventory()];
-		for (int var3 = 0; var3 < var2.tagCount(); ++var3) {
-			NBTTagCompound var4 = var2.getCompoundTagAt(var3);
-			byte var5 = var4.getByte("Slot");
-			if (var5 >= 0 && var5 < this.RadioItemStack.length) {
-				this.RadioItemStack[var5] = new ItemStack(var4);
-			}
-		}
+		inventory.deserializeNBT(nbt.getCompoundTag("inventory"));
+		//RadioItemStack[0] = inventory.getStackInSlot(0);
 	}
 
 	@Override
@@ -506,18 +517,8 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 				nbt.setInteger("stationCount", i + 1);
 			}
 		}
-		NBTTagList var2 = new NBTTagList();
-		for (int var3 = 0; var3 < this.RadioItemStack.length; ++var3)
-		{
-			if (this.RadioItemStack[var3] != null)
-			{
-				NBTTagCompound var4 = new NBTTagCompound();
-				var4.setByte("Slot", (byte)var3);
-				this.RadioItemStack[var3].writeToNBT(var4);
-				var2.appendTag(var4);
-			}
-		}
-		nbt.setTag("Items", var2);
+		//inventory.setStackInSlot(0, RadioItemStack[0]);
+		nbt.setTag("inventory", inventory.serializeNBT());
 		return nbt;
 	}
 
@@ -706,158 +707,39 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 		return methodNames;
 	}
 
-	@Override
-	public int getSizeInventory() {
-		return RadioItemStack.length;
-	}
-
-	@Override
-	public ItemStack getStackInSlot(int i) {
-		return this.RadioItemStack[i];
-	}
-
-	@Override
-	public ItemStack decrStackSize(int slot, int amt) {
-		ItemStack stack = getStackInSlot(slot);
-		if (!stack.isEmpty()) {
-			if (stack.getCount() <= amt) {
-				setInventorySlotContents(slot, ItemStack.EMPTY);
-			} else {
-				stack = stack.splitStack(amt);
-				if (stack.getCount() == 0) {
-					setInventorySlotContents(slot, ItemStack.EMPTY);
-				}
-			}
-		}
-		return stack;
-	}
-
-	@Override
-	public ItemStack removeStackFromSlot(int i) {
-		if (getStackInSlot(i) != null) {
-			ItemStack var2 = getStackInSlot(i);
-			setInventorySlotContents(i, null);
-			return var2;
-		} else {
-			return null;
-		}
-	}
-
-	@Override
-	public void setInventorySlotContents(int i, ItemStack itemstack) {
-		this.RadioItemStack[i] = itemstack;
-		if (!itemstack.isEmpty() && itemstack.getCount() > this.getInventoryStackLimit())
-		{
-			itemstack.setCount(this.getInventoryStackLimit());
-		}
-	}
-
-	@Override
-	public int getInventoryStackLimit() {
-		return 1;
-	}
-
-	@Override
-	public boolean isUsableByPlayer(EntityPlayer player) {
-		return world.getTileEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ())) == this && player.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 64;
-	}
-
-	@Override
-	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
-		if (i == 0) {
-			if (itemstack.getItem() instanceof ItemMemoryCard) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public void writeDataToCard() {
-		if (getStackInSlot(0) != null) {
-			RadioItemStack[0] = new ItemStack(ContentRegistry.itemMemoryCard);
-			RadioItemStack[0].setTagCompound(new NBTTagCompound());
-			RadioItemStack[0].getTagCompound().setString("screenText", this.screenText);	
-			RadioItemStack[0].getTagCompound().setInteger("screenColor", this.screenColor);
-			RadioItemStack[0].getTagCompound().setString("streamURL", this.streamURL);
-			RadioItemStack[0].getTagCompound().setInteger("stationCount", this.stationCount);
+		
+		if (inventory.getStackInSlot(0) != ItemStack.EMPTY) {
+			//RadioItemStack[0] = new ItemStack(ContentRegistry.itemMemoryCard);
+			inventory.getStackInSlot(0).setTagCompound(new NBTTagCompound());
+			inventory.getStackInSlot(0).getTagCompound().setString("screenText", this.screenText);	
+			inventory.getStackInSlot(0).getTagCompound().setInteger("screenColor", this.screenColor);
+			inventory.getStackInSlot(0).getTagCompound().setString("streamURL", this.streamURL);
+			inventory.getStackInSlot(0).getTagCompound().setInteger("stationCount", this.stationCount);
 			for(int i = 0; i < this.getStationCount(); i++)
 			{
-				RadioItemStack[0].getTagCompound().setString("station" + i, stations.get(i));
+				inventory.getStackInSlot(0).getTagCompound().setString("station" + i, stations.get(i));
 			}
-			RadioItemStack[0].setStackDisplayName(this.screenText);
+			inventory.getStackInSlot(0).setStackDisplayName(this.screenText);
 		}
 
 	}
 
 	public void readDataFromCard() {
-		if (getStackInSlot(0) != null) {
-			if (RadioItemStack[0].hasTagCompound()) {
-				this.screenText = RadioItemStack[0].getTagCompound().getString("screenText");
-				this.screenColor = RadioItemStack[0].getTagCompound().getInteger("screenColor");
-				this.streamURL = RadioItemStack[0].getTagCompound().getString("streamURL");
-				this.stationCount = RadioItemStack[0].getTagCompound().getInteger("stationCount");
+		if (inventory.getStackInSlot(0) != ItemStack.EMPTY) {
+			if (inventory.getStackInSlot(0).hasTagCompound()) {
+				this.screenText = inventory.getStackInSlot(0).getTagCompound().getString("screenText");
+				this.screenColor = inventory.getStackInSlot(0).getTagCompound().getInteger("screenColor");
+				this.streamURL = inventory.getStackInSlot(0).getTagCompound().getString("streamURL");
+				this.stationCount = inventory.getStackInSlot(0).getTagCompound().getInteger("stationCount");
 				for(int i = 0; i < this.getStationCount(); i++)
 				{
-					stations.add(RadioItemStack[0].getTagCompound().getString("station" + i));
+					stations.add(inventory.getStackInSlot(0).getTagCompound().getString("station" + i));
 				}
 				getUpdateTag();
 				markDirty();
 			}
 		}
-	}
-
-	@Override
-	public String getName() {
-		// TODO Auto-generated method stub
-		return "ofm_radio";
-	}
-
-	@Override
-	public boolean hasCustomName() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public ITextComponent getDisplayName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void openInventory(EntityPlayer player) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void closeInventory(EntityPlayer player) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public int getField(int id) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void setField(int id, int value) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public int getFieldCount() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void clear() {
-		// TODO Auto-generated method stub
-
 	}
 
 	public void setOwner(String inOwner) {
@@ -915,9 +797,4 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 		return screenOut;
 	}
 
-	@Override
-	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

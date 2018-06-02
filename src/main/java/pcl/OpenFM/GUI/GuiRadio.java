@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -359,17 +360,17 @@ public class GuiRadio extends GuiRadioBase {
 		}
 		if (buttonID == 16) { //Read from card
 			//PacketHandler.INSTANCE.sendToServer(new MessageRadioReadCard(this.radio).wrap());
-			if (this.radio.RadioItemStack[0] != null && this.radio.RadioItemStack[0].hasTagCompound()) {
-				this.screenTextBox.setText(this.radio.RadioItemStack[0].getTagCompound().getString("screenText"));
-				this.colorBox.setText(toHexString(this.radio.RadioItemStack[0].getTagCompound().getInteger("screenColor")));
-				this.streamTextBox.setText(this.radio.RadioItemStack[0].getTagCompound().getString("streamURL"));
+			if (this.radio.inventory.getStackInSlot(0) != ItemStack.EMPTY && this.radio.inventory.getStackInSlot(0).hasTagCompound()) {
+				this.screenTextBox.setText(this.radio.inventory.getStackInSlot(0).getTagCompound().getString("screenText"));
+				this.colorBox.setText(toHexString(this.radio.inventory.getStackInSlot(0).getTagCompound().getInteger("screenColor")));
+				this.streamTextBox.setText(this.radio.inventory.getStackInSlot(0).getTagCompound().getString("streamURL"));
 				actionPerformed(0);
 				actionPerformed(13);
 				actionPerformed(14);
 			}
 		}
 		if (buttonID == 15) { //Write to card
-			if(this.radio.RadioItemStack[0] != null) {
+			if(this.radio.inventory.getStackInSlot(0) != ItemStack.EMPTY) {
 				PacketHandler.INSTANCE.sendToServer(new MessageRadioWriteCard(this.radio).wrap());
 			}
 		}

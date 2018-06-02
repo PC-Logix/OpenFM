@@ -1,8 +1,8 @@
-tile.OpenFM.Radio.name=电台
-tile.OpenFM.Speaker.name=扬声器
-item.OpenFM.Tuner.name=电台调频器
-item.OpenFM.MemoryCard.name=内存卡
-itemGroup.OpenFM.tabOpenFM=OepnFM
+tile.radio.name=电台
+tile.speaker.name=扬声器
+item.radiotuner.name=电台调频器
+item.memorycard.name=内存卡
+itemgroup.tabopenfm=OepnFM
 gui.string.OpenFM.PlayButton=播放
 gui.string.OpenFM.StopButton=停止
 gui.string.OpenFM.VolumeUp=音量加

@@ -7,10 +7,19 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.SlotItemHandler;
+import pcl.OpenFM.ContentRegistry;
+import pcl.OpenFM.Items.ItemMemoryCard;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 /**
  * @author Caitlyn
  *
@@ -18,73 +27,69 @@ import java.util.List;
 public class RadioContainer extends Container {
 	public TileEntityRadio tileEntity;	
 
-	private final int HOTBAR_SLOT_COUNT = 9;
-	private final int PLAYER_INVENTORY_ROW_COUNT = 3;
-	private final int PLAYER_INVENTORY_COLUMN_COUNT = 9;
-	private final int PLAYER_INVENTORY_SLOT_COUNT = PLAYER_INVENTORY_COLUMN_COUNT * PLAYER_INVENTORY_ROW_COUNT;
-	private final int TE_INVENTORY_SLOT_COUNT = 1;
-
-	public RadioContainer(InventoryPlayer inventory, TileEntityRadio te) {
-		tileEntity = te;
-		final int SLOT_X_SPACING = 18;
-		final int HOTBAR_XPOS = 9;
-		final int HOTBAR_YPOS = 15;
-		// Add the players hotbar to the gui - the [xpos, ypos] location of each item
-		for (int x = 0; x < HOTBAR_SLOT_COUNT; x++) {
-			int slotNumber = x;
-			addSlotToContainer(new Slot(inventory, slotNumber, HOTBAR_XPOS + SLOT_X_SPACING * x, HOTBAR_YPOS));
-		}
-		
-		if (TE_INVENTORY_SLOT_COUNT != te.getSizeInventory()) {
-			System.err.println("Mismatched slot count in RadioContainer(" + TE_INVENTORY_SLOT_COUNT + ") and TileInventory (" + te.getSizeInventory()+")");
-		}
+	public RadioContainer(InventoryPlayer playerInv, final TileEntityRadio pedestal) {
+		IItemHandler inventory = pedestal.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.NORTH);
 		final int TILE_INVENTORY_XPOS = 5;
 		final int TILE_INVENTORY_YPOS = 70;
-		// Add the tile inventory container to the gui
-		//addSlotToContainer(new MemoryCardSlot(tileEntity, 0, TILE_INVENTORY_XPOS + SLOT_X_SPACING * 0, TILE_INVENTORY_YPOS));
+		final int SLOT_X_SPACING = 18;
+		addSlotToContainer(new SlotItemHandler(inventory, 0, TILE_INVENTORY_XPOS + SLOT_X_SPACING * 0, TILE_INVENTORY_YPOS) {
+			@Override
+			public void onSlotChanged() {
+				pedestal.markDirty();
+			}
+			
+			@Override
+			public boolean isItemValid(@Nonnull ItemStack stack) {
+				Item memoryCard = ContentRegistry.itemMemoryCard;
+				ItemStack memoryCards = new ItemStack(memoryCard);
+				return stack.areItemsEqualIgnoreDurability(stack, memoryCards);
+			}
+		});
+		
+		final int HOTBAR_XPOS = 9;
+		final int HOTBAR_YPOS = 15;
+		for (int k = 0; k < 9; k++) {
+			addSlotToContainer(new Slot(playerInv, k, HOTBAR_XPOS + SLOT_X_SPACING * k, HOTBAR_YPOS));
+		}
 	}
-
-	/* (non-Javadoc)
-	 * @see net.minecraft.inventory.Container#canInteractWith(net.minecraft.entity.player.EntityPlayer)
-	 */
+	
 	@Override
 	public boolean canInteractWith(EntityPlayer player) {
-		return tileEntity.isUsableByPlayer(player);
+		return true;
 	}
 
-    @Override
-    public ItemStack transferStackInSlot(EntityPlayer player, int slot) {
-            ItemStack stack = ItemStack.EMPTY;
-            Slot slotObject = (Slot) inventorySlots.get(slot);
-
-            //null checks and checks if the item can be stacked (maxStackSize > 1)
-            if (slotObject != null && slotObject.getHasStack()) {
-                    ItemStack stackInSlot = slotObject.getStack();
-                    stack = stackInSlot.copy();
-
-                    //merges the item into player inventory since its in the tileEntity
-                    if (slot < tileEntity.getSizeInventory()) {
-                            if (!this.mergeItemStack(stackInSlot, tileEntity.getSizeInventory(), 36+tileEntity.getSizeInventory(), true)) {
-                                    return ItemStack.EMPTY;
-                            }
-                    }
-                    //places it into the tileEntity is possible since its in the player inventory
-                    else if (!this.mergeItemStack(stackInSlot, 0, tileEntity.getSizeInventory(), false)) {
-                            return ItemStack.EMPTY;
-                    }
-
-                    if (stackInSlot.isEmpty()) {
-                            slotObject.putStack(null);
-                    } else {
-                            slotObject.onSlotChanged();
-                    }
-
-                    if (stackInSlot.getCount() == stack.getCount()) {
-                        return ItemStack.EMPTY;
-                }
-                    slotObject.onTake(player, stackInSlot);
-            }
-            return stack;
-    }
-
+	@Override
+	public ItemStack transferStackInSlot(EntityPlayer player, int index) {
+		ItemStack itemstack = ItemStack.EMPTY;
+		Slot slot = inventorySlots.get(index);	
+		if (slot != null && slot.getHasStack()) {
+			ItemStack itemstack1 = slot.getStack();
+			itemstack = itemstack1.copy();
+	
+			int containerSlots = inventorySlots.size() - player.inventory.mainInventory.size();
+	
+			if (index < containerSlots) {
+				if (!this.mergeItemStack(itemstack1, containerSlots, inventorySlots.size(), true)) {
+					return ItemStack.EMPTY;
+				}
+			} else if (!this.mergeItemStack(itemstack1, 0, containerSlots, false)) {
+				return ItemStack.EMPTY;
+			}
+	
+			if (itemstack1.getCount() == 0) {
+				slot.putStack(ItemStack.EMPTY);
+			} else {
+				slot.onSlotChanged();
+			}
+	
+			if (itemstack1.getCount() == itemstack.getCount()) {
+				return ItemStack.EMPTY;
+			}
+	
+			slot.onTake(player, itemstack1);
+		}
+	
+		return itemstack;
+	}
+	
 }

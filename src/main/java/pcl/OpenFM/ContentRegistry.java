@@ -95,7 +95,7 @@ public class ContentRegistry {
 
 			@SideOnly(Side.CLIENT)
 			public String getTranslatedTabLabel() {
-				return I18n.translateToLocal("itemGroup.OpenFM.tabOpenFM");
+				return I18n.translateToLocal("itemgroup.tabopenfm");
 			}
 		};
 	}

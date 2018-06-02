@@ -28,6 +28,8 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import pcl.OpenFM.OpenFM;
 import pcl.OpenFM.GUI.GuiRadioBase;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
@@ -68,7 +70,12 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 			return;
 		}
 		
-		dropContent(t, world, t.getPos().getX(), t.getPos().getY(), t.getPos().getZ());
+		IItemHandler itemHandler = t.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.NORTH);
+		ItemStack stack1 = itemHandler.getStackInSlot(0);
+		if (!stack1.isEmpty()) {
+			EntityItem item = new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), stack1);
+			world.spawnEntity(item);
+		}
 
 		if (t instanceof TileEntityRadio) {
 			if (t.stations.size() > 0) {
