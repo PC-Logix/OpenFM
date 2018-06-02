@@ -26,6 +26,11 @@ repositories {
         name = "OC repo"
         url = "http://maven.cil.li/"
     }
+	
+	    maven {
+        name = "OC repo mirror"
+        url = "http://maven.pc-logix.com/"
+    }
 }
 
 configurations {
