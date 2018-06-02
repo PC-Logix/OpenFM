@@ -9,7 +9,6 @@
 		"model": "minecraft:orientable"
 	},
 	"variants": {
-		"normal": [{}],
 		"inventory": [{
 			"transform": "forge:default-block"
 		}],

@@ -47,7 +47,7 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 		super(Material.WOOD);
 		setHardness(2.0F);
 		setResistance(10.0F);
-		setUnlocalizedName("OpenFM.Radio");
+		setUnlocalizedName("radio");
 		//setStepSound(Block.soundTypeWood);
 		random = new Random();
 	}

@@ -37,6 +37,7 @@ public class OpenFM {
 	public static final Logger logger = LogManager.getFormatterLogger(BuildInfo.modID);
 	public static File configFile;
 	private static ContentRegistry contentRegistry = new ContentRegistry();
+	
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		PacketHandler.init();
@@ -47,7 +48,9 @@ public class OpenFM {
 		ContentRegistry.preInit();
 		proxy.initTileEntities();
 		proxy.registerItemRenderers();
-		
+		proxy.registerRenderers();
+		FMLCommonHandler.instance().bus().register(instance);
+		MinecraftForge.EVENT_BUS.register(instance);
 	}
 	
 	@Mod.EventHandler
@@ -57,9 +60,6 @@ public class OpenFM {
 		FMLCommonHandler.instance().bus().register(new ClientEvent());
 		MinecraftForge.EVENT_BUS.register(new ServerEvent());
 		FMLCommonHandler.instance().bus().register(new ServerEvent());
-		FMLCommonHandler.instance().bus().register(instance);
-		MinecraftForge.EVENT_BUS.register(instance);
-		proxy.registerRenderers();
 	}
 
 	@SubscribeEvent
