@@ -59,8 +59,8 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 @Optional.InterfaceList({
-	@Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "OpenComputers"),
-	@Optional.Interface(iface = "li.cil.oc.api.network.ManagedPeripheral", modid = "OpenComputers"),
+	@Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "opencomputers"),
+	@Optional.Interface(iface = "li.cil.oc.api.network.ManagedPeripheral", modid = "opencomputers"),
 	@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = "ComputerCraft")
 })
 
@@ -69,7 +69,6 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	public boolean isPlaying = false;
 	public boolean isValid = true;
 	public String streamURL = "";
-	private World world;
 	public float volume = 0.3F;
 	private boolean redstoneInput = false;
 	public boolean listenToRedstone = false;
@@ -89,9 +88,8 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	int loops = 0;
 	int ticks = 0;
 	int renderCount = 0;
-
+	
 	public TileEntityRadio(World w) {
-		world = w;
 		if (isPlaying) {
 			try {
 				startStream();
@@ -109,11 +107,6 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 				stopStream();
 			}
 		}
-	}
-
-	public void setWorld(World w)
-	{
-		world = w;
 	}
 
 	public void startStream() throws Exception {
@@ -693,7 +686,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 
 
 	@Override
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] invoke(final String method, final Context context,
 			final Arguments args) throws Exception {
 		final Object[] arguments = new Object[args.count()];
@@ -708,7 +701,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	}
 
 	@Override
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public String[] methods() {
 		return methodNames;
 	}

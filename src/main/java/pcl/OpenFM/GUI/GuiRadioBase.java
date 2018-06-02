@@ -60,6 +60,7 @@ public class GuiRadioBase extends GuiContainer {
 	public void initGui() {
 		
 		super.initGui();
+		this.fontRenderer = this.mc.fontRenderer;
 	}
 
 	public void onGuiClosed()
@@ -69,6 +70,7 @@ public class GuiRadioBase extends GuiContainer {
 
 	@Override
 	public void drawScreen(int par1, int par2, float par3){
+		
 		int k = (this.width - this.gui_width) / 2;
 		int l = (this.height - this.gui_height) / 2 + 30 - 5 - 45;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);

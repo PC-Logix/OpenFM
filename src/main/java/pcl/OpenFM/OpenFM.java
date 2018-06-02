@@ -34,7 +34,6 @@ public class OpenFM {
 	@SidedProxy(clientSide="pcl.OpenFM.ClientProxy", serverSide="pcl.OpenFM.CommonProxy")
 	public static CommonProxy proxy;
 	public static List<PlayerDispatcher> playerList = new ArrayList<PlayerDispatcher>();
-	public Configuration config;
 	public static final Logger logger = LogManager.getFormatterLogger(BuildInfo.modID);
 	public static File configFile;
 	private static ContentRegistry contentRegistry = new ContentRegistry();
@@ -45,18 +44,6 @@ public class OpenFM {
 		// Load config
 		configFile = new File(event.getModConfigurationDirectory() + "/openfm/openfm.cfg");
 		OFMConfiguration.init(configFile);
-		
-		// Check for Mod Update Detector
-		if (event.getSourceFile().getName().endsWith(".jar") && event.getSide().isClient() && OFMConfiguration.enableMUD) {
-			logger.info("Registering mod with OpenUpdater.");
-			try {
-				Class.forName("pcl.mud.OpenUpdater").getDeclaredMethod("registerMod", ModContainer.class, URL.class, URL.class).invoke(null, FMLCommonHandler.instance().findContainerFor(this),
-						new URL("http://PC-Logix.com/OpenFM/get_latest_build.php?mcver=1.9.4"),
-						new URL("http://PC-Logix.com/OpenFM/changelog.php?mcver=1.9.4"));
-			} catch (Throwable e) {
-				logger.info("OpenUpdater is not installed, not registering.");
-			}
-		}
 		ContentRegistry.preInit();
 		proxy.initTileEntities();
 		proxy.registerItemRenderers();

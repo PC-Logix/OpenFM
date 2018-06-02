@@ -71,9 +71,9 @@ public class GuiRadio extends GuiRadioBase {
 			this.lockedBtn = new OFMGuiButton(11, this.width / 2 + 100 - 4, this.height / 2 + 30 - 45, 12, 16, 103, 24, "", OFMGuiButton.guiLocation); //Locked
 		}
 
-		if (this.radio.getWorld().provider.getDimension() == 0) {
+		//if (this.radio.getWorld().provider.getDimension() == 0) {
 			this.OFMbuttonList.add(this.redstoneBtn);
-		}
+		//}
 
 		this.OFMbuttonList.add(this.lockedBtn);
 
@@ -84,7 +84,6 @@ public class GuiRadio extends GuiRadioBase {
 
 		this.streamTextBox = new OFMGuiTextField(1, this.fontRenderer, this.width / 2 - 100, this.height / 2 - 5 + 17 - 45, 200, 20);
 		this.streamTextBox.setMaxStringLength(1000);
-
 		if (!(this.radio.streamURL == null) && !this.radio.streamURL.equals("")) {
 			this.streamTextBox.setText(this.radio.streamURL);
 		} else {

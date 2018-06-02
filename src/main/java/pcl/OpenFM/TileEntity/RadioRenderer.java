@@ -44,11 +44,12 @@ public class RadioRenderer extends TileEntitySpecialRenderer {
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			//System.out.println(output);
 			mc.getRenderManager().getFontRenderer().drawString(radio.scrollText(radio), -37 / 2, 0, radio.getScreenColor());
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GL11.glEnable(GL11.GL_LIGHTING);
-			GL11.glPopMatrix();
+		} else {
+			//System.out.println("World null");
 		}
+		GL11.glPopMatrix();
 	}
 }

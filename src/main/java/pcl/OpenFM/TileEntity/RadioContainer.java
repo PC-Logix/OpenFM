@@ -41,10 +41,7 @@ public class RadioContainer extends Container {
 		final int TILE_INVENTORY_XPOS = 5;
 		final int TILE_INVENTORY_YPOS = 70;
 		// Add the tile inventory container to the gui
-		for (int x = 0; x < TE_INVENTORY_SLOT_COUNT; x++) {
-			int slotNumber = x;
-			addSlotToContainer(new MemoryCardSlot(tileEntity, slotNumber, TILE_INVENTORY_XPOS + SLOT_X_SPACING * x, TILE_INVENTORY_YPOS));
-		}
+		//addSlotToContainer(new MemoryCardSlot(tileEntity, 0, TILE_INVENTORY_XPOS + SLOT_X_SPACING * 0, TILE_INVENTORY_YPOS));
 	}
 
 	/* (non-Javadoc)
@@ -57,7 +54,7 @@ public class RadioContainer extends Container {
 
     @Override
     public ItemStack transferStackInSlot(EntityPlayer player, int slot) {
-            ItemStack stack = null;
+            ItemStack stack = ItemStack.EMPTY;
             Slot slotObject = (Slot) inventorySlots.get(slot);
 
             //null checks and checks if the item can be stacked (maxStackSize > 1)
@@ -68,12 +65,12 @@ public class RadioContainer extends Container {
                     //merges the item into player inventory since its in the tileEntity
                     if (slot < tileEntity.getSizeInventory()) {
                             if (!this.mergeItemStack(stackInSlot, tileEntity.getSizeInventory(), 36+tileEntity.getSizeInventory(), true)) {
-                                    return null;
+                                    return ItemStack.EMPTY;
                             }
                     }
                     //places it into the tileEntity is possible since its in the player inventory
                     else if (!this.mergeItemStack(stackInSlot, 0, tileEntity.getSizeInventory(), false)) {
-                            return null;
+                            return ItemStack.EMPTY;
                     }
 
                     if (stackInSlot.isEmpty()) {

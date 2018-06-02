@@ -11,20 +11,20 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 
 @Optional.InterfaceList(value={
-		@Optional.Interface(iface = "li.cil.oc.api.network.Environment", modid = "OpenComputers")
+		@Optional.Interface(iface = "li.cil.oc.api.network.Environment", modid = "opencomputers")
 })
 public class TileEntitySpeaker extends TileEntity implements Environment, ITickable {
 	
 	protected Node node;
 		
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	@Override
 	public Node node() {
 		if (node == null) node = Network.newNode(this, Visibility.Network).create();
 		return node;
 	}
 	
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	@Override
 	public void onChunkUnload() {
 		super.onChunkUnload();
@@ -32,7 +32,7 @@ public class TileEntitySpeaker extends TileEntity implements Environment, ITicka
 			node.remove();
 	}
 
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	@Override
 	public void invalidate() {
 		super.invalidate();
@@ -40,26 +40,26 @@ public class TileEntitySpeaker extends TileEntity implements Environment, ITicka
 			node.remove();
 	}
 
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	@Override
 	public void onConnect(final Node node) {
 		// TODO Auto-generated method stub
 	}
 
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	@Override
 	public void onMessage(Message message) {
 		// TODO Auto-generated method stub
 	}
 
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	@Override
 	public void onDisconnect(Node node) {
 		// TODO Auto-generated method stub
 
 	}
 
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
@@ -68,7 +68,7 @@ public class TileEntitySpeaker extends TileEntity implements Environment, ITicka
 		}
 	}
 
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
@@ -80,7 +80,7 @@ public class TileEntitySpeaker extends TileEntity implements Environment, ITicka
 		return nbt;
 	}
 
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public void updateEntity() {
 		if (node != null && node.network() == null) {
 			Network.joinOrCreateNetwork(this);
