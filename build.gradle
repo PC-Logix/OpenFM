@@ -17,8 +17,8 @@ plugins {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
 	mavenCentral()
@@ -68,9 +68,9 @@ group = "pcl.OpenFM"
 archivesBaseName = "OpenFM-1.9.4"
 
 minecraft {
-    version = "1.12.2-14.23.3.2698"
+    version = "1.12.2-14.23.4.2707"
     runDir = "run"
-    mappings = "snapshot_20180120"
+    mappings = "snapshot_20171003"
     useDepAts = true
 	replace "@VERSION@", project.version
 	replace "@BUILD@", project.ext.buildNumber
