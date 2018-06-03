@@ -67,7 +67,7 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 		if(t==null) {
 			return;
 		}
-		
+
 		dropContent(t, world, t.getPos().getX(), t.getPos().getY(), t.getPos().getZ());
 
 		if (t instanceof TileEntityRadio) {
@@ -141,7 +141,7 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 		EnumFacing enumfacing = (placer == null) ? EnumFacing.NORTH : EnumFacing.fromAngle(placer.rotationYaw);
 		return this.getDefaultState().withProperty(PROPERTYFACING, enumfacing);
 	}
-	
+
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
     	super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
@@ -153,11 +153,13 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 		return true;
 	}
 
-	public void onNeighborBlockChange(World world, BlockPos pos, Block block) {
+	@Override
+	public void neighborChanged(IBlockState state, World world, BlockPos pos,
+			Block block) {
 		boolean flag = world.isBlockPowered(pos);
 		try {
 			Side side = FMLCommonHandler.instance().getEffectiveSide();
-			if (block.canProvidePower((IBlockState) block.getBlockState())) {
+			if (block.canProvidePower((IBlockState) block.getBlockState().getBaseState())) {
 				TileEntity tileEntity;
 				if (side == Side.SERVER) {
 					tileEntity = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getTileEntity(pos);
@@ -167,7 +169,7 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 				((TileEntityRadio)tileEntity).setRedstoneInput(flag);
 			}
 		}
-		catch (Exception localException) { }
+		catch (Exception localException) {}
 	}
 
 	public void dropContent(IInventory chest, World world, int xCoord, int yCoord, int zCoord) {
@@ -205,7 +207,7 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 			}
 		}
 	}
-	
+
 	public boolean shouldCheckWeakPower(IBlockAccess world, int x, int y, int z, int side) {
 		return true;
 	}
