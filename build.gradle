@@ -74,6 +74,7 @@ minecraft {
     useDepAts = true
 	replace "@VERSION@", project.version
 	replace "@BUILD@", project.ext.buildNumber
+	makeObfSourceJar = false
 }
 
 version = "${version}.${project.ext.buildNumber}"
