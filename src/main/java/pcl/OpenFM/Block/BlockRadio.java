@@ -103,7 +103,6 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 			} else {
 				ItemStack stack = new ItemStack(Item.getItemFromBlock(this), 1);
 				world.spawnEntity(new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), stack));
-				super.breakBlock(world, pos, state);
 			}
 		}
 	}
@@ -153,11 +152,12 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 		return true;
 	}
 
-	public void onNeighborBlockChange(World world, BlockPos pos, Block block) {
+	@Override
+	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos fromPos) {
 		boolean flag = world.isBlockPowered(pos);
 		try {
 			Side side = FMLCommonHandler.instance().getEffectiveSide();
-			if (block.canProvidePower((IBlockState) block.getBlockState())) {
+			if (block.canProvidePower((IBlockState) block.getBlockState().getBaseState())) {
 				TileEntity tileEntity;
 				if (side == Side.SERVER) {
 					tileEntity = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getTileEntity(pos);

@@ -81,21 +81,21 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	private boolean scheduledRedstoneInput = false;
 	private boolean scheduleRedstoneInput = false;
 	public ArrayList<Speaker> speakers = new ArrayList<Speaker>();
-	public int screenColor = 0x0000FF;
+	public int screenColor = 0x0AFF0A;
 	public String screenText = "OpenFM";
 	public String screenOut = "";
 	public List<String> stations = new ArrayList<String>();
 	private int stationCount = 0;
 	public boolean isLocked;
 	public String owner = "";
-	
+
 	public ItemStackHandler inventory = new ItemStackHandler(1);
 	//public ItemStack[] RadioItemStack = new ItemStack[1];
 	int th = 0;
 	int loops = 0;
 	int ticks = 0;
 	int renderCount = 0;
-	
+
 	public TileEntityRadio(World w) {
 		if (isPlaying) {
 			try {
@@ -120,13 +120,13 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
 		return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
 	}
-	
+
 	@Nullable
 	@Override
 	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
 		return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? (T)inventory : super.getCapability(capability, facing);
 	}
-	
+
 	public void startStream() throws Exception {
 		OFMConfiguration.init(OpenFM.configFile);
 		if (OFMConfiguration.enableStreams) {
@@ -263,7 +263,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 					loops = 0;
 				} else {
 					loops++;
-					
+
 				}
 				th++;
 				if (th >= 60) {
@@ -280,17 +280,14 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 				}
 			}
 
-			if ((scheduleRedstoneInput) && (listenToRedstone)) {
-				if ((!scheduledRedstoneInput) && (redstoneInput)) {
-					isPlaying = (!isPlaying);
+			//Change: Can now use a Lever to turn it on or off, instead of push button
+			if (listenToRedstone) {
+				if (isPlaying != scheduledRedstoneInput) {
+					isPlaying =  !(isPlaying && !scheduledRedstoneInput);
 					if (getWorld() != null) {
-						PacketHandler.INSTANCE.sendToAll(new MessageRadioPlaying(this, isPlaying).wrap());
+						PacketHandler.INSTANCE.sendToAll(new MessageRadioPlaying(this,isPlaying).wrap());
 					}
 				}
-
-				redstoneInput = scheduledRedstoneInput;
-				scheduleRedstoneInput = false;
-				scheduledRedstoneInput = false;
 			}
 		}
 	}
@@ -355,10 +352,9 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	}
 
 	public void setRedstoneInput(boolean input) {
-		if (input) {
+		if (input != this.scheduledRedstoneInput) {
 			this.scheduledRedstoneInput = input;
 		}
-		this.scheduleRedstoneInput = true;
 	}
 
 	public void setScreenText(String text) {
@@ -430,7 +426,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	public NBTTagCompound getUpdateTag() {
 		NBTTagCompound tagCom = new NBTTagCompound();
 		this.writeToNBT(tagCom);
-		
+
 		for (Speaker s :speakers) {
 			PacketHandler.INSTANCE.sendToDimension(new MessageRadioAddSpeaker(this, s).wrap(), getWorld().provider.getDimension());
 		}
@@ -708,7 +704,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	}
 
 	public void writeDataToCard() {
-		
+
 		if (inventory.getStackInSlot(0) != ItemStack.EMPTY) {
 			//RadioItemStack[0] = new ItemStack(ContentRegistry.itemMemoryCard);
 			inventory.getStackInSlot(0).setTagCompound(new NBTTagCompound());
@@ -770,7 +766,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 	public void resetTicks() {
 		this.ticks = 0;
 	}
-	
+
 	@SideOnly(Side.CLIENT)
 	public String scrollText(TileEntityRadio radio) {
 		Minecraft mc = Minecraft.getMinecraft();
