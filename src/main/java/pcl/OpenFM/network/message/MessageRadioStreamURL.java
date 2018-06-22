@@ -25,6 +25,7 @@ public class MessageRadioStreamURL extends BaseRadioMessage {
 					try {
 						radio.startStream();
 					} catch (Exception e) {
+						e.printStackTrace();
 						radio.stopStream();
 					}
 				}

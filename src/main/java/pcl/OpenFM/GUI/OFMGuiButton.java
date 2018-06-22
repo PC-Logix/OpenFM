@@ -62,12 +62,15 @@ import net.minecraftforge.fml.relauncher.SideOnly;
      
      return b0;
    }
-   
-   public void drawButton(Minecraft minecraft, int posX, int posY) {
+      
+   public void drawButton(Minecraft minecraft, int posX, int posY, int color) {
      if (this.visible) {
        FontRenderer fontrenderer = minecraft.fontRenderer;
        minecraft.getTextureManager().bindTexture(this.OFMbuttonTextures);
-       GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+       float red = (color >> 16 & 255) / 255.0F;
+       float green = (color >> 8 & 255) / 255.0F;
+       float blue = (color & 255) / 255.0F;
+       GL11.glColor4f(red, green, blue, 1.0F);
        //Check if the button is being hovered over
        this.hovered = ((posX >= this.x) && (posY >= this.y) && (posX < this.x + this.width) && (posY < this.y + this.height));
        int k = getHoverState(this.hovered);

@@ -158,16 +158,11 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 		try {
 			Side side = FMLCommonHandler.instance().getEffectiveSide();
 			if (block.canProvidePower((IBlockState) block.getBlockState().getBaseState())) {
-				TileEntity tileEntity;
-				if (side == Side.SERVER) {
-					tileEntity = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getTileEntity(pos);
-				} else {
-					tileEntity = FMLClientHandler.instance().getClient().world.getTileEntity(pos);
-				}
+				TileEntity tileEntity = world.getTileEntity(pos);
 				((TileEntityRadio)tileEntity).setRedstoneInput(flag);
 			}
 		}
-		catch (Exception localException) { }
+		catch (Exception localException) { localException.printStackTrace(); }
 	}
 
 	public void dropContent(IInventory chest, World world, int xCoord, int yCoord, int zCoord) {

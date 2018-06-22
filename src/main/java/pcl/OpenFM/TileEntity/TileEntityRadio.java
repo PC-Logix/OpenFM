@@ -2,6 +2,9 @@ package pcl.OpenFM.TileEntity;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +15,13 @@ import javax.annotation.Nullable;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
+
+import org.xml.sax.SAXException;
+
+import wseemann.media.jplaylistparser.exception.JPlaylistParserException;
+import wseemann.media.jplaylistparser.parser.AutoDetectParser;
+import wseemann.media.jplaylistparser.playlist.Playlist;
+import wseemann.media.jplaylistparser.playlist.PlaylistEntry;
 
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Context;
@@ -127,13 +137,13 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 		return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? (T)inventory : super.getCapability(capability, facing);
 	}
 
-	public void startStream() throws Exception {
+	public void startStream() {
 		OFMConfiguration.init(OpenFM.configFile);
 		if (OFMConfiguration.enableStreams) {
 			Side side = FMLCommonHandler.instance().getEffectiveSide();
 			String decoder = null;
 			if (!OpenFM.playerList.contains(player)) {
-				if (side == Side.CLIENT) {
+				if (side == Side.CLIENT) {					
 					OkHttpClient client = new OkHttpClient();
 					Request request = new Request.Builder().url(streamURL).build();
 					Response response = null;

@@ -43,7 +43,7 @@ public class GuiRadio extends GuiRadioBase {
 
 		this.OFMbuttonList.clear();
 
-		this.playBtn = new OFMGuiButton(0, this.width / 2 - 12, this.height / 2 + 28 - 5 - 45, 24, 24, 0, 0, "", OFMGuiButton.guiLocation); //Play
+		this.playBtn = new OFMGuiButton(0, this.width / 2 - 12, this.height / 2 + 28 - 5 - 41, 24, 24, 0, 0, "", OFMGuiButton.guiLocation); //Play
 		this.OFMbuttonList.add(this.playBtn);
 
 		this.OFMbuttonList.add(new OFMGuiButton(1, this.width / 2 + 12, this.height / 2 + 3 - 5 - 45, 10, 10, 58, 24, "", OFMGuiButton.guiLocation)); //VolDown
@@ -52,11 +52,11 @@ public class GuiRadio extends GuiRadioBase {
 		this.OFMbuttonList.add(new OFMGuiButton(3, this.width / 2 - 107, this.height / 2 + 15 - 5 - 45, 6, 12, 75, 24, "", OFMGuiButton.guiLocation)); //Scroll Left
 		this.OFMbuttonList.add(new OFMGuiButton(4, this.width / 2 + 101, this.height / 2 + 15 - 5 - 45, 6, 12, 81, 24, "", OFMGuiButton.guiLocation)); //Scroll Right
 
-		this.OFMbuttonList.add(new OFMGuiButton(5, this.width / 2 - 12 - 50, this.height / 2 + 31 - 5 - 45, 48, 8, 48, 0, "", OFMGuiButton.guiLocation)); //Clear
-		this.OFMbuttonList.add(new OFMGuiButton(6, this.width / 2 - 12 - 51, this.height / 2 + 41 - 5 - 45, 49, 8, 96, 1, "", OFMGuiButton.guiLocation)); //Paste
+		this.OFMbuttonList.add(new OFMGuiButton(5, this.width / 2 - 12 - 50, this.height / 2 + 31 - 5 - 41, 48, 8, 48, 0, "", OFMGuiButton.guiLocation)); //Clear
+		this.OFMbuttonList.add(new OFMGuiButton(6, this.width / 2 - 12 - 51, this.height / 2 + 41 - 5 - 41, 49, 8, 96, 1, "", OFMGuiButton.guiLocation)); //Paste
 
-		this.OFMbuttonList.add(new OFMGuiButton(7, this.width / 2 + 12 + 2, this.height / 2 + 33 - 5 - 45, 42, 6, 145, 0, "", OFMGuiButton.guiLocation)); //Save
-		this.OFMbuttonList.add(new OFMGuiButton(8, this.width / 2 + 12 + 2, this.height / 2 + 40 - 5 - 45, 54, 8, 187, 0, "", OFMGuiButton.guiLocation)); //Delete
+		this.OFMbuttonList.add(new OFMGuiButton(7, this.width / 2 + 12 + 2, this.height / 2 + 33 - 5 - 41, 42, 6, 145, 0, "", OFMGuiButton.guiLocation)); //Save
+		this.OFMbuttonList.add(new OFMGuiButton(8, this.width / 2 + 12 + 2, this.height / 2 + 40 - 5 - 41, 54, 8, 187, 0, "", OFMGuiButton.guiLocation)); //Delete
 
 		this.OFMbuttonList.add(new OFMGuiButton(9, this.width / 2 + 100, this.height / 2 + 3 - 5 - 45, 7, 8, 68, 24, "", OFMGuiButton.guiLocation)); //Close
 
@@ -134,23 +134,20 @@ public class GuiRadio extends GuiRadioBase {
 
 		if ((this.radio.isPlaying()) && (!this.playButtonPlayingState)) {
 			this.playButtonPlayingState = true;
-			this.OFMbuttonList.remove(this.playBtn);
-			this.playBtn = new OFMGuiButton(0, this.width / 2 - 12, this.height / 2 + 28 - 5 - 45, 24, 24, 24, 0, "", OFMGuiButton.guiLocation);
-			this.OFMbuttonList.add(this.playBtn);
+			this.playBtn = new OFMGuiButton(0, this.width / 2 - 12, this.height / 2 + 28 - 5 - 41, 24, 24, 24, 0, "", OFMGuiButton.guiLocation);
+			this.OFMbuttonList.set(0, this.playBtn);
 		}
 
 		if ((!this.radio.isPlaying()) && (this.playButtonPlayingState)) {
 			this.playButtonPlayingState = false;
-			this.OFMbuttonList.remove(this.playBtn);
-			this.playBtn = new OFMGuiButton(0, this.width / 2 - 12, this.height / 2 + 28 - 5 - 45, 24, 24, 0, 0, "", OFMGuiButton.guiLocation);
-			this.OFMbuttonList.add(this.playBtn);
+			this.playBtn = new OFMGuiButton(0, this.width / 2 - 12, this.height / 2 + 28 - 5 - 41, 24, 24, 0, 0, "", OFMGuiButton.guiLocation);
+			this.OFMbuttonList.set(0, this.playBtn);
 		}
 
 		if ((this.radio.isListeningToRedstoneInput() & !this.redstoneButtonState)) {
 			this.redstoneButtonState = true;
-			this.OFMbuttonList.remove(this.redstoneBtn);
 			this.redstoneBtn = new OFMGuiButton(10, this.width / 2 + 100 - 13, this.height / 2 + 3 - 5 - 45, 8, 8, 95, 24, "", OFMGuiButton.guiLocation);
-			this.OFMbuttonList.add(this.redstoneBtn);
+			this.OFMbuttonList.add(10, this.redstoneBtn);
 		}
 
 		if ((!this.radio.isListeningToRedstoneInput() & this.redstoneButtonState)) {
@@ -287,7 +284,7 @@ public class GuiRadio extends GuiRadioBase {
 	@Override
 	@SideOnly(Side.CLIENT)
 	protected void actionPerformed(int buttonID) {
-		if (buttonID == 0) { //Play button
+		if (buttonID == 0 && !this.redstoneButtonState) { //Play button
 			if(this.streamTextBox.getText() != null && !this.streamTextBox.getText().isEmpty()) {
 				if (this.streamTextBox.getText().toLowerCase().endsWith(".m3u")) {
 					this.radio.streamURL = takeFirstEntryFromM3U(this.streamTextBox.getText());
@@ -296,6 +293,7 @@ public class GuiRadio extends GuiRadioBase {
 				} else {
 					this.radio.streamURL = this.streamTextBox.getText();
 				}
+				System.out.println(this.radio.streamURL);
 				if (this.radio.isPlaying) {
 					PacketHandler.INSTANCE.sendToServer(new MessageRadioPlaying(this.radio, !this.radio.isPlaying).wrap());
 					PacketHandler.INSTANCE.sendToServer(new MessageRadioStreamURL(this.radio, this.radio.streamURL).wrap());

@@ -24,10 +24,12 @@ public class MessageRadioPlaying extends BaseRadioMessage {
 	@Override
 	public void onMessage(TileEntityRadio radio, MessageContext ctx) {
 		if (playing) {
+			System.out.println(ctx.side);
 			if (radio.isValid) {
 				try {
 					radio.startStream();
 				} catch (Exception e) {
+					e.printStackTrace();
 					radio.stopStream();
 				}
 			}
