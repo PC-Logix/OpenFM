@@ -56,13 +56,17 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import dan200.computercraft.api.lua.ILuaContext;
+import dan200.computercraft.api.peripheral.IComputerAccess;
+import dan200.computercraft.api.peripheral.IPeripheral;
+
 @Optional.InterfaceList({
 	@Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "opencomputers"),
 	@Optional.Interface(iface = "li.cil.oc.api.network.ManagedPeripheral", modid = "opencomputers"),
-	@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = "ComputerCraft")
+	@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = "computercraft")
 })
 
-public class TileEntityRadio extends TileEntity implements SimpleComponent, ManagedPeripheral, ITickable {
+public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleComponent, ManagedPeripheral, ITickable {
 	public PlayerDispatcher player = null;
 	public boolean isPlaying = false;
 	public boolean isValid = true;
@@ -676,8 +680,7 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 
 	@Override
 	@Optional.Method(modid = "opencomputers")
-	public Object[] invoke(final String method, final Context context,
-			final Arguments args) throws Exception {
+	public Object[] invoke(final String method, final Context context, final Arguments args) throws Exception {
 		final Object[] arguments = new Object[args.count()];
 		for (int i = 0; i < args.count(); ++i) {
 			arguments[i] = args.checkAny(i);
@@ -783,6 +786,36 @@ public class TileEntityRadio extends TileEntity implements SimpleComponent, Mana
 			radio.resetRenderCount();
 		}
 		return screenOut;
+	}
+
+	@Override
+	@Optional.Method(modid = "ComputerCraft")
+	public String getType() {
+		return "OpenFM-Radio";
+	}
+
+	@Override
+	@Optional.Method(modid = "ComputerCraft")
+	public String[] getMethodNames() {
+		return methodNames;
+	}
+
+	@Override
+	@Optional.Method(modid = "ComputerCraft")
+	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+        try {
+            return callMethod(method, arguments);
+        } catch(Exception e) {
+        	OpenFM.logger.info("Exception encountered when invoking computercraft method: %s", e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+	@Override
+	@Optional.Method(modid = "ComputerCraft")
+	public boolean equals(IPeripheral other) {
+		return hashCode() == other.hashCode();
 	}
 
 }
