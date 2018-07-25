@@ -23,6 +23,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import dan200.computercraft.api.ComputerCraftAPI;
+import pcl.OpenFM.Block.BlockRadio;
 import pcl.OpenFM.GUI.OFMGuiHandler;
 import pcl.OpenFM.Handler.ClientEvent;
 import pcl.OpenFM.Handler.ServerEvent;
@@ -68,6 +70,7 @@ public class OpenFM {
 		FMLCommonHandler.instance().bus().register(new ClientEvent());
 		MinecraftForge.EVENT_BUS.register(new ServerEvent());
 		FMLCommonHandler.instance().bus().register(new ServerEvent());
+		ComputerCraftAPI.registerPeripheralProvider(new BlockRadio());
 	}
 
 	@SubscribeEvent

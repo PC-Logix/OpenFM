@@ -4,6 +4,8 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
+import dan200.computercraft.api.peripheral.IPeripheral;
+import dan200.computercraft.api.peripheral.IPeripheralProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -35,9 +37,9 @@ import pcl.OpenFM.GUI.GuiRadioBase;
 import pcl.OpenFM.TileEntity.TileEntityRadio;
 
 @Optional.InterfaceList({
-	@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheralProvider", modid = "ComputerCraft"),
+	@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheralProvider", modid = "computercraft"),
 })
-public class BlockRadio extends Block implements ITileEntityProvider {
+public class BlockRadio extends Block implements IPeripheralProvider, ITileEntityProvider {
 
 	//public GuiRadioBase guiRadio;
 	private Random random;
@@ -207,5 +209,17 @@ public class BlockRadio extends Block implements ITileEntityProvider {
 	@Override
 	public TileEntity createNewTileEntity(World world, int meta) {
 		return new TileEntityRadio(world);
+	}
+	
+	// IPeripheralProvider
+	@Optional.Method(modid = "computercraft")
+	@Override
+	public IPeripheral getPeripheral(World world, BlockPos pos, EnumFacing side) {
+		TileEntity te = world.getTileEntity(pos);
+		OpenFM.logger.info("Looking for TE");
+		if(te instanceof TileEntityRadio)
+			return (IPeripheral)te;
+
+		return null;
 	}
 }

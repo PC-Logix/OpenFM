@@ -661,7 +661,11 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 				return new Object[]{false, "Insufficient number of arguments, expected 1"};
 			}
 			if (args[0] != null) {
-				String tempURL = new String((byte[]) args[0], StandardCharsets.UTF_8);
+				String tempURL = null;
+				if (args[0] instanceof byte[]) 
+					tempURL = new String((byte[]) args[0], StandardCharsets.UTF_8);
+				else 
+					tempURL = String.valueOf(args[0]);
 				if (tempURL != null && tempURL.length() > 1) {
 					streamURL = tempURL;
 				} else {
@@ -789,19 +793,19 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
 	}
 
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public String getType() {
 		return "OpenFM-Radio";
 	}
 
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public String[] getMethodNames() {
 		return methodNames;
 	}
 
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
         try {
             return callMethod(method, arguments);
@@ -813,7 +817,7 @@ public class TileEntityRadio extends TileEntity implements IPeripheral, SimpleCo
     }
 
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public boolean equals(IPeripheral other) {
 		return hashCode() == other.hashCode();
 	}
