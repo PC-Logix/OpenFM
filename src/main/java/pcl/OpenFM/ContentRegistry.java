@@ -1,5 +1,7 @@
 package pcl.OpenFM;
 
+import dan200.computercraft.api.ComputerCraftAPI;
+import dan200.computercraft.api.peripheral.IPeripheralProvider;
 import net.minecraft.block.Block;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.creativetab.CreativeTabs;
@@ -20,6 +22,7 @@ import pcl.OpenFM.TileEntity.TileEntitySpeaker;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -63,6 +66,9 @@ public class ContentRegistry {
 		blockSpeaker.setCreativeTab(creativeTab);
 		itemRadioTuner.setCreativeTab(creativeTab);
 		itemMemoryCard.setCreativeTab(creativeTab);
+		if (Loader.isModLoaded("computercraft")) {
+			ComputerCraftAPI.registerPeripheralProvider((IPeripheralProvider) blockRadio);
+        }
     }
 
 	

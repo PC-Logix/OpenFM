@@ -10,6 +10,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -24,6 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import dan200.computercraft.api.ComputerCraftAPI;
+import dan200.computercraft.api.peripheral.IPeripheralProvider;
 import pcl.OpenFM.Block.BlockRadio;
 import pcl.OpenFM.GUI.OFMGuiHandler;
 import pcl.OpenFM.Handler.ClientEvent;
@@ -70,9 +72,6 @@ public class OpenFM {
 		FMLCommonHandler.instance().bus().register(new ClientEvent());
 		MinecraftForge.EVENT_BUS.register(new ServerEvent());
 		FMLCommonHandler.instance().bus().register(new ServerEvent());
-		if (Loader.isModLoaded("ComputerCraft")) {
-        		ComputerCraftAPI.registerPeripheralProvider(new BlockRadio());
-        	}
 	}
 
 	@SubscribeEvent
