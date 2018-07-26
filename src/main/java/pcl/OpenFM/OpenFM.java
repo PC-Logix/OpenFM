@@ -70,7 +70,9 @@ public class OpenFM {
 		FMLCommonHandler.instance().bus().register(new ClientEvent());
 		MinecraftForge.EVENT_BUS.register(new ServerEvent());
 		FMLCommonHandler.instance().bus().register(new ServerEvent());
-		ComputerCraftAPI.registerPeripheralProvider(new BlockRadio());
+		if (Loader.isModLoaded("ComputerCraft")) {
+        		ComputerCraftAPI.registerPeripheralProvider(new BlockRadio());
+        	}
 	}
 
 	@SubscribeEvent
