@@ -35,7 +35,7 @@ import pcl.OpenFM.TileEntity.TileEntityRadio;
 @Optional.InterfaceList({
 	@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheralProvider", modid = "computercraft"),
 })
-public class BlockRadio extends Block implements IPeripheralProvider, ITileEntityProvider {
+public class BlockRadio extends Block implements IPeripheralProvider {
 
 	//public GuiRadioBase guiRadio;
 	private Random random;
@@ -49,8 +49,7 @@ public class BlockRadio extends Block implements IPeripheralProvider, ITileEntit
 		//setStepSound(Block.soundTypeWood);
 		random = new Random();
 	}
-
-
+	
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
 		TileEntity tileEntity = world.getTileEntity(pos);
@@ -63,45 +62,21 @@ public class BlockRadio extends Block implements IPeripheralProvider, ITileEntit
 
 	@Override
 	public void breakBlock(World world, BlockPos pos, IBlockState state) {
+		
+		if(world.isRemote) {
+			return;
+		}
+		
 		TileEntityRadio t = (TileEntityRadio)world.getTileEntity(pos);
 		if(t==null) {
 			return;
 		}
 		
-		IItemHandler itemHandler = t.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.NORTH);
+		IItemHandler itemHandler = t.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 		ItemStack stack1 = itemHandler.getStackInSlot(0);
 		if (!stack1.isEmpty()) {
 			EntityItem item = new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), stack1);
 			world.spawnEntity(item);
-		}
-
-		if (t instanceof TileEntityRadio) {
-			if (t.stations.size() > 0) {
-				ItemStack stack = new ItemStack(Item.getItemFromBlock(this), 1);
-
-				if (!stack.hasTagCompound()) {
-					stack.setTagCompound(new NBTTagCompound());
-				}
-				if(t.streamURL != null) {
-					stack.getTagCompound().setString("streamurl", t.streamURL);
-				}
-				if(t.getScreenText() != null) {
-					stack.getTagCompound().setString("screenText", t.getScreenText());
-				}
-				stack.getTagCompound().setInteger("screenColor", t.getScreenColor());
-				for(int i = 0; i < t.getStationCount(); i++)
-				{
-					if (t.stations.get(i) != null) {
-						stack.getTagCompound().setString("station" + i, t.stations.get(i));
-						stack.getTagCompound().setInteger("stationCount", i + 1);
-					}
-				}
-				world.spawnEntity(new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), stack));
-				super.breakBlock(world, pos, state);;
-			} else {
-				ItemStack stack = new ItemStack(Item.getItemFromBlock(this), 1);
-				world.spawnEntity(new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), stack));
-			}
 		}
 	}
 
@@ -162,48 +137,19 @@ public class BlockRadio extends Block implements IPeripheralProvider, ITileEntit
 		}
 		catch (Exception localException) { localException.printStackTrace(); }
 	}
-
-	public void dropContent(IInventory chest, World world, int xCoord, int yCoord, int zCoord) {
-		if (chest == null)
-			return;
-
-		for (int i1 = 0; i1 < chest.getSizeInventory(); ++i1) {
-			ItemStack itemstack = chest.getStackInSlot(i1);
-
-			if (itemstack != null) {
-				float offsetX = random.nextFloat() * 0.8F + 0.1F;
-				float offsetY = random.nextFloat() * 0.8F + 0.1F;
-				float offsetZ = random.nextFloat() * 0.8F + 0.1F;
-				EntityItem entityitem;
-
-				for (; itemstack.getCount() > 0; world.spawnEntity(entityitem)) {
-					int stackSize = random.nextInt(21) + 10;
-					if (stackSize > itemstack.getCount())
-						stackSize = itemstack.getCount();
-
-					itemstack.setCount(itemstack.getCount() - stackSize);
-					ItemStack stack = new ItemStack(itemstack.getItem(), stackSize, itemstack.getItemDamage());
-					if (itemstack.hasTagCompound())
-						stack.setTagCompound(itemstack.getTagCompound().copy());
-					
-					entityitem = new EntityItem(world, (double)((float)xCoord + offsetX), (double)((float)yCoord + offsetY), (double)((float)zCoord + offsetZ), stack);
-
-					float velocity = 0.05F;
-					entityitem.motionX = (double)((float)random.nextGaussian() * velocity);
-					entityitem.motionY = (double)((float)random.nextGaussian() * velocity + 0.2F);
-					entityitem.motionZ = (double)((float)random.nextGaussian() * velocity);
-					
-				}
-			}
-		}
-	}
 	
 	public boolean shouldCheckWeakPower(IBlockAccess world, int x, int y, int z, int side) {
 		return true;
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World world, int meta) {
+    public boolean hasTileEntity(IBlockState state)
+    {
+        return true;
+    }
+	
+	@Override
+	public TileEntity createTileEntity(World world, IBlockState state) {
 		return new TileEntityRadio(world);
 	}
 	
@@ -212,7 +158,6 @@ public class BlockRadio extends Block implements IPeripheralProvider, ITileEntit
 	@Override
 	public IPeripheral getPeripheral(World world, BlockPos pos, EnumFacing side) {
 		TileEntity te = world.getTileEntity(pos);
-		OpenFM.logger.info("Looking for TE");
 		if(te instanceof TileEntityRadio)
 			return (IPeripheral)te;
 
