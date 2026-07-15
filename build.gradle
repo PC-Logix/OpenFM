@@ -1,109 +1,69 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
-    }
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
-    }
+plugins {
+    id 'eclipse'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '6.0.+'
 }
 
-apply plugin: 'forge'
-apply plugin: 'maven'
+group = project.mod_group
+version = project.mod_version
+archivesBaseName = project.mod_id
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
-
-repositories {
-	mavenCentral()
-    maven {
-        name = "OC repo"
-        url = "http://maven.cil.li/"
-    }
-}
-
-configurations {
-    shade
-    compile.extendsFrom shade
-}
-
-
-dependencies {
-    compile "li.cil.oc:OpenComputers:MC1.7.10-1.6.+:dev"
-	shade "javazoom:jlayer:1.0.1"
-	shade "com.squareup.okhttp:okhttp:2.5.0"
-	shade "com.googlecode.soundlibs:tritonus-share:0.3.7-2"
-}
-
-if (System.getenv().BUILD_NUMBER != null)
-	ext.buildNumber = System.getenv().BUILD_NUMBER?.toInteger()
-else
-	ext.buildNumber = 0
-
-version = "0.1.0"
-group = "pcl.OpenFM"
-archivesBaseName = "OpenFM-1.7.10"
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-	version = "1.7.10-10.13.4.1448-1.7.10"
-	replace "@VERSION@", project.version
-	replace "@BUILD@", project.ext.buildNumber
-}
+    mappings channel: 'official', version: project.minecraft_version
 
-jar {
-    configurations.shade.each { dep ->
-        from(project.zipTree(dep)){
-            exclude 'META-INF', 'META-INF/**'
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'debug'
+            mods {
+                "${project.mod_id}" {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'debug'
+            mods {
+                "${project.mod_id}" {
+                    source sourceSets.main
+                }
+            }
         }
     }
 }
 
-jar.classifier = "${ext.buildNumber}"
-jar.manifest = manifest { attributes(
-	"FMLCorePlugin": "pcl.OpenFM.misc.DepLoader",
-	"FMLCorePluginContainsFMLMod": "icanhazfmlmodpweeze"
-) }
-def curseforge_key = 0
-def curse_changlog = "default"
-if (project.hasProperty('opensecurity_curseforge_key')) {
-	curseforge_key = project.opensecurity_curseforge_key
-	curse_changlog = project.changelog
-}
+repositories {
+    mavenCentral()
 
-apply plugin: 'curseforge'
-curse {
-	apiKey = curseforge_key
-	projectId = "236839"
-	releaseType = "release"
-	changelog = curse_changlog
-	addGameVersion project.minecraft.version
-}
-
-processResources {
-    // replace stuff in mcmod.info, nothing else
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-                
-        // replace version and mcversion
-        expand 'version':project.version + "." + project.ext.buildNumber, 'mcversion':project.minecraft.version
-    }
-        
-    // copy everything else, thats not the mcmod.info
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
+    // CC:Tweaked Maven (note: maven.squiddev.cc, NOT squiddev.cc/maven)
+    maven {
+        url "https://maven.squiddev.cc"
+        content { includeGroup "cc.tweaked" }
     }
 }
 
-// this is needed for IntelliJ so we don't have to copy over the assets manually every time
-idea {
-    module {
-        outputDir = file('build/classes/main')
-    }
+dependencies {
+    minecraft "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+
+    // Compile-time
+    implementation "javazoom:jlayer:1.0.1"
+    implementation "org.jcraft:jorbis:0.0.17"
+
+    // ComputerCraft (CC:Tweaked) - ForgeGradle deobf deps
+    // API at compile-time, full mod at runtime for dev runs.
+    compileOnly "cc.tweaked:cc-tweaked-1.20.1-core-api:1.117.0"
+    compileOnly fg.deobf("cc.tweaked:cc-tweaked-1.20.1-forge-api:1.117.0")
+    runtimeOnly fg.deobf("cc.tweaked:cc-tweaked-1.20.1-forge:1.117.0")
+
+    // DEV runtime: put libs on the game/launch classpath so the mod classloader can see them
+    minecraftLibrary "javazoom:jlayer:1.0.1"
+    minecraftLibrary "org.jcraft:jorbis:0.0.17"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
 }

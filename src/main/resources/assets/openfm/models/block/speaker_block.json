@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down":  "openfm:block/speaker_side",
+    "up":    "openfm:block/speaker_side",
+    "north": "openfm:block/speaker_front",
+    "south": "openfm:block/speaker_side",
+    "west":  "openfm:block/speaker_side",
+    "east":  "openfm:block/speaker_side",
+    "particle": "openfm:block/speaker_side"
+  }
+}

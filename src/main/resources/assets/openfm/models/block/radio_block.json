@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "openfm:block/radio_front",
+    "side": "openfm:block/radio_side",
+    "top": "openfm:block/radio_side"
+  }
+}
