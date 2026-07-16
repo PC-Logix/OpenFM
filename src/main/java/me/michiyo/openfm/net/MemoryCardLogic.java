@@ -1,8 +1,10 @@
 package me.michiyo.openfm.net;
 
 import me.michiyo.openfm.world.be.RadioBlockEntity;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 
 public final class MemoryCardLogic {
     private static final String ROOT = "OpenFMCard";
@@ -11,7 +13,6 @@ public final class MemoryCardLogic {
         ItemStack card = radio.getInventory().getItem(0);
         if (card.isEmpty()) return;
 
-        CompoundTag tag = card.getOrCreateTag();
         CompoundTag root = new CompoundTag();
 
         root.putString("StreamUrl", radio.getStreamUrl());
@@ -19,17 +20,16 @@ public final class MemoryCardLogic {
         root.putString("ScreenColor", radio.getScreenColor());
         root.putString("ScreenText", radio.getScreenText());
 
-        tag.put(ROOT, root);
-        card.setTag(tag);
+        CustomData.update(DataComponents.CUSTOM_DATA, card, tag -> tag.put(ROOT, root));
         radio.setChanged();
     }
 
     public static void loadFromCard(RadioBlockEntity radio) {
         ItemStack card = radio.getInventory().getItem(0);
-        if (card.isEmpty() || !card.hasTag()) return;
+        if (card.isEmpty()) return;
 
-        CompoundTag tag = card.getTag();
-        if (tag == null || !tag.contains(ROOT)) return;
+        CompoundTag tag = card.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (!tag.contains(ROOT)) return;
 
         CompoundTag root = tag.getCompound(ROOT);
 
@@ -41,13 +41,9 @@ public final class MemoryCardLogic {
 
     public static void deleteFromCard(RadioBlockEntity radio) {
         ItemStack card = radio.getInventory().getItem(0);
-        if (card.isEmpty() || !card.hasTag()) return;
+        if (card.isEmpty()) return;
 
-        CompoundTag tag = card.getTag();
-        if (tag == null) return;
-
-        tag.remove(ROOT);
-        card.setTag(tag);
+        CustomData.update(DataComponents.CUSTOM_DATA, card, tag -> tag.remove(ROOT));
         radio.setChanged();
     }
 

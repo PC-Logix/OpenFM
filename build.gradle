@@ -1,39 +1,40 @@
 plugins {
-    id 'eclipse'
+    id 'java-library'
+    id 'idea'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '6.0.+'
+    id 'net.neoforged.gradle.userdev' version '7.1.36'
 }
 
-group = project.mod_group
+group = project.mod_group_id
 version = project.mod_version
-archivesBaseName = project.mod_id
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+base {
+    archivesName = project.mod_id
+}
 
-minecraft {
-    mappings channel: 'official', version: project.minecraft_version
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
-    runs {
-        client {
-            workingDirectory project.file('run')
-            property 'forge.logging.console.level', 'debug'
-            mods {
-                "${project.mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        server {
-            workingDirectory project.file('run')
-            property 'forge.logging.console.level', 'debug'
-            mods {
-                "${project.mod_id}" {
-                    source sourceSets.main
-                }
-            }
+runs {
+    configureEach {
+        systemProperty 'forge.logging.console.level', 'debug'
+        workingDirectory project.layout.projectDirectory.dir('run').dir(name)
+        modSource project.sourceSets.main
+        dependencies {
+            runtime "javazoom:jlayer:1.0.1"
+            runtime "org.jcraft:jorbis:0.0.17"
+            runtime "com.tianscar.javasound:jaad:0.9.4"
         }
     }
+
+    client {}
+
+    server {
+        argument '--nogui'
+    }
+}
+
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
 }
 
 repositories {
@@ -47,21 +48,41 @@ repositories {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+    implementation "net.neoforged:neoforge:${project.neo_version}"
 
-    // Compile-time
-    implementation "javazoom:jlayer:1.0.1"
-    implementation "org.jcraft:jorbis:0.0.17"
+    // Compile against and embed the stream decoder libraries in the distributable mod jar.
+    jarJar(implementation("javazoom:jlayer:[1.0.1]")) {
+        version { prefer "1.0.1" }
+    }
+    jarJar(implementation("org.jcraft:jorbis:[0.0.17]")) {
+        version { prefer "0.0.17" }
+    }
+    jarJar(implementation("com.tianscar.javasound:jaad:[0.9.4]")) {
+        version { prefer "0.9.4" }
+    }
 
-    // ComputerCraft (CC:Tweaked) - ForgeGradle deobf deps
-    // API at compile-time, full mod at runtime for dev runs.
-    compileOnly "cc.tweaked:cc-tweaked-1.20.1-core-api:1.117.0"
-    compileOnly fg.deobf("cc.tweaked:cc-tweaked-1.20.1-forge-api:1.117.0")
-    runtimeOnly fg.deobf("cc.tweaked:cc-tweaked-1.20.1-forge:1.117.0")
+    // CC:Tweaked still publishes its 1.21.1 NeoForge-compatible build under the forge classifier.
+    compileOnly "cc.tweaked:cc-tweaked-${project.minecraft_version}-core-api:${project.cc_tweaked_version}"
+    compileOnly "cc.tweaked:cc-tweaked-${project.minecraft_version}-forge-api:${project.cc_tweaked_version}"
+    localRuntime "cc.tweaked:cc-tweaked-${project.minecraft_version}-forge:${project.cc_tweaked_version}"
 
-    // DEV runtime: put libs on the game/launch classpath so the mod classloader can see them
-    minecraftLibrary "javazoom:jlayer:1.0.1"
-    minecraftLibrary "org.jcraft:jorbis:0.0.17"
+}
+
+tasks.withType(ProcessResources).configureEach {
+    def replaceProperties = [
+            minecraft_version_range: minecraft_version_range,
+            neo_version: neo_version,
+            loader_version_range: loader_version_range,
+            mod_id: mod_id,
+            mod_name: mod_name,
+            mod_license: mod_license,
+            mod_version: mod_version,
+            cc_tweaked_version: cc_tweaked_version
+    ]
+    inputs.properties replaceProperties
+    filesMatching('META-INF/neoforge.mods.toml') {
+        expand replaceProperties
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {

@@ -2,6 +2,7 @@ package me.michiyo.openfm.world.be;
 
 import me.michiyo.openfm.reg.ModBlockEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -11,8 +12,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 public class SpeakerBlockEntity extends BlockEntity {
     private static final String NBT_LINKED_DIM = "LinkedDim";
@@ -89,19 +90,19 @@ public class SpeakerBlockEntity extends BlockEntity {
     // -----------------------
 
     private static void clientRegisterEmitter(BlockPos radioPos, BlockPos speakerPos) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+        if (FMLEnvironment.dist == Dist.CLIENT) {
             me.michiyo.openfm.client.audio.RadioStreamManager.setEmitterForRadio(
                     radioPos,
                     speakerPos,
                     Vec3.atCenterOf(speakerPos)
             );
-        });
+        }
     }
 
     private static void clientUnregisterEmitter(BlockPos radioPos, BlockPos speakerPos) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+        if (FMLEnvironment.dist == Dist.CLIENT) {
             me.michiyo.openfm.client.audio.RadioStreamManager.clearEmitterForRadio(radioPos, speakerPos);
-        });
+        }
     }
 
     /**
@@ -172,12 +173,12 @@ public class SpeakerBlockEntity extends BlockEntity {
     // -----------------------
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
 
         String dimStr = tag.getString(NBT_LINKED_DIM);
         if (dimStr != null && !dimStr.isEmpty()) {
-            this.linkedDim = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(dimStr));
+            this.linkedDim = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(dimStr));
         } else {
             this.linkedDim = null;
         }
@@ -196,8 +197,8 @@ public class SpeakerBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
 
         tag.putString(NBT_LINKED_DIM, linkedDim == null ? "" : linkedDim.location().toString());
         if (linkedRadioPos != null) {
@@ -209,15 +210,15 @@ public class SpeakerBlockEntity extends BlockEntity {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         CompoundTag tag = new CompoundTag();
-        saveAdditional(tag);
+        saveAdditional(tag, registries);
         return tag;
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        super.handleUpdateTag(tag);
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
+        super.handleUpdateTag(tag, registries);
         // load() is not guaranteed to be called here, so refresh using current fields
         clientRefreshEmitterRegistration();
     }

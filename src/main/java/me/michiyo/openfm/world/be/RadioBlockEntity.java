@@ -4,6 +4,7 @@ import me.michiyo.openfm.client.audio.RadioStreamManager;
 import me.michiyo.openfm.net.S2CSyncFields;
 import me.michiyo.openfm.reg.ModBlockEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -158,8 +159,8 @@ public class RadioBlockEntity extends BlockEntity {
     public SimpleContainer getInventory() { return inv; }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
 
         if (ownerUuid != null) tag.putUUID("Owner", ownerUuid);
         tag.putBoolean("Locked", locked);
@@ -173,13 +174,13 @@ public class RadioBlockEntity extends BlockEntity {
 
         CompoundTag invTag = new CompoundTag();
         ItemStack stack = inv.getItem(0);
-        if (!stack.isEmpty()) invTag.put("MemoryCard", stack.save(new CompoundTag()));
+        if (!stack.isEmpty()) invTag.put("MemoryCard", stack.save(registries));
         tag.put("Inv", invTag);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
 
         ownerUuid = tag.hasUUID("Owner") ? tag.getUUID("Owner") : null;
         locked = tag.getBoolean("Locked");
@@ -195,7 +196,7 @@ public class RadioBlockEntity extends BlockEntity {
         if (tag.contains("Inv")) {
             CompoundTag invTag = tag.getCompound("Inv");
             if (invTag.contains("MemoryCard")) {
-                inv.setItem(0, ItemStack.of(invTag.getCompound("MemoryCard")));
+                inv.setItem(0, ItemStack.parseOptional(registries, invTag.getCompound("MemoryCard")));
             }
         }
     }
@@ -250,13 +251,13 @@ public class RadioBlockEntity extends BlockEntity {
     // ---- BE sync plumbing ----
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveWithoutMetadata(registries);
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        load(tag);
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
+        loadWithComponents(tag, registries);
         clientApplyAudioState();
     }
 
@@ -266,10 +267,10 @@ public class RadioBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
         CompoundTag tag = pkt.getTag();
         if (tag != null) {
-            load(tag);
+            loadWithComponents(tag, registries);
             clientApplyAudioState();
         }
     }
@@ -375,7 +376,7 @@ public class RadioBlockEntity extends BlockEntity {
     private void cc_event(String event, Object... args) {
         if (this.level == null || this.level.isClientSide) return;
         if (!(this.level instanceof net.minecraft.server.level.ServerLevel serverLevel)) return;
-        if (!net.minecraftforge.fml.ModList.get().isLoaded("computercraft")) return;
+        if (!net.neoforged.fml.ModList.get().isLoaded("computercraft")) return;
 
         try {
             Class<?> cls = Class.forName("me.michiyo.openfm.compat.cc.CCEvents");

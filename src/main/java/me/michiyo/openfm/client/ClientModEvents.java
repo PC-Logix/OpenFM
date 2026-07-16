@@ -6,25 +6,27 @@ import me.michiyo.openfm.reg.ModBlockEntities;
 import me.michiyo.openfm.reg.ModMenus;
 import me.michiyo.openfm.client.render.RadioBlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraft.client.gui.screens.MenuScreens;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
-@Mod.EventBusSubscriber(modid = OpenFM.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = OpenFM.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public final class ClientModEvents {
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent e) {
         e.enqueueWork(() -> {
-            MenuScreens.register(ModMenus.RADIO_MENU.get(), RadioScreen::new);
-
             // Block Entity Renderer (screen text)
             BlockEntityRenderers.register(ModBlockEntities.RADIO_BE.get(), RadioBlockEntityRenderer::new);
         });
     }
 
+    @SubscribeEvent
+    public static void registerScreens(RegisterMenuScreensEvent event) {
+        event.register(ModMenus.RADIO_MENU.get(), RadioScreen::new);
+    }
 
     private ClientModEvents() {}
 }

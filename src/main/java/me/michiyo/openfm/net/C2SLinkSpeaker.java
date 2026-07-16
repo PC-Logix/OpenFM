@@ -1,20 +1,28 @@
 package me.michiyo.openfm.net;
 
+import me.michiyo.openfm.OpenFM;
 import me.michiyo.openfm.world.be.RadioBlockEntity;
 import me.michiyo.openfm.world.be.SpeakerBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
-
-public class C2SLinkSpeaker {
+public class C2SLinkSpeaker implements CustomPacketPayload {
+    public static final Type<C2SLinkSpeaker> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath(OpenFM.MODID, "link_speaker")
+    );
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SLinkSpeaker> STREAM_CODEC =
+            StreamCodec.of((buf, msg) -> encode(msg, buf), C2SLinkSpeaker::decode);
     private final boolean unlink;
 
     private final ResourceKey<Level> speakerDim;
@@ -61,13 +69,10 @@ public class C2SLinkSpeaker {
         return new C2SLinkSpeaker(unlink, speakerDim, speakerPos, radioDim, radioPos);
     }
 
-    public static void handle(C2SLinkSpeaker msg, Supplier<NetworkEvent.Context> ctxSup) {
-        NetworkEvent.Context ctx = ctxSup.get();
+    public static void handle(C2SLinkSpeaker msg, IPayloadContext ctx) {
+        if (!(ctx.player() instanceof net.minecraft.server.level.ServerPlayer player)) return;
 
-        ctx.enqueueWork(() -> {
-            if (ctx.getSender() == null) return;
-
-            ServerLevel speakerLevel = ctx.getSender().server.getLevel(msg.speakerDim);
+            ServerLevel speakerLevel = player.server.getLevel(msg.speakerDim);
             if (speakerLevel == null) return;
             if (!speakerLevel.isLoaded(msg.speakerPos)) return;
 
@@ -80,7 +85,7 @@ public class C2SLinkSpeaker {
                 return;
             }
 
-            ServerLevel radioLevel = ctx.getSender().server.getLevel(msg.radioDim);
+            ServerLevel radioLevel = player.server.getLevel(msg.radioDim);
             if (radioLevel == null) return;
             if (!radioLevel.isLoaded(msg.radioPos)) return;
 
@@ -95,9 +100,11 @@ public class C2SLinkSpeaker {
 
             speakerBe.setLink(msg.radioDim, msg.radioPos);
             sendSpeakerUpdate(speakerLevel, msg.speakerPos);
-        });
+    }
 
-        ctx.setPacketHandled(true);
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
     private static void sendSpeakerUpdate(ServerLevel level, BlockPos pos) {

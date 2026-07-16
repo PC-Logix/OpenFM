@@ -1,14 +1,22 @@
 package me.michiyo.openfm.net;
 
+import me.michiyo.openfm.OpenFM;
 import me.michiyo.openfm.world.be.RadioBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
-
-public class C2SButtonAction {
+public class C2SButtonAction implements CustomPacketPayload {
+    public static final Type<C2SButtonAction> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath(OpenFM.MODID, "button_action")
+    );
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SButtonAction> STREAM_CODEC =
+            StreamCodec.of((buf, msg) -> encode(msg, buf), C2SButtonAction::decode);
     public enum Action {
         VOL_DOWN, VOL_UP,
         TOGGLE_LOCK,
@@ -40,15 +48,12 @@ public class C2SButtonAction {
         return new C2SButtonAction(pos, vals[ord]);
     }
 
-    public static void handle(C2SButtonAction msg, Supplier<NetworkEvent.Context> ctxSup) {
-        NetworkEvent.Context ctx = ctxSup.get();
-        ctx.enqueueWork(() -> {
-            ServerPlayer player = ctx.getSender();
-            if (player == null) return;
+    public static void handle(C2SButtonAction msg, IPayloadContext ctx) {
+        if (!(ctx.player() instanceof ServerPlayer player)) return;
 
-            var level = player.serverLevel();
-            var be = level.getBlockEntity(msg.pos);
-            if (!(be instanceof RadioBlockEntity radio)) return;
+        var level = player.serverLevel();
+        var be = level.getBlockEntity(msg.pos);
+        if (!(be instanceof RadioBlockEntity radio)) return;
 
             boolean hasOwner = radio.getOwnerUuid() != null;
             boolean isOwner = hasOwner && radio.getOwnerUuid().equals(player.getUUID());
@@ -65,13 +70,13 @@ public class C2SButtonAction {
 
                 radio.setChanged();
                 S2CSyncFields.syncToTracking(level, msg.pos, radio);
-                return;
-            }
+            return;
+        }
 
             // For all other actions, enforce lock
             if (radio.isLocked() && hasOwner && !isOwner) {
-                return;
-            }
+            return;
+        }
 
             // If unowned, first editor becomes owner
             radio.ensureOwner(player.getUUID());
@@ -103,9 +108,12 @@ public class C2SButtonAction {
                 default -> {}
             }
 
-            radio.setChanged();
-            S2CSyncFields.syncToTracking(level, msg.pos, radio);
-        });
-        ctx.setPacketHandled(true);
+        radio.setChanged();
+        S2CSyncFields.syncToTracking(level, msg.pos, radio);
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

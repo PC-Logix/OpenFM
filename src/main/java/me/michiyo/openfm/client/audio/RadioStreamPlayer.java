@@ -370,6 +370,8 @@ public final class RadioStreamPlayer {
                 if (resp.statusCode() < 200 || resp.statusCode() >= 300) return;
 
                 int metaInt = parseIcyMetaInt(resp.headers().firstValue("icy-metaint"));
+                String contentType = resp.headers().firstValue("content-type").orElse("");
+                log("Content-Type=" + contentType);
 
                 try (InputStream raw = resp.body();
                      BufferedInputStream bin0 = new BufferedInputStream(raw, 64 * 1024)) {
@@ -399,7 +401,7 @@ public final class RadioStreamPlayer {
                         audioIn = new BufferedInputStream(audioIn, 64 * 1024);
                     }
 
-                    DecoderFactory.DecoderWithStream created = DecoderFactory.create(audioIn);
+                    DecoderFactory.DecoderWithStream created = DecoderFactory.create(audioIn, contentType);
                     decoder = created.decoder;
 
                     log("Decoder=" + decoder.getClass().getSimpleName());
@@ -452,11 +454,18 @@ public final class RadioStreamPlayer {
                     Thread.currentThread().interrupt();
                 }
             } catch (Throwable t) {
-                log("Decoder thread exception: " + t);
-                t.printStackTrace();
+                if (stopped.get() || !running.get()) {
+                    Thread.currentThread().interrupt();
+                } else {
+                    log("Decoder thread exception: " + t);
+                    t.printStackTrace();
+                }
             } finally {
                 if (decoder != null) {
                     try { decoder.close(); } catch (Throwable ignored) {}
+                }
+                if (!stopped.get()) {
+                    stopInternal();
                 }
             }
         }, "OpenFM-Decode-" + url.hashCode());

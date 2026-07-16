@@ -1,49 +1,23 @@
 package me.michiyo.openfm.net;
 
-import me.michiyo.openfm.OpenFM;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public final class Net {
     private static final String PROTOCOL = "1";
-    public static final SimpleChannel CH = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(OpenFM.MODID, "main"),
-            () -> PROTOCOL,
-            PROTOCOL::equals,
-            PROTOCOL::equals
-    );
 
-    private static int id = 0;
+    public static void register(RegisterPayloadHandlersEvent event) {
+        PayloadRegistrar registrar = event.registrar(PROTOCOL);
+        registrar.playToServer(C2SButtonAction.TYPE, C2SButtonAction.STREAM_CODEC, C2SButtonAction::handle);
+        registrar.playToServer(C2SSetFields.TYPE, C2SSetFields.STREAM_CODEC, C2SSetFields::handle);
+        registrar.playToServer(C2SLinkSpeaker.TYPE, C2SLinkSpeaker.STREAM_CODEC, C2SLinkSpeaker::handle);
+        registrar.playToClient(S2CSyncFields.TYPE, S2CSyncFields.STREAM_CODEC, S2CSyncFields::handle);
+    }
 
-    public static void register() {
-        // C2S
-        CH.messageBuilder(C2SButtonAction.class, id++, NetworkDirection.PLAY_TO_SERVER)
-                .encoder(C2SButtonAction::encode)
-                .decoder(C2SButtonAction::decode)
-                .consumerMainThread(C2SButtonAction::handle)
-                .add();
-
-        CH.messageBuilder(C2SSetFields.class, id++, NetworkDirection.PLAY_TO_SERVER)
-                .encoder(C2SSetFields::encode)
-                .decoder(C2SSetFields::decode)
-                .consumerMainThread(C2SSetFields::handle)
-                .add();
-
-        // NEW: Speaker link/unlink
-        CH.messageBuilder(C2SLinkSpeaker.class, id++, NetworkDirection.PLAY_TO_SERVER)
-                .encoder(C2SLinkSpeaker::encode)
-                .decoder(C2SLinkSpeaker::decode)
-                .consumerMainThread(C2SLinkSpeaker::handle)
-                .add();
-
-        // S2C (THIS is the one that makes your color/text/url sync work)
-        CH.messageBuilder(S2CSyncFields.class, id++, NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(S2CSyncFields::encode)
-                .decoder(S2CSyncFields::decode)
-                .consumerMainThread(S2CSyncFields::handle)
-                .add();
+    public static void sendToServer(CustomPacketPayload payload) {
+        PacketDistributor.sendToServer(payload);
     }
 
     private Net() {}

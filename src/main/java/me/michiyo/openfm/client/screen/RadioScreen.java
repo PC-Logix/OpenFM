@@ -16,8 +16,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 public class RadioScreen extends AbstractContainerScreen<RadioMenu> {
-    private static final ResourceLocation GUI_TEX = new ResourceLocation("openfm", "textures/gui/gui_radio.png");
-    private static final ResourceLocation BTN_TEX = new ResourceLocation("openfm", "textures/gui/buttons.png");
+    private static final ResourceLocation GUI_TEX = ResourceLocation.fromNamespaceAndPath("openfm", "textures/gui/gui_radio.png");
+    private static final ResourceLocation BTN_TEX = ResourceLocation.fromNamespaceAndPath("openfm", "textures/gui/buttons.png");
 
     private static final int TEX_W = 256;
     private static final int TEX_H = 256;
@@ -265,11 +265,11 @@ public class RadioScreen extends AbstractContainerScreen<RadioMenu> {
     }
 
     private void sendButton(C2SButtonAction.Action action) {
-        Net.CH.sendToServer(new C2SButtonAction(menu.pos, action));
+        Net.sendToServer(new C2SButtonAction(menu.pos, action));
     }
 
     private void sendFieldsToServer() {
-        Net.CH.sendToServer(new C2SSetFields(menu.pos, urlBox.getValue(), colorBox.getValue(), textBox.getValue()));
+        Net.sendToServer(new C2SSetFields(menu.pos, urlBox.getValue(), colorBox.getValue(), textBox.getValue()));
     }
 
     public void applyServerSync(S2CSyncFields pkt) {
@@ -342,7 +342,7 @@ public class RadioScreen extends AbstractContainerScreen<RadioMenu> {
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(g);
+        this.renderBackground(g, mouseX, mouseY, partialTick);
         super.render(g, mouseX, mouseY, partialTick);
 
         if (debugGui) {

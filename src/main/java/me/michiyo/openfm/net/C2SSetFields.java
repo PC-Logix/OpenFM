@@ -1,14 +1,22 @@
 package me.michiyo.openfm.net;
 
+import me.michiyo.openfm.OpenFM;
 import me.michiyo.openfm.world.be.RadioBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
-
-public class C2SSetFields {
+public class C2SSetFields implements CustomPacketPayload {
+    public static final Type<C2SSetFields> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath(OpenFM.MODID, "set_fields")
+    );
+    public static final StreamCodec<RegistryFriendlyByteBuf, C2SSetFields> STREAM_CODEC =
+            StreamCodec.of((buf, msg) -> encode(msg, buf), C2SSetFields::decode);
     public final BlockPos pos;
     public final String url;
     public final String screenColor;
@@ -37,11 +45,8 @@ public class C2SSetFields {
         );
     }
 
-    public static void handle(C2SSetFields msg, Supplier<NetworkEvent.Context> ctxSup) {
-        NetworkEvent.Context ctx = ctxSup.get();
-        ctx.enqueueWork(() -> {
-            ServerPlayer player = ctx.getSender();
-            if (player == null) return;
+    public static void handle(C2SSetFields msg, IPayloadContext ctx) {
+        if (!(ctx.player() instanceof ServerPlayer player)) return;
 
             var level = player.serverLevel();
             var be = level.getBlockEntity(msg.pos);
@@ -69,9 +74,12 @@ public class C2SSetFields {
                 radio.setScreenText(text);
             }
 
-            radio.setChanged();
-            S2CSyncFields.syncToTracking(level, msg.pos, radio);
-        });
-        ctx.setPacketHandled(true);
+        radio.setChanged();
+        S2CSyncFields.syncToTracking(level, msg.pos, radio);
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

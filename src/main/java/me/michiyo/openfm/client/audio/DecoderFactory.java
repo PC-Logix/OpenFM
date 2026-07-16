@@ -3,6 +3,7 @@ package me.michiyo.openfm.client.audio;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
+import java.util.Locale;
 
 public final class DecoderFactory {
     private DecoderFactory() {}
@@ -17,7 +18,7 @@ public final class DecoderFactory {
         }
     }
 
-    public static DecoderWithStream create(InputStream raw) throws Exception {
+    public static DecoderWithStream create(InputStream raw, String contentType) throws Exception {
         PushbackInputStream in = new PushbackInputStream(raw, 64);
 
         byte[] head = readSome(in, 64);
@@ -28,6 +29,11 @@ public final class DecoderFactory {
         // OGG container signature: "OggS"
         if (startsWith(head, new byte[]{'O','g','g','S'})) {
             return new DecoderWithStream(new OggVorbisDecoder(in), in);
+        }
+
+        String normalizedType = contentType == null ? "" : contentType.toLowerCase(Locale.ROOT);
+        if (normalizedType.contains("aac") || isAdts(head)) {
+            return new DecoderWithStream(new AacDecoder(in), in);
         }
 
         // MP3 often starts with ID3 tag
@@ -46,6 +52,12 @@ public final class DecoderFactory {
 
         // Default: try MP3 first (most forgiving with weird streams)
         return new DecoderWithStream(new Mp3Decoder(in), in);
+    }
+
+    private static boolean isAdts(byte[] head) {
+        return head.length >= 2
+                && (head[0] & 0xFF) == 0xFF
+                && (head[1] & 0xF6) == 0xF0;
     }
 
     private static boolean startsWith(byte[] a, byte[] prefix) {

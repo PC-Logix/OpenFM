@@ -1,14 +1,14 @@
 package me.michiyo.openfm.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public final class OpenFMClientConfig {
-    public static final ForgeConfigSpec SPEC;
+    public static final ModConfigSpec SPEC;
 
-    public static final ForgeConfigSpec.DoubleValue RADIO_VOLUME; // 0.0..1.0
+    public static final ModConfigSpec.DoubleValue RADIO_VOLUME; // 0.0..1.0
 
     static {
-        ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
+        ModConfigSpec.Builder b = new ModConfigSpec.Builder();
 
         b.push("audio");
 

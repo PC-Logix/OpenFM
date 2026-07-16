@@ -1,17 +1,25 @@
 package me.michiyo.openfm.net;
 
+import me.michiyo.openfm.OpenFM;
 import me.michiyo.openfm.client.screen.RadioScreen;
 import me.michiyo.openfm.world.be.RadioBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
-
-public class S2CSyncFields {
+public class S2CSyncFields implements CustomPacketPayload {
+    public static final Type<S2CSyncFields> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath(OpenFM.MODID, "sync_fields")
+    );
+    public static final StreamCodec<RegistryFriendlyByteBuf, S2CSyncFields> STREAM_CODEC =
+            StreamCodec.of((buf, msg) -> encode(msg, buf), S2CSyncFields::decode);
     public final BlockPos pos;
     public final String url;
     public final String screenColor;
@@ -52,11 +60,9 @@ public class S2CSyncFields {
         );
     }
 
-    public static void handle(S2CSyncFields msg, Supplier<NetworkEvent.Context> ctxSup) {
-        NetworkEvent.Context ctx = ctxSup.get();
-        ctx.enqueueWork(() -> {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.level == null) return;
+    public static void handle(S2CSyncFields msg, IPayloadContext ctx) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null) return;
 
             var be = mc.level.getBlockEntity(msg.pos);
             if (be instanceof RadioBlockEntity radio) {
@@ -67,10 +73,11 @@ public class S2CSyncFields {
             if (mc.screen instanceof RadioScreen screen) {
                 screen.applyServerSync(msg);
             }
-        });
+    }
 
-        //System.out.println("[OpenFM] S2C received for " + msg.pos + " color=" + msg.screenColor + " text=" + msg.screenText + " playing=" + msg.playing);
-        ctx.setPacketHandled(true);
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
     public static void syncToTracking(ServerLevel level, BlockPos pos, RadioBlockEntity radio) {
@@ -83,7 +90,7 @@ public class S2CSyncFields {
                 radio.isLocked(),
                 radio.isPlaying()
         );
-        Net.CH.send(PacketDistributor.TRACKING_CHUNK.with(() -> level.getChunkAt(pos)), pkt);
+        PacketDistributor.sendToPlayersTrackingChunk(level, level.getChunkAt(pos).getPos(), pkt);
     }
 
     public static void syncToPlayer(net.minecraft.server.level.ServerPlayer player, BlockPos pos, RadioBlockEntity radio) {
@@ -96,6 +103,6 @@ public class S2CSyncFields {
                 radio.isLocked(),
                 radio.isPlaying()
         );
-        Net.CH.send(PacketDistributor.PLAYER.with(() -> player), pkt);
+        PacketDistributor.sendToPlayer(player, pkt);
     }
 }

@@ -8,12 +8,14 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
@@ -37,7 +39,7 @@ public class OpenFMTunerItem extends Item {
                 // send packet client-side
                 if (level.isClientSide) {
                     ResourceKey<Level> dim = level.dimension();
-                    Net.CH.sendToServer(C2SLinkSpeaker.unlink(dim, clicked));
+                    Net.sendToServer(C2SLinkSpeaker.unlink(dim, clicked));
                 }
 
                 clearSpeakerSelection(stack);
@@ -80,7 +82,7 @@ public class OpenFMTunerItem extends Item {
 
             // send packet client-side
             if (level.isClientSide) {
-                Net.CH.sendToServer(C2SLinkSpeaker.link(sel.dim, sel.pos, level.dimension(), clicked));
+                Net.sendToServer(C2SLinkSpeaker.link(sel.dim, sel.pos, level.dimension(), clicked));
             }
 
             clearSpeakerSelection(stack);
@@ -99,27 +101,27 @@ public class OpenFMTunerItem extends Item {
     }
 
     private static void setSpeakerSelection(ItemStack stack, ResourceKey<Level> dim, BlockPos pos) {
-        CompoundTag tag = stack.getOrCreateTag();
-        tag.putString(NBT_SPK_DIM, dim.location().toString());
-        tag.putLong(NBT_SPK_POS, pos.asLong());
+        CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> {
+            tag.putString(NBT_SPK_DIM, dim.location().toString());
+            tag.putLong(NBT_SPK_POS, pos.asLong());
+        });
     }
 
     private static void clearSpeakerSelection(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
-        if (tag == null) return;
-        tag.remove(NBT_SPK_DIM);
-        tag.remove(NBT_SPK_POS);
+        CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> {
+            tag.remove(NBT_SPK_DIM);
+            tag.remove(NBT_SPK_POS);
+        });
     }
 
     private static SpeakerSel getSpeakerSelection(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
-        if (tag == null) return null;
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (!tag.contains(NBT_SPK_DIM) || !tag.contains(NBT_SPK_POS)) return null;
 
         String dimStr = tag.getString(NBT_SPK_DIM);
         if (dimStr == null || dimStr.isEmpty()) return null;
 
-        ResourceKey<Level> dim = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(dimStr));
+        ResourceKey<Level> dim = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(dimStr));
         BlockPos pos = BlockPos.of(tag.getLong(NBT_SPK_POS));
         return new SpeakerSel(dim, pos);
     }

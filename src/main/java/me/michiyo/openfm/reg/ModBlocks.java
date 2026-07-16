@@ -6,18 +6,17 @@ import me.michiyo.openfm.world.block.SpeakerBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class ModBlocks {
-    public static final DeferredRegister<Block> REG = DeferredRegister.create(ForgeRegistries.BLOCKS, OpenFM.MODID);
+    public static final DeferredRegister.Blocks REG = DeferredRegister.createBlocks(OpenFM.MODID);
 
-    public static final RegistryObject<Block> RADIO_BLOCK = REG.register("radio_block",
+    public static final DeferredBlock<Block> RADIO_BLOCK = REG.register("radio_block",
             () -> new RadioBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0F).requiresCorrectToolForDrops())
     );
 
-    public static final RegistryObject<Block> SPEAKER_BLOCK = REG.register("speaker_block",
+    public static final DeferredBlock<Block> SPEAKER_BLOCK = REG.register("speaker_block",
             () -> new SpeakerBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0F).requiresCorrectToolForDrops())
     );
 }
