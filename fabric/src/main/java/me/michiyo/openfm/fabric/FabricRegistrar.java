@@ -6,6 +6,7 @@ import me.michiyo.openfm.platform.RegistrySupplier;
 import me.michiyo.openfm.world.menu.RadioMenu;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -13,6 +14,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -54,7 +57,15 @@ final class FabricRegistrar implements OpenFMRegistrar {
 
     @Override
     public RegistrySupplier<CreativeModeTab> registerCreativeTab(
-            String name, Supplier<? extends CreativeModeTab> factory) {
-        return fixed(net.minecraft.core.Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, id(name), factory.get()));
+            String name,
+            Component title,
+            Supplier<ItemStack> icon,
+            CreativeModeTab.DisplayItemsGenerator displayItems) {
+        CreativeModeTab tab = FabricItemGroup.builder()
+                .title(title)
+                .icon(icon)
+                .displayItems(displayItems)
+                .build();
+        return fixed(net.minecraft.core.Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, id(name), tab));
     }
 }

@@ -1,0 +1,90 @@
+name: Build
+
+on:
+  push:
+    tags:
+      - "v*"
+    branches:
+      - "**"
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      loader:
+        description: Mod loader to build and publish
+        required: true
+        default: both
+        type: choice
+        options:
+          - both
+          - fabric
+          - neoforge
+      release_type:
+        description: CurseForge release channel
+        required: true
+        default: alpha
+        type: choice
+        options:
+          - alpha
+          - beta
+          - release
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: Build Fabric
+        if: github.event_name != 'workflow_dispatch' || inputs.loader == 'both' || inputs.loader == 'fabric'
+        run: ./gradlew :fabric:build
+
+      - name: Build NeoForge
+        if: github.event_name != 'workflow_dispatch' || inputs.loader == 'both' || inputs.loader == 'neoforge'
+        run: ./gradlew :neoforge:build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: openfm-${{ github.ref_name }}
+          path: |
+            fabric/build/libs/*.jar
+            neoforge/build/libs/*.jar
+            !fabric/build/libs/*-sources.jar
+            !neoforge/build/libs/*-sources.jar
+          if-no-files-found: error
+
+      - name: Publish Fabric to CurseForge
+        if: (startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch') && (github.event_name != 'workflow_dispatch' || inputs.loader == 'both' || inputs.loader == 'fabric')
+        env:
+          ORG_GRADLE_PROJECT_curseforge_project: ${{ vars.CURSEFORGE_PROJECT_ID }}
+          ORG_GRADLE_PROJECT_curseforge_token: ${{ secrets.CURSEFORGE_TOKEN }}
+          ORG_GRADLE_PROJECT_curseforge_release_type: ${{ github.event_name == 'workflow_dispatch' && inputs.release_type || 'release' }}
+          ORG_GRADLE_PROJECT_curseforge_changelog: OpenFM ${{ github.ref_name }} from ${{ github.sha }}
+        run: ./gradlew :fabric:publishCurseForge --no-configuration-cache
+
+      - name: Publish NeoForge to CurseForge
+        if: (startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch') && (github.event_name != 'workflow_dispatch' || inputs.loader == 'both' || inputs.loader == 'neoforge')
+        env:
+          ORG_GRADLE_PROJECT_curseforge_project: ${{ vars.CURSEFORGE_PROJECT_ID }}
+          ORG_GRADLE_PROJECT_curseforge_token: ${{ secrets.CURSEFORGE_TOKEN }}
+          ORG_GRADLE_PROJECT_curseforge_release_type: ${{ github.event_name == 'workflow_dispatch' && inputs.release_type || 'release' }}
+          ORG_GRADLE_PROJECT_curseforge_changelog: OpenFM ${{ github.ref_name }} from ${{ github.sha }}
+        run: ./gradlew :neoforge:publishCurseForge --no-configuration-cache

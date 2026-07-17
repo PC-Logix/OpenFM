@@ -26,6 +26,8 @@ import java.util.function.Consumer;
 public final class RadioStreamPlayer {
     private static final boolean DEBUG = true;
 
+    private static final int MAX_PLAYLIST_DEPTH = 5;
+
     private static final int BUFFER_MS = 400;
     private static final int NUM_AL_BUFFERS = 6;
 
@@ -356,18 +358,8 @@ public final class RadioStreamPlayer {
             PcmDecoder decoder = null;
 
             try {
-                log("HTTP GET " + url);
-
-                HttpRequest req = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .GET()
-                        .header("User-Agent", "OpenFM")
-                        .header("Icy-MetaData", "1") // request ICY metadata if available
-                        .build();
-
-                HttpResponse<InputStream> resp = client.send(req, HttpResponse.BodyHandlers.ofInputStream());
-                log("HTTP status=" + resp.statusCode());
-                if (resp.statusCode() < 200 || resp.statusCode() >= 300) return;
+                HttpResponse<InputStream> resp = openAudioResponse(client, URI.create(url));
+                if (resp == null) return;
 
                 int metaInt = parseIcyMetaInt(resp.headers().firstValue("icy-metaint"));
                 String contentType = resp.headers().firstValue("content-type").orElse("");
@@ -472,6 +464,56 @@ public final class RadioStreamPlayer {
 
         decodeThread.setDaemon(true);
         decodeThread.start();
+    }
+
+    private static HttpResponse<InputStream> openAudioResponse(HttpClient client, URI initialUri) throws Exception {
+        URI currentUri = initialUri;
+
+        for (int depth = 0; depth <= MAX_PLAYLIST_DEPTH; depth++) {
+            log("HTTP GET " + currentUri);
+
+            HttpRequest req = HttpRequest.newBuilder()
+                    .uri(currentUri)
+                    .GET()
+                    .header("User-Agent", "OpenFM")
+                    .header("Icy-MetaData", "1")
+                    .build();
+
+            HttpResponse<InputStream> resp = client.send(req, HttpResponse.BodyHandlers.ofInputStream());
+            log("HTTP status=" + resp.statusCode());
+            if (resp.statusCode() < 200 || resp.statusCode() >= 300) {
+                resp.body().close();
+                return null;
+            }
+
+            String contentType = resp.headers().firstValue("content-type").orElse("");
+            if (!M3uPlaylist.isPlaylist(currentUri, contentType)) {
+                return resp;
+            }
+
+            byte[] contents;
+            try (InputStream body = resp.body()) {
+                contents = body.readNBytes(M3uPlaylist.MAX_BYTES + 1);
+            }
+
+            if (contents.length > M3uPlaylist.MAX_BYTES) {
+                log("M3U playlist exceeds " + M3uPlaylist.MAX_BYTES + " bytes.");
+                return null;
+            }
+
+            Optional<URI> entry = M3uPlaylist.firstHttpEntry(currentUri, contents);
+            if (entry.isEmpty()) {
+                log("M3U playlist contains no HTTP stream URL.");
+                return null;
+            }
+
+            URI nextUri = entry.get();
+            log("M3U resolved to " + nextUri);
+            currentUri = nextUri;
+        }
+
+        log("M3U playlist nesting exceeds " + MAX_PLAYLIST_DEPTH + ".");
+        return null;
     }
 
     private static int parseIcyMetaInt(Optional<String> v) {

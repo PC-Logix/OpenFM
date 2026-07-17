@@ -113,12 +113,12 @@ public final class RadioStreamManager {
             BlockPos pos = e.getKey();
             Desired d = e.getValue();
 
-            // If chunk not loaded, stop and forget desired state
-            if (!mc.level.hasChunkAt(pos)) {
+            // A loaded speaker can keep playback alive even when the radio's own chunk is not loaded.
+            if (!mc.level.hasChunkAt(pos) && !hasLoadedEmitter(mc.level, pos)) {
                 stopPlayer(pos);
                 it.remove();
                 NOW_PLAYING.remove(pos);
-                clearAllEmittersForRadio(pos); // keep this
+                clearAllEmittersForRadio(pos);
                 continue;
             }
 
@@ -133,12 +133,13 @@ public final class RadioStreamManager {
             }
 
             // Pick nearest emitter for this radio (radio itself is always an implicit emitter)
+            boolean radioLoaded = mc.level.hasChunkAt(pos);
             Vec3 targetPos = blockCenter(pos);
 
             Map<BlockPos, Vec3> emitters = RADIO_EMITTERS.get(pos);
             if (emitters != null && !emitters.isEmpty()) {
-                double bestDist2 = targetPos.distanceToSqr(listener);
-                Vec3 bestPos = targetPos;
+                double bestDist2 = radioLoaded ? targetPos.distanceToSqr(listener) : Double.POSITIVE_INFINITY;
+                Vec3 bestPos = radioLoaded ? targetPos : null;
                 //System.out.println("[OpenFM][EmitterPick] radio=" + pos + " usingEmitter=" + (targetPos == null ? "null" : targetPos));
 
                 for (var ee : emitters.entrySet()) {
@@ -160,7 +161,9 @@ public final class RadioStreamManager {
                     }
                 }
 
-                targetPos = bestPos;
+                if (bestPos != null) {
+                    targetPos = bestPos;
+                }
 
                 if (emitters.isEmpty()) {
                     RADIO_EMITTERS.remove(pos);
@@ -275,6 +278,12 @@ public final class RadioStreamManager {
 
     private static Vec3 blockCenter(BlockPos pos) {
         return new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+    }
+
+    private static boolean hasLoadedEmitter(Level level, BlockPos radioPos) {
+        Map<BlockPos, Vec3> emitters = RADIO_EMITTERS.get(radioPos);
+        if (emitters == null || emitters.isEmpty()) return false;
+        return emitters.keySet().stream().anyMatch(level::hasChunkAt);
     }
 
     private static Vec3 lerp(Vec3 a, Vec3 b, double t) {

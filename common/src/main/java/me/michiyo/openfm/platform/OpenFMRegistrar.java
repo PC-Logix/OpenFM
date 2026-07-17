@@ -4,6 +4,8 @@ import me.michiyo.openfm.world.menu.RadioMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.core.BlockPos;
@@ -21,7 +23,11 @@ public interface OpenFMRegistrar {
 
     RegistrySupplier<MenuType<RadioMenu>> registerRadioMenu(String name);
 
-    RegistrySupplier<CreativeModeTab> registerCreativeTab(String name, Supplier<? extends CreativeModeTab> factory);
+    RegistrySupplier<CreativeModeTab> registerCreativeTab(
+            String name,
+            Component title,
+            Supplier<ItemStack> icon,
+            CreativeModeTab.DisplayItemsGenerator displayItems);
 
     @FunctionalInterface
     interface BlockEntityFactory<T extends net.minecraft.world.level.block.entity.BlockEntity> {

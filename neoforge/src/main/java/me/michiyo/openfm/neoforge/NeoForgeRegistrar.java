@@ -8,6 +8,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -58,8 +60,15 @@ final class NeoForgeRegistrar implements OpenFMRegistrar {
 
     @Override
     public RegistrySupplier<CreativeModeTab> registerCreativeTab(
-            String name, Supplier<? extends CreativeModeTab> factory) {
-        var holder = tabs.register(name, factory);
+            String name,
+            Component title,
+            Supplier<ItemStack> icon,
+            CreativeModeTab.DisplayItemsGenerator displayItems) {
+        var holder = tabs.register(name, () -> CreativeModeTab.builder()
+                .title(title)
+                .icon(icon)
+                .displayItems(displayItems)
+                .build());
         return holder::get;
     }
 

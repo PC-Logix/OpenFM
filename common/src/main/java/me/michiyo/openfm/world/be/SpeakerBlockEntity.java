@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -121,6 +122,17 @@ public class SpeakerBlockEntity extends BlockEntity {
         // If currently linked, register as an emitter (ALWAYS; do not gate on activeUrl/activeVol)
         if (linkedRadioPos != null) {
             clientRegisterEmitter(linkedRadioPos, worldPosition);
+
+            if (activeUrl != null && !activeUrl.isEmpty() && activeVol > 0) {
+                me.michiyo.openfm.client.audio.RadioStreamManager.setDesired(
+                        linkedRadioPos,
+                        activeUrl,
+                        activeVol,
+                        Vec3.atCenterOf(worldPosition)
+                );
+            } else {
+                me.michiyo.openfm.client.audio.RadioStreamManager.clearDesired(linkedRadioPos);
+            }
         }
 
         lastClientLinkedRadioPos = linkedRadioPos;
@@ -163,8 +175,12 @@ public class SpeakerBlockEntity extends BlockEntity {
             return;
         }
 
-        // Mirror radio settings
-        be.setActive(radioBe.getStreamUrl(), radioBe.getVolume());
+        // Mirror only active playback. A configured but stopped radio must remain silent.
+        if (radioBe.isPlaying()) {
+            be.setActive(radioBe.getStreamUrl(), radioBe.getVolume());
+        } else {
+            be.setActive("", 0);
+        }
     }
 
     // -----------------------
@@ -213,6 +229,11 @@ public class SpeakerBlockEntity extends BlockEntity {
         CompoundTag tag = new CompoundTag();
         saveAdditional(tag, registries);
         return tag;
+    }
+
+    @Override
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override

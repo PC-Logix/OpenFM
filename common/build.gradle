@@ -15,7 +15,7 @@ dependencies {
     api 'javazoom:jlayer:1.0.1'
     api 'org.jcraft:jorbis:0.0.17'
     api 'com.tianscar.javasound:jaad:0.9.4'
-    compileOnly "cc.tweaked:cc-tweaked-${minecraft_version}-core-api:${cc_tweaked_version}"
+    compileOnly "cc.tweaked:cc-tweaked-${minecraft_version}-core-api:${cc_tweaked_neoforge_version}"
 }
 
 configurations {
@@ -33,4 +33,3 @@ artifacts {
     commonJava sourceSets.main.java.sourceDirectories.singleFile
     commonResources sourceSets.main.resources.sourceDirectories.singleFile
 }
-

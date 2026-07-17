@@ -66,6 +66,7 @@ processResources {
             neoforge_version: neoforge_version,
             neoforge_loader_version_range: neoforge_loader_version_range,
             cc_tweaked_version: cc_tweaked_version,
+            cc_tweaked_min_version: cc_tweaked_min_version,
             credits: credits,
             java_version: java_version
     ]
@@ -74,4 +75,3 @@ processResources {
     }
     inputs.properties(expandProps)
 }
-

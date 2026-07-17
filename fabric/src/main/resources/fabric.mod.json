@@ -18,7 +18,6 @@
     "java": ">=${java_version}"
   },
   "suggests": {
-    "computercraft": ">=${cc_tweaked_version}"
+    "computercraft": ">=${cc_tweaked_min_version}"
   }
 }
-
