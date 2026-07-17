@@ -1,26 +1,43 @@
 # OpenFM
 
-Streaming radio for Minecraft, with OpenComputers, and ComputerCraft support.
+OpenFM adds streaming internet radio blocks and linked speakers to Minecraft 1.21.1, with optional CC:Tweaked peripheral support.
 
-fm = component.openfm_radio
+## Loaders
 
-fm.setURL("http://listen.radionomy.com/DeepHouse")
+OpenFM is maintained as a multi-loader project:
 
-fm.start()
+- `common` contains shared gameplay, networking payloads, UI, rendering, and streaming audio code.
+- `neoforge` contains the NeoForge entrypoint and loader integrations.
+- `fabric` contains the Fabric entrypoints and loader integrations.
 
-fm.stop()
+The loader modules compile the same common sources. Loader-specific behavior is kept behind the registration and platform service interfaces under `me.michiyo.openfm.platform`.
 
-fm.volUp()
+## Building
 
-fm.volDown()
+Java 21 is required.
 
-fm.getVol()
+```powershell
+.\gradlew.bat :neoforge:build :fabric:build
+```
 
-fm.setScreenColor(0xFF0000) Sets the text color to red on the display
+The distributable JARs are written to:
 
-fm.setScreenText("Text to display on radio")  Text will scroll if larger than the display.
+- `neoforge/build/libs/openfm-neoforge-1.21.1-<version>.jar`
+- `fabric/build/libs/openfm-fabric-1.21.1-<version>.jar`
 
+Both JARs embed the MP3, Ogg Vorbis, and AAC decoder libraries. The Fabric build requires Fabric API. CC:Tweaked is optional on both loaders.
 
-Highly modified version of Dragon's Radio Mod, Dragon's Radio Mod is Licenses MIT.
+## Development runs
 
-Downloads via Curse http://www.curse.com/mc-mods/Minecraft/236839-openfm
+```powershell
+.\gradlew.bat :neoforge:runClient
+.\gradlew.bat :neoforge:runServer
+.\gradlew.bat :fabric:runClient
+.\gradlew.bat :fabric:runServer
+```
+
+## CC:Tweaked
+
+When CC:Tweaked is installed, the radio is exposed as an OpenFM peripheral. Existing Lua-facing methods and events are shared between both loader builds.
+
+OpenFM is a heavily modified version of Dragon's Radio Mod. Both projects are licensed under the MIT License.
