@@ -1,0 +1,60 @@
+plugins {
+    id 'multiloader-loader'
+    id 'net.neoforged.moddev'
+    id 'net.darkhax.curseforgegradle'
+}
+
+neoForge {
+    version = neoforge_version
+    parchment {
+        minecraftVersion = parchment_minecraft
+        mappingsVersion = parchment_version
+    }
+    runs {
+        configureEach {
+            ideName = "OpenFM NeoForge ${it.name.capitalize()}"
+        }
+        client { client() }
+        server { server() }
+    }
+    mods {
+        "${mod_id}" { sourceSet sourceSets.main }
+    }
+}
+
+dependencies {
+    compileOnly "cc.tweaked:cc-tweaked-${minecraft_version}-core-api:${cc_tweaked_neoforge_version}"
+    compileOnly "cc.tweaked:cc-tweaked-${minecraft_version}-forge-api:${cc_tweaked_neoforge_version}"
+    runtimeOnly "cc.tweaked:cc-tweaked-${minecraft_version}-forge:${cc_tweaked_neoforge_version}"
+
+    jarJar(implementation('javazoom:jlayer:[1.0.1]')) { version { prefer '1.0.1' } }
+    jarJar(implementation('com.tianscar.javasound:jaad:[0.9.4]')) { version { prefer '0.9.4' } }
+}
+
+tasks.register('publishCurseForge', net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+    group = 'publishing'
+    description = 'Build and publish the NeoForge JAR to CurseForge.'
+
+    def curseForgeToken = providers.gradleProperty('curseforge_token')
+            .orElse(providers.environmentVariable('CURSEFORGE_TOKEN'))
+    def curseForgeProject = providers.gradleProperty('curseforge_project')
+            .orElse(providers.environmentVariable('CURSEFORGE_PROJECT_ID'))
+
+    apiToken = curseForgeToken.orNull
+    def mainFile = upload(curseForgeProject.getOrElse('0'), tasks.named('jar'))
+    mainFile.releaseType = providers.gradleProperty('curseforge_release_type').getOrElse('alpha')
+    mainFile.changelog = providers.gradleProperty('curseforge_changelog')
+            .getOrElse("OpenFM ${project.version}")
+    mainFile.addGameVersion(minecraft_version)
+    mainFile.addModLoader('NeoForge')
+    mainFile.addEnvironment('Client', 'Server')
+
+    doFirst {
+        if (!curseForgeProject.isPresent()) {
+            throw new GradleException('Missing CurseForge project ID. Set CURSEFORGE_PROJECT_ID or curseforge_project.')
+        }
+        if (!curseForgeToken.isPresent()) {
+            throw new GradleException('Missing CurseForge API token. Set CURSEFORGE_TOKEN or curseforge_token.')
+        }
+    }
+}

@@ -1,69 +1,11 @@
 plugins {
-    id 'eclipse'
-    id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '6.0.+'
+    id 'fabric-loom' version '1.8-SNAPSHOT' apply false
+    id 'net.neoforged.moddev' version '2.0.49-beta' apply false
+    id 'net.darkhax.curseforgegradle' version '1.1.28' apply false
 }
 
-group = project.mod_group
-version = project.mod_version
-archivesBaseName = project.mod_id
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
-minecraft {
-    mappings channel: 'official', version: project.minecraft_version
-
-    runs {
-        client {
-            workingDirectory project.file('run')
-            property 'forge.logging.console.level', 'debug'
-            mods {
-                "${project.mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        server {
-            workingDirectory project.file('run')
-            property 'forge.logging.console.level', 'debug'
-            mods {
-                "${project.mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
-    }
-}
-
-repositories {
-    mavenCentral()
-
-    // CC:Tweaked Maven (note: maven.squiddev.cc, NOT squiddev.cc/maven)
-    maven {
-        url "https://maven.squiddev.cc"
-        content { includeGroup "cc.tweaked" }
-    }
-}
-
-dependencies {
-    minecraft "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
-
-    // Compile-time
-    implementation "javazoom:jlayer:1.0.1"
-    implementation "org.jcraft:jorbis:0.0.17"
-
-    // ComputerCraft (CC:Tweaked) - ForgeGradle deobf deps
-    // API at compile-time, full mod at runtime for dev runs.
-    compileOnly "cc.tweaked:cc-tweaked-1.20.1-core-api:1.117.0"
-    compileOnly fg.deobf("cc.tweaked:cc-tweaked-1.20.1-forge-api:1.117.0")
-    runtimeOnly fg.deobf("cc.tweaked:cc-tweaked-1.20.1-forge:1.117.0")
-
-    // DEV runtime: put libs on the game/launch classpath so the mod classloader can see them
-    minecraftLibrary "javazoom:jlayer:1.0.1"
-    minecraftLibrary "org.jcraft:jorbis:0.0.17"
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
+tasks.register('publishCurseForge') {
+    group = 'publishing'
+    description = 'Build and publish both the Fabric and NeoForge JARs to CurseForge.'
+    dependsOn(':fabric:publishCurseForge', ':neoforge:publishCurseForge')
 }

@@ -1,0 +1,66 @@
+plugins {
+    id 'multiloader-loader'
+    id 'fabric-loom'
+    id 'net.darkhax.curseforgegradle'
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
+    }
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+
+    modCompileOnly "cc.tweaked:cc-tweaked-${minecraft_version}-fabric-api:${cc_tweaked_version}"
+    modRuntimeOnly "cc.tweaked:cc-tweaked-${minecraft_version}-fabric:${cc_tweaked_version}"
+
+    include implementation('javazoom:jlayer:1.0.1')
+    include implementation('com.tianscar.javasound:jaad:0.9.4')
+}
+
+loom {
+    runs {
+        client {
+            client()
+            setConfigName('OpenFM Fabric Client')
+            ideConfigGenerated(true)
+            runDir('runs/client')
+        }
+        server {
+            server()
+            setConfigName('OpenFM Fabric Server')
+            ideConfigGenerated(true)
+            runDir('runs/server')
+        }
+    }
+}
+
+tasks.register('publishCurseForge', net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+    group = 'publishing'
+    description = 'Build and publish the Fabric JAR to CurseForge.'
+
+    def curseForgeToken = providers.gradleProperty('curseforge_token')
+            .orElse(providers.environmentVariable('CURSEFORGE_TOKEN'))
+    def curseForgeProject = providers.gradleProperty('curseforge_project')
+            .orElse(providers.environmentVariable('CURSEFORGE_PROJECT_ID'))
+
+    apiToken = curseForgeToken.orNull
+    def mainFile = upload(curseForgeProject.getOrElse('0'), tasks.named('remapJar'))
+    mainFile.releaseType = providers.gradleProperty('curseforge_release_type').getOrElse('alpha')
+    mainFile.changelog = providers.gradleProperty('curseforge_changelog')
+            .getOrElse("OpenFM ${project.version}")
+    mainFile.addGameVersion(minecraft_version)
+    mainFile.addModLoader('Fabric')
+    mainFile.addEnvironment('Client', 'Server')
+
+    doFirst {
+        if (!curseForgeProject.isPresent()) {
+            throw new GradleException('Missing CurseForge project ID. Set CURSEFORGE_PROJECT_ID or curseforge_project.')
+        }
+        if (!curseForgeToken.isPresent()) {
+            throw new GradleException('Missing CurseForge API token. Set CURSEFORGE_TOKEN or curseforge_token.')
+        }
+    }
+}
