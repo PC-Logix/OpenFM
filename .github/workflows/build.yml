@@ -39,6 +39,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Java 25
         uses: actions/setup-java@v4
@@ -52,18 +54,53 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
 
+      - name: Calculate mod version
+        id: version
+        shell: bash
+        run: |
+          base_version="$(sed -n 's/^mod_version=//p' gradle.properties | tail -n 1)"
+          seed_version="$(sed -n 's/^mod_version_seed=//p' gradle.properties | tail -n 1)"
+          seed_build="$(sed -n 's/^mod_version_seed_build=//p' gradle.properties | tail -n 1)"
+          version_commit="$(git log -G '^mod_version=' --format='%H' -n 1 -- gradle.properties)"
+
+          if [[ -z "$base_version" || -z "$version_commit" ]]; then
+            echo "Unable to determine the mod version or its starting commit." >&2
+            exit 1
+          fi
+
+          if [[ ! "$seed_build" =~ ^[0-9]+$ ]] || (( seed_build < 1 )); then
+            echo "mod_version_seed_build must be a positive integer." >&2
+            exit 1
+          fi
+
+          if git rev-parse "${version_commit}^" >/dev/null 2>&1; then
+            relative_build="$(git rev-list --count "${version_commit}^..HEAD")"
+          else
+            relative_build="$(git rev-list --count HEAD)"
+          fi
+
+          build_number="$relative_build"
+          if [[ "$base_version" == "$seed_version" ]]; then
+            build_number=$((relative_build + seed_build - 1))
+          fi
+
+          full_version="${base_version}.${build_number}"
+          echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
+          echo "full_version=$full_version" >> "$GITHUB_OUTPUT"
+          echo "Building OpenFM $full_version"
+
       - name: Build Fabric
         if: github.event_name != 'workflow_dispatch' || inputs.loader == 'both' || inputs.loader == 'fabric'
-        run: ./gradlew :fabric:build
+        run: ./gradlew :fabric:build -Pbuild_number=${{ steps.version.outputs.build_number }}
 
       - name: Build NeoForge
         if: github.event_name != 'workflow_dispatch' || inputs.loader == 'both' || inputs.loader == 'neoforge'
-        run: ./gradlew :neoforge:build
+        run: ./gradlew :neoforge:build -Pbuild_number=${{ steps.version.outputs.build_number }}
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: openfm-${{ github.ref_name }}
+          name: openfm-${{ steps.version.outputs.full_version }}-${{ github.ref_name }}
           path: |
             fabric/build/libs/*.jar
             neoforge/build/libs/*.jar
@@ -77,8 +114,8 @@ jobs:
           ORG_GRADLE_PROJECT_curseforge_project: ${{ vars.CURSEFORGE_PROJECT_ID }}
           ORG_GRADLE_PROJECT_curseforge_token: ${{ secrets.CURSEFORGE_TOKEN }}
           ORG_GRADLE_PROJECT_curseforge_release_type: ${{ github.event_name == 'workflow_dispatch' && inputs.release_type || 'release' }}
-          ORG_GRADLE_PROJECT_curseforge_changelog: OpenFM ${{ github.ref_name }} from ${{ github.sha }}
-        run: ./gradlew :fabric:publishCurseForge --no-configuration-cache
+          ORG_GRADLE_PROJECT_curseforge_changelog: OpenFM ${{ steps.version.outputs.full_version }} from ${{ github.sha }}
+        run: ./gradlew :fabric:publishCurseForge -Pbuild_number=${{ steps.version.outputs.build_number }} --no-configuration-cache
 
       - name: Publish NeoForge to CurseForge
         if: (startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch') && (github.event_name != 'workflow_dispatch' || inputs.loader == 'both' || inputs.loader == 'neoforge')
@@ -86,5 +123,5 @@ jobs:
           ORG_GRADLE_PROJECT_curseforge_project: ${{ vars.CURSEFORGE_PROJECT_ID }}
           ORG_GRADLE_PROJECT_curseforge_token: ${{ secrets.CURSEFORGE_TOKEN }}
           ORG_GRADLE_PROJECT_curseforge_release_type: ${{ github.event_name == 'workflow_dispatch' && inputs.release_type || 'release' }}
-          ORG_GRADLE_PROJECT_curseforge_changelog: OpenFM ${{ github.ref_name }} from ${{ github.sha }}
-        run: ./gradlew :neoforge:publishCurseForge --no-configuration-cache
+          ORG_GRADLE_PROJECT_curseforge_changelog: OpenFM ${{ steps.version.outputs.full_version }} from ${{ github.sha }}
+        run: ./gradlew :neoforge:publishCurseForge -Pbuild_number=${{ steps.version.outputs.build_number }} --no-configuration-cache
