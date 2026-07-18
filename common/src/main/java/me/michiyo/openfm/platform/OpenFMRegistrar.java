@@ -12,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.function.Supplier;
+import java.util.function.Consumer;
 
 public interface OpenFMRegistrar {
     RegistrySupplier<Block> registerBlock(String name, Supplier<? extends Block> factory);
@@ -27,7 +28,12 @@ public interface OpenFMRegistrar {
             String name,
             Component title,
             Supplier<ItemStack> icon,
-            CreativeModeTab.DisplayItemsGenerator displayItems);
+            CreativeTabEntries displayItems);
+
+    @FunctionalInterface
+    interface CreativeTabEntries {
+        void accept(Consumer<ItemStack> output);
+    }
 
     @FunctionalInterface
     interface BlockEntityFactory<T extends net.minecraft.world.level.block.entity.BlockEntity> {

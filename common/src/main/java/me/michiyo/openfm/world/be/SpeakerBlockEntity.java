@@ -8,11 +8,13 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 public class SpeakerBlockEntity extends BlockEntity {
@@ -79,7 +81,7 @@ public class SpeakerBlockEntity extends BlockEntity {
 
     private void syncToClient() {
         if (level == null) return;
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             BlockState state = getBlockState();
             level.sendBlockUpdated(worldPosition, state, state, 3);
         }
@@ -112,7 +114,7 @@ public class SpeakerBlockEntity extends BlockEntity {
      * Safe to call from anywhere: it will no-op on server.
      */
     private void clientRefreshEmitterRegistration() {
-        if (level == null || !level.isClientSide) return;
+        if (level == null || !level.isClientSide()) return;
 
         // If link changed, remove from old radio emitter list
         if (lastClientLinkedRadioPos != null && (linkedRadioPos == null || !lastClientLinkedRadioPos.equals(linkedRadioPos))) {
@@ -125,6 +127,7 @@ public class SpeakerBlockEntity extends BlockEntity {
 
             if (activeUrl != null && !activeUrl.isEmpty() && activeVol > 0) {
                 me.michiyo.openfm.client.audio.RadioStreamManager.setDesired(
+                        linkedDim,
                         linkedRadioPos,
                         activeUrl,
                         activeVol,
@@ -139,7 +142,7 @@ public class SpeakerBlockEntity extends BlockEntity {
     }
 
     private void clientStopEmitter() {
-        if (level == null || !level.isClientSide) return;
+        if (level == null || !level.isClientSide()) return;
 
         if (linkedRadioPos != null) {
             clientUnregisterEmitter(linkedRadioPos, worldPosition);
@@ -188,47 +191,41 @@ public class SpeakerBlockEntity extends BlockEntity {
     // -----------------------
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
 
-        String dimStr = tag.getString(NBT_LINKED_DIM);
+        String dimStr = input.getStringOr(NBT_LINKED_DIM, "");
         if (dimStr != null && !dimStr.isEmpty()) {
-            this.linkedDim = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(dimStr));
+            this.linkedDim = ResourceKey.create(Registries.DIMENSION, Identifier.parse(dimStr));
         } else {
             this.linkedDim = null;
         }
 
-        if (tag.contains(NBT_LINKED_POS)) {
-            this.linkedRadioPos = BlockPos.of(tag.getLong(NBT_LINKED_POS));
-        } else {
-            this.linkedRadioPos = null;
-        }
+        this.linkedRadioPos = input.getLong(NBT_LINKED_POS).map(BlockPos::of).orElse(null);
 
-        this.activeUrl = tag.getString(NBT_ACTIVE_URL);
-        this.activeVol = tag.getInt(NBT_ACTIVE_VOL);
+        this.activeUrl = input.getStringOr(NBT_ACTIVE_URL, "");
+        this.activeVol = input.getIntOr(NBT_ACTIVE_VOL, 0);
 
         // On client, register emitter after load (safe no-op on server)
         clientRefreshEmitterRegistration();
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
 
-        tag.putString(NBT_LINKED_DIM, linkedDim == null ? "" : linkedDim.location().toString());
+        output.putString(NBT_LINKED_DIM, linkedDim == null ? "" : linkedDim.identifier().toString());
         if (linkedRadioPos != null) {
-            tag.putLong(NBT_LINKED_POS, linkedRadioPos.asLong());
+            output.putLong(NBT_LINKED_POS, linkedRadioPos.asLong());
         }
 
-        tag.putString(NBT_ACTIVE_URL, activeUrl == null ? "" : activeUrl);
-        tag.putInt(NBT_ACTIVE_VOL, activeVol);
+        output.putString(NBT_ACTIVE_URL, activeUrl == null ? "" : activeUrl);
+        output.putInt(NBT_ACTIVE_VOL, activeVol);
     }
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        CompoundTag tag = new CompoundTag();
-        saveAdditional(tag, registries);
-        return tag;
+        return saveWithoutMetadata(registries);
     }
 
     @Override

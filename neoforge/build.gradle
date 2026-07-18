@@ -6,10 +6,6 @@ plugins {
 
 neoForge {
     version = neoforge_version
-    parchment {
-        minecraftVersion = parchment_minecraft
-        mappingsVersion = parchment_version
-    }
     runs {
         configureEach {
             ideName = "OpenFM NeoForge ${it.name.capitalize()}"
@@ -23,9 +19,9 @@ neoForge {
 }
 
 dependencies {
-    compileOnly "cc.tweaked:cc-tweaked-${minecraft_version}-core-api:${cc_tweaked_neoforge_version}"
-    compileOnly "cc.tweaked:cc-tweaked-${minecraft_version}-forge-api:${cc_tweaked_neoforge_version}"
-    runtimeOnly "cc.tweaked:cc-tweaked-${minecraft_version}-forge:${cc_tweaked_neoforge_version}"
+    compileOnly "cc.tweaked:cc-tweaked-${cc_tweaked_minecraft_version}-core-api:${cc_tweaked_version}"
+    compileOnly "cc.tweaked:cc-tweaked-${cc_tweaked_minecraft_version}-forge-api:${cc_tweaked_version}"
+    runtimeOnly "cc.tweaked:cc-tweaked-${cc_tweaked_minecraft_version}-forge:${cc_tweaked_version}"
 
     jarJar(implementation('javazoom:jlayer:[1.0.1]')) { version { prefer '1.0.1' } }
     jarJar(implementation('com.tianscar.javasound:jaad:[0.9.4]')) { version { prefer '0.9.4' } }

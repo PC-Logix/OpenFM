@@ -4,7 +4,7 @@ import me.michiyo.openfm.platform.OpenFMPlatform;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.fabricmc.fabric.api.menu.v1.ExtendedMenuProvider;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -26,7 +26,7 @@ public final class FabricPlatform implements OpenFMPlatform {
         PlayerLookup.tracking(level, pos).forEach(player -> ServerPlayNetworking.send(player, payload));
     }
     @Override public void openMenu(ServerPlayer player, MenuProvider provider, BlockPos pos) {
-        player.openMenu(new ExtendedScreenHandlerFactory<BlockPos>() {
+        player.openMenu(new ExtendedMenuProvider<BlockPos>() {
             @Override public BlockPos getScreenOpeningData(ServerPlayer player) { return pos; }
             @Override public net.minecraft.network.chat.Component getDisplayName() { return provider.getDisplayName(); }
             @Override public net.minecraft.world.inventory.AbstractContainerMenu createMenu(

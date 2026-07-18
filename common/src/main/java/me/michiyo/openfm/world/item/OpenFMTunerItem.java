@@ -11,7 +11,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -37,64 +37,56 @@ public class OpenFMTunerItem extends Item {
             // Shift+click speaker = unlink
             if (ctx.getPlayer() != null && ctx.getPlayer().isShiftKeyDown()) {
                 // send packet client-side
-                if (level.isClientSide) {
+                if (level.isClientSide()) {
                     ResourceKey<Level> dim = level.dimension();
                     Net.sendToServer(C2SLinkSpeaker.unlink(dim, clicked));
                 }
 
                 clearSpeakerSelection(stack);
 
-                if (level.isClientSide && ctx.getPlayer() != null) {
-                    ctx.getPlayer().displayClientMessage(
-                            Component.literal("Speaker unlinked.").withStyle(ChatFormatting.GRAY),
-                            true
-                    );
+                if (level.isClientSide() && ctx.getPlayer() != null) {
+                    ctx.getPlayer().sendOverlayMessage(
+                            Component.literal("Speaker unlinked.").withStyle(ChatFormatting.GRAY));
                 }
 
-                return InteractionResult.sidedSuccess(level.isClientSide);
+                return success(level);
             }
 
             // Normal click speaker = select it in the tuner
             setSpeakerSelection(stack, level.dimension(), clicked);
 
-            if (level.isClientSide && ctx.getPlayer() != null) {
-                ctx.getPlayer().displayClientMessage(
-                        Component.literal("Speaker selected. Now click a Radio.").withStyle(ChatFormatting.GRAY),
-                        true
-                );
+            if (level.isClientSide() && ctx.getPlayer() != null) {
+                ctx.getPlayer().sendOverlayMessage(
+                        Component.literal("Speaker selected. Now click a Radio.").withStyle(ChatFormatting.GRAY));
             }
 
-            return InteractionResult.sidedSuccess(level.isClientSide);
+            return success(level);
         }
 
         if (level.getBlockEntity(clicked) instanceof RadioBlockEntity) {
             // click radio with tuner that has a selected speaker -> link
             SpeakerSel sel = getSpeakerSelection(stack);
             if (sel == null) {
-                if (level.isClientSide && ctx.getPlayer() != null) {
-                    ctx.getPlayer().displayClientMessage(
-                            Component.literal("No speaker selected. Click a Speaker first.").withStyle(ChatFormatting.RED),
-                            true
-                    );
+                if (level.isClientSide() && ctx.getPlayer() != null) {
+                    ctx.getPlayer().sendOverlayMessage(
+                            Component.literal("No speaker selected. Click a Speaker first.").withStyle(ChatFormatting.RED));
                 }
-                return InteractionResult.sidedSuccess(level.isClientSide);
+                return success(level);
             }
 
             // send packet client-side
-            if (level.isClientSide) {
+            if (level.isClientSide()) {
                 Net.sendToServer(C2SLinkSpeaker.link(sel.dim, sel.pos, level.dimension(), clicked));
             }
 
             clearSpeakerSelection(stack);
 
-            if (level.isClientSide && ctx.getPlayer() != null) {
-                ctx.getPlayer().displayClientMessage(
-                        Component.literal("Linked speaker to radio.").withStyle(ChatFormatting.GREEN),
-                        true
-                );
+            if (level.isClientSide() && ctx.getPlayer() != null) {
+                ctx.getPlayer().sendOverlayMessage(
+                        Component.literal("Linked speaker to radio.").withStyle(ChatFormatting.GREEN));
             }
 
-            return InteractionResult.sidedSuccess(level.isClientSide);
+            return success(level);
         }
 
         return InteractionResult.PASS;
@@ -102,7 +94,7 @@ public class OpenFMTunerItem extends Item {
 
     private static void setSpeakerSelection(ItemStack stack, ResourceKey<Level> dim, BlockPos pos) {
         CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> {
-            tag.putString(NBT_SPK_DIM, dim.location().toString());
+            tag.putString(NBT_SPK_DIM, dim.identifier().toString());
             tag.putLong(NBT_SPK_POS, pos.asLong());
         });
     }
@@ -118,12 +110,16 @@ public class OpenFMTunerItem extends Item {
         CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (!tag.contains(NBT_SPK_DIM) || !tag.contains(NBT_SPK_POS)) return null;
 
-        String dimStr = tag.getString(NBT_SPK_DIM);
-        if (dimStr == null || dimStr.isEmpty()) return null;
+        String dimStr = tag.getString(NBT_SPK_DIM).orElse("");
+        if (dimStr.isEmpty()) return null;
 
-        ResourceKey<Level> dim = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(dimStr));
-        BlockPos pos = BlockPos.of(tag.getLong(NBT_SPK_POS));
+        ResourceKey<Level> dim = ResourceKey.create(Registries.DIMENSION, Identifier.parse(dimStr));
+        BlockPos pos = BlockPos.of(tag.getLong(NBT_SPK_POS).orElse(0L));
         return new SpeakerSel(dim, pos);
+    }
+
+    private static InteractionResult success(Level level) {
+        return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
     }
 
     private record SpeakerSel(ResourceKey<Level> dim, BlockPos pos) {}

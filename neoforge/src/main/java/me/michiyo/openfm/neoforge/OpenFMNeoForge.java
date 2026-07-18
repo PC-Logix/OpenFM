@@ -22,7 +22,8 @@ public final class OpenFMNeoForge {
         if (ModList.get().isLoaded("computercraft")) {
             modBus.addListener(NeoForgeComputerCraft::register);
         }
-        if (FMLEnvironment.dist == Dist.CLIENT) {
+
+        if (FMLEnvironment.getDist() == Dist.CLIENT) {
             NeoForgeClientEvents.register(modBus);
         }
     }

@@ -1,12 +1,13 @@
 package me.michiyo.openfm.client.gui;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class TexturedButton extends Button {
-    private final ResourceLocation tex;
+    private final Identifier tex;
     private final int u;
     private final int v;
     private final int hoverVOffset;
@@ -16,7 +17,7 @@ public class TexturedButton extends Button {
     public TexturedButton(
             int x, int y, int width, int height,
             int u, int v, int hoverVOffset,
-            ResourceLocation tex, int texW, int texH,
+            Identifier tex, int texW, int texH,
             OnPress onPress
     ) {
         super(x, y, width, height, Component.empty(), onPress, DEFAULT_NARRATION);
@@ -29,8 +30,8 @@ public class TexturedButton extends Button {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    protected void extractContents(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         int drawV = this.v + (this.isHoveredOrFocused() ? this.hoverVOffset : 0);
-        g.blit(this.tex, this.getX(), this.getY(), this.u, drawV, this.width, this.height, this.texW, this.texH);
+        g.blit(RenderPipelines.GUI_TEXTURED, this.tex, this.getX(), this.getY(), this.u, drawV, this.width, this.height, this.texW, this.texH);
     }
 }

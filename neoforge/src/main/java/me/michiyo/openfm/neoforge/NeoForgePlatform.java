@@ -10,12 +10,13 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 public final class NeoForgePlatform implements OpenFMPlatform {
     @Override public String loaderName() { return "NeoForge"; }
     @Override public boolean isModLoaded(String modId) { return ModList.get().isLoaded(modId); }
-    @Override public boolean isPhysicalClient() { return FMLEnvironment.dist == Dist.CLIENT; }
-    @Override public void sendToServer(CustomPacketPayload payload) { PacketDistributor.sendToServer(payload); }
+    @Override public boolean isPhysicalClient() { return FMLEnvironment.getDist() == Dist.CLIENT; }
+    @Override public void sendToServer(CustomPacketPayload payload) { ClientPacketDistributor.sendToServer(payload); }
     @Override public void sendToPlayer(ServerPlayer player, CustomPacketPayload payload) {
         PacketDistributor.sendToPlayer(player, payload);
     }

@@ -1,23 +1,26 @@
 package me.michiyo.openfm.client.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.michiyo.openfm.net.C2SButtonAction;
 import me.michiyo.openfm.net.C2SSetFields;
 import me.michiyo.openfm.net.Net;
 import me.michiyo.openfm.net.S2CSyncFields;
 import me.michiyo.openfm.world.menu.RadioMenu;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class RadioScreen extends AbstractContainerScreen<RadioMenu> {
-    private static final ResourceLocation GUI_TEX = ResourceLocation.fromNamespaceAndPath("openfm", "textures/gui/gui_radio.png");
-    private static final ResourceLocation BTN_TEX = ResourceLocation.fromNamespaceAndPath("openfm", "textures/gui/buttons.png");
+    private static final Identifier GUI_TEX = Identifier.fromNamespaceAndPath("openfm", "textures/gui/gui_radio.png");
+    private static final Identifier BTN_TEX = Identifier.fromNamespaceAndPath("openfm", "textures/gui/buttons.png");
 
     private static final int TEX_W = 256;
     private static final int TEX_H = 256;
@@ -75,9 +78,7 @@ public class RadioScreen extends AbstractContainerScreen<RadioMenu> {
     private boolean debugGui = false; // set false when done
 
     public RadioScreen(RadioMenu menu, net.minecraft.world.entity.player.Inventory inv, Component title) {
-        super(menu, inv, title);
-        this.imageWidth = GUI_W;
-        this.imageHeight = GUI_H;
+        super(menu, inv, title, GUI_W, GUI_H);
     }
 
     @Override
@@ -287,22 +288,22 @@ public class RadioScreen extends AbstractContainerScreen<RadioMenu> {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
         // If the user is typing in any text box, do NOT let the inventory key (E) close the screen.
-        if (Minecraft.getInstance().options.keyInventory.matches(keyCode, scanCode)) return true;
+        if (Minecraft.getInstance().options.keyInventory.matches(event)) return true;
 
         // ENTER saves fields
-        if (keyCode == 257 || keyCode == 335) {
+        if (event.key() == 257 || event.key() == 335) {
             sendFieldsToServer();
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     @Override
-    public boolean charTyped(char codePoint, int modifiers) {
+    public boolean charTyped(CharacterEvent event) {
         // Normal text entry
-        return super.charTyped(codePoint, modifiers);
+        return super.charTyped(event);
     }
 
     @Override
@@ -311,9 +312,10 @@ public class RadioScreen extends AbstractContainerScreen<RadioMenu> {
     }
 
     @Override
-    protected void renderBg(GuiGraphics g, float partialTick, int mouseX, int mouseY) {
+    public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(g, mouseX, mouseY, partialTick);
         // Draw ONLY the classic 256x166 "panel" portion of the 256x256 sheet.
-        g.blit(GUI_TEX, leftPos, topPos, 0, 0, GUI_W, GUI_H, TEX_W, TEX_H);
+        g.blit(RenderPipelines.GUI_TEXTURED, GUI_TEX, leftPos, topPos, 0, 0, GUI_W, GUI_H, TEX_W, TEX_H);
 
         if (debugGui) {
             int ox = leftPos;
@@ -323,7 +325,7 @@ public class RadioScreen extends AbstractContainerScreen<RadioMenu> {
             g.fill(ox - 1, oy - 1, ox + 2, oy + 2, 0xFFFF0000);
 
             // show container origin coords
-            g.drawString(this.font, "leftPos=" + ox + " topPos=" + oy, ox + 4, oy + 4, 0xFFFFFF, false);
+            g.text(this.font, "leftPos=" + ox + " topPos=" + oy, ox + 4, oy + 4, 0xFFFFFFFF, false);
             g.fill(leftPos + 45, topPos + 52, leftPos + 47, topPos + 54, 0xFF00FF00); // card slot
             // draw slot markers
             for (int i = 0; i < this.menu.slots.size(); i++) {
@@ -331,31 +333,29 @@ public class RadioScreen extends AbstractContainerScreen<RadioMenu> {
                 int sx = ox + s.x;
                 int sy = oy + s.y;
                 g.fill(sx, sy, sx + 16, sy + 16, 0x40FF00FF); // translucent magenta box
-                g.drawString(this.font, String.valueOf(i), sx + 1, sy + 1, 0xFFFFFF, false);
+                g.text(this.font, String.valueOf(i), sx + 1, sy + 1, 0xFFFFFFFF, false);
             }
         }
 
         // Volume number: put it where the old volumeBox lived.
-        g.drawString(this.font, String.valueOf(menu.getVolume()), leftPos + VOL_TXT_X, topPos + VOL_TXT_Y, 0xFFFFFF, false);
+        g.text(this.font, String.valueOf(menu.getVolume()), leftPos + VOL_TXT_X, topPos + VOL_TXT_Y, 0xFFFFFFFF, false);
     }
 
     @Override
-    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(g, mouseX, mouseY, partialTick);
-        super.render(g, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(g, mouseX, mouseY, partialTick);
 
         if (debugGui) {
             int rx = mouseX - leftPos;
             int ry = mouseY - topPos;
-            g.drawString(this.font, "relMouse=" + rx + "," + ry, leftPos + 4, topPos + 16, 0xFFFFFF, false);
+            g.text(this.font, "relMouse=" + rx + "," + ry, leftPos + 4, topPos + 16, 0xFFFFFFFF, false);
         }
 
         SpriteButton hovered = findHoveredSpriteButton();
         if (hovered != null) {
-            g.renderTooltip(this.font, hovered.tooltip, mouseX, mouseY);
+            g.setTooltipForNextFrame(this.font, hovered.tooltip, mouseX, mouseY);
         }
 
-        this.renderTooltip(g, mouseX, mouseY);
     }
 
     private SpriteButton findHoveredSpriteButton() {
@@ -370,7 +370,7 @@ public class RadioScreen extends AbstractContainerScreen<RadioMenu> {
     }
 
     @Override
-    protected void renderLabels(GuiGraphics g, int mouseX, int mouseY) {
+    protected void extractLabels(GuiGraphicsExtractor g, int mouseX, int mouseY) {
         // no vanilla labels
     }
 
@@ -395,21 +395,15 @@ public class RadioScreen extends AbstractContainerScreen<RadioMenu> {
         }
 
         @Override
-        public void onClick(double mouseX, double mouseY) {
+        public void onClick(MouseButtonEvent event, boolean doubleClick) {
             if (this.active) this.onPress.run();
         }
 
         @Override
-        protected void renderWidget(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+        protected void extractWidgetRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
             boolean hovered = this.isHoveredOrFocused();
-
-            RenderSystem.enableBlend();
-            RenderSystem.setShaderColor(hovered ? 1f : 0.9f, hovered ? 1f : 0.9f, hovered ? 1f : 0.9f, 1f);
-
-            g.blit(BTN_TEX, this.getX(), this.getY(), sprite.u(), sprite.v(), sprite.w(), sprite.h(), TEX_W, TEX_H);
-
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-            RenderSystem.disableBlend();
+            int color = hovered ? 0xFFFFFFFF : 0xFFE6E6E6;
+            g.blit(RenderPipelines.GUI_TEXTURED, BTN_TEX, this.getX(), this.getY(), sprite.u(), sprite.v(), sprite.w(), sprite.h(), TEX_W, TEX_H, color);
         }
 
         @Override

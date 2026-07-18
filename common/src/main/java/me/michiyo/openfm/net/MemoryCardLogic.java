@@ -31,12 +31,12 @@ public final class MemoryCardLogic {
         CompoundTag tag = card.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (!tag.contains(ROOT)) return;
 
-        CompoundTag root = tag.getCompound(ROOT);
+        CompoundTag root = tag.getCompound(ROOT).orElseGet(CompoundTag::new);
 
-        radio.setStreamUrl(root.getString("StreamUrl"));
-        radio.setVolume(root.getInt("Volume"));
-        radio.setScreenColor(root.getString("ScreenColor"));
-        radio.setScreenText(root.getString("ScreenText"));
+        radio.setStreamUrl(root.getString("StreamUrl").orElse(""));
+        radio.setVolume(root.getInt("Volume").orElse(5));
+        radio.setScreenColor(root.getString("ScreenColor").orElse(RadioBlockEntity.DEFAULT_COLOR));
+        radio.setScreenText(root.getString("ScreenText").orElse(RadioBlockEntity.DEFAULT_TEXT));
     }
 
     public static void deleteFromCard(RadioBlockEntity radio) {

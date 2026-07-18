@@ -3,7 +3,8 @@ package me.michiyo.openfm.client.screen;
 import me.michiyo.openfm.config.OpenFMClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -62,12 +63,12 @@ public class OpenFMAudioSettingsScreen extends Screen {
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        boolean handled = super.mouseReleased(mouseX, mouseY, button);
+    public boolean mouseReleased(MouseButtonEvent event) {
+        boolean handled = super.mouseReleased(event);
 
         // Save when the mouse is released (i.e., end of a drag), but only if value changed.
         // This runs even if release happens off the slider, which is fine due to the change check.
-        if (button == 0) {
+        if (event.button() == 0) {
             commitIfChanged();
         }
 
@@ -86,9 +87,8 @@ public class OpenFMAudioSettingsScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(g, mouseX, mouseY, partialTick);
-        g.drawCenteredString(this.font, this.title, this.width / 2, 12, 0xFFFFFF);
-        super.render(g, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
+        g.centeredText(this.font, this.title, this.width / 2, 12, 0xFFFFFFFF);
+        super.extractRenderState(g, mouseX, mouseY, partialTick);
     }
 }

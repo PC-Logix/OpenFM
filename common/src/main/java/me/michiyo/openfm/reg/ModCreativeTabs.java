@@ -14,11 +14,11 @@ public final class ModCreativeTabs {
                 "openfm",
                 Component.literal("OpenFM"),
                 () -> new ItemStack(ModItems.RADIO_BLOCK_ITEM.get()),
-                (params, output) -> {
-                    output.accept(ModItems.RADIO_BLOCK_ITEM.get());
-                    output.accept(ModItems.SPEAKER_BLOCK_ITEM.get());
-                    output.accept(ModItems.MEMORY_CARD.get());
-                    output.accept(ModItems.TUNER.get());
+                output -> {
+                    output.accept(new ItemStack(ModItems.RADIO_BLOCK_ITEM.get()));
+                    output.accept(new ItemStack(ModItems.SPEAKER_BLOCK_ITEM.get()));
+                    output.accept(new ItemStack(ModItems.MEMORY_CARD.get()));
+                    output.accept(new ItemStack(ModItems.TUNER.get()));
                 });
     }
 

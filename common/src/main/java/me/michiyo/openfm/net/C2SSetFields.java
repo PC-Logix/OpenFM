@@ -7,12 +7,12 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 public class C2SSetFields implements CustomPacketPayload {
     public static final Type<C2SSetFields> TYPE = new Type<>(
-            ResourceLocation.fromNamespaceAndPath(OpenFM.MODID, "set_fields")
+            Identifier.fromNamespaceAndPath(OpenFM.MODID, "set_fields")
     );
     public static final StreamCodec<RegistryFriendlyByteBuf, C2SSetFields> STREAM_CODEC =
             StreamCodec.of((buf, msg) -> encode(msg, buf), C2SSetFields::decode);
@@ -45,7 +45,7 @@ public class C2SSetFields implements CustomPacketPayload {
     }
 
     public static void handle(C2SSetFields msg, ServerPlayer player) {
-            var level = player.serverLevel();
+            var level = player.level();
             var be = level.getBlockEntity(msg.pos);
             if (!(be instanceof RadioBlockEntity radio)) return;
 

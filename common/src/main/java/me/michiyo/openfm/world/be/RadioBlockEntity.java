@@ -13,6 +13,9 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.core.UUIDUtil;
 
 import java.util.UUID;
 
@@ -25,6 +28,7 @@ public class RadioBlockEntity extends BlockEntity {
 
     // explicit playback state
     private boolean playing = false;
+    private String nowPlaying = "";
 
     private int volume = 5; // 0..10
     private String streamUrl = "";
@@ -47,7 +51,7 @@ public class RadioBlockEntity extends BlockEntity {
 
     private void markDirtyAndSync() {
         setChanged();
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
     }
@@ -109,6 +113,7 @@ public class RadioBlockEntity extends BlockEntity {
             cc_event("openfm_stop",
                     worldPosition.getX(), worldPosition.getY(), worldPosition.getZ()
             );
+            clearNowPlaying();
         }
 
         markDirtyAndSync();
@@ -131,6 +136,7 @@ public class RadioBlockEntity extends BlockEntity {
         String nu = sanitizeUrl(url);
         if (nu.equals(this.streamUrl)) return;
         this.streamUrl = nu;
+        clearNowPlaying();
         cc_event("openfm_url_changed", worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), cc_getStreamUrl());
 
         markDirtyAndSync();
@@ -159,53 +165,42 @@ public class RadioBlockEntity extends BlockEntity {
     public SimpleContainer getInventory() { return inv; }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
 
-        if (ownerUuid != null) tag.putUUID("Owner", ownerUuid);
-        tag.putBoolean("Locked", locked);
+        output.storeNullable("Owner", UUIDUtil.CODEC, ownerUuid);
+        output.putBoolean("Locked", locked);
+        output.putBoolean("Playing", playing);
+        output.putInt("Volume", volume);
+        output.putString("StreamUrl", streamUrl);
+        output.putString("ScreenColor", screenColor);
+        output.putString("ScreenText", screenText);
 
-        tag.putBoolean("Playing", playing);
-
-        tag.putInt("Volume", volume);
-        tag.putString("StreamUrl", streamUrl);
-        tag.putString("ScreenColor", screenColor);
-        tag.putString("ScreenText", screenText);
-
-        CompoundTag invTag = new CompoundTag();
         ItemStack stack = inv.getItem(0);
-        if (!stack.isEmpty()) invTag.put("MemoryCard", stack.save(registries));
-        tag.put("Inv", invTag);
+        if (!stack.isEmpty()) output.child("Inv").store("MemoryCard", ItemStack.CODEC, stack);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
 
-        ownerUuid = tag.hasUUID("Owner") ? tag.getUUID("Owner") : null;
-        locked = tag.getBoolean("Locked");
-
-        playing = tag.getBoolean("Playing");
-
-        volume = clamp(tag.getInt("Volume"), 0, 10);
-        streamUrl = sanitizeUrl(tag.getString("StreamUrl"));
-        screenColor = sanitizeColor(tag.getString("ScreenColor"));
-        screenText = sanitizeScreenText(tag.getString("ScreenText"));
+        ownerUuid = input.read("Owner", UUIDUtil.CODEC).orElse(null);
+        locked = input.getBooleanOr("Locked", false);
+        playing = input.getBooleanOr("Playing", false);
+        volume = clamp(input.getIntOr("Volume", 5), 0, 10);
+        streamUrl = sanitizeUrl(input.getStringOr("StreamUrl", ""));
+        screenColor = sanitizeColor(input.getStringOr("ScreenColor", DEFAULT_COLOR));
+        screenText = sanitizeScreenText(input.getStringOr("ScreenText", DEFAULT_TEXT));
 
         inv.setItem(0, ItemStack.EMPTY);
-        if (tag.contains("Inv")) {
-            CompoundTag invTag = tag.getCompound("Inv");
-            if (invTag.contains("MemoryCard")) {
-                inv.setItem(0, ItemStack.parseOptional(registries, invTag.getCompound("MemoryCard")));
-            }
-        }
+        inv.setItem(0, input.childOrEmpty("Inv").read("MemoryCard", ItemStack.CODEC).orElse(ItemStack.EMPTY));
         clientApplyAudioState();
     }
 
     // ---- client audio wiring (RESPECT playing) ----
 
     private void clientApplyAudioState() {
-        if (level == null || !level.isClientSide) return;
+        if (level == null || !level.isClientSide()) return;
 
         if (!playing) {
             RadioStreamManager.applyState(worldPosition, "", 0);
@@ -228,14 +223,14 @@ public class RadioBlockEntity extends BlockEntity {
         this.locked = locked;
         this.playing = playing;
 
-        if (level != null && level.isClientSide) {
+        if (level != null && level.isClientSide()) {
             clientApplyAudioState();
         }
     }
 
     @Override
     public void setRemoved() {
-        if (level != null && level.isClientSide) {
+        if (level != null && level.isClientSide()) {
             RadioStreamManager.applyState(worldPosition, "", 0);
         }
         super.setRemoved();
@@ -338,7 +333,7 @@ public class RadioBlockEntity extends BlockEntity {
     private void cc_sync() {
         setChanged();
 
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
 
             if (level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
@@ -351,8 +346,27 @@ public class RadioBlockEntity extends BlockEntity {
         return this.streamUrl == null ? "" : this.streamUrl;
     }
 
+    public String getNowPlaying() {
+        return this.nowPlaying;
+    }
+
+    public void acceptNowPlaying(String title) {
+        String next = title == null ? "" : title.trim().replace('\r', ' ').replace('\n', ' ');
+        if (next.equals(this.nowPlaying)) return;
+        this.nowPlaying = next;
+        cc_event("openfm_now_playing",
+                worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), this.nowPlaying);
+    }
+
+    private void clearNowPlaying() {
+        if (this.nowPlaying.isEmpty()) return;
+        this.nowPlaying = "";
+        cc_event("openfm_now_playing",
+                worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), "");
+    }
+
     private void cc_event(String event, Object... args) {
-        if (this.level == null || this.level.isClientSide) return;
+        if (this.level == null || this.level.isClientSide()) return;
         if (!(this.level instanceof net.minecraft.server.level.ServerLevel serverLevel)) return;
         if (!Services.PLATFORM.isModLoaded("computercraft")) return;
 

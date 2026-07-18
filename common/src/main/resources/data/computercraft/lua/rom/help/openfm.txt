@@ -1,0 +1,23 @@
+OpenFM Radio Controller
+
+Usage: openfm [peripheral]
+
+Opens an interactive controller for an attached OpenFM radio. The radio may be
+directly beside the computer or connected through a wired modem. If more than
+one radio is attached, pass the peripheral name to select one.
+
+The dashboard shows the current ICY song title when a nearby player is listening
+to the stream. Title changes are pushed to attached computers automatically.
+
+Keyboard controls:
+  P       Start playback
+  S       Stop playback
+  + / -   Change volume
+  U       Set or clear the stream URL
+  T       Set the radio display text
+  C       Set the display color as RRGGBB
+  R       Refresh the dashboard
+  Q       Quit
+
+The buttons are also clickable on computers with mouse input. A radio locked by
+its owner can be inspected but cannot be changed from a computer.

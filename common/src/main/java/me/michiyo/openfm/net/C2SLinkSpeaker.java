@@ -10,7 +10,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -19,7 +19,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class C2SLinkSpeaker implements CustomPacketPayload {
     public static final Type<C2SLinkSpeaker> TYPE = new Type<>(
-            ResourceLocation.fromNamespaceAndPath(OpenFM.MODID, "link_speaker")
+            Identifier.fromNamespaceAndPath(OpenFM.MODID, "link_speaker")
     );
     public static final StreamCodec<RegistryFriendlyByteBuf, C2SLinkSpeaker> STREAM_CODEC =
             StreamCodec.of((buf, msg) -> encode(msg, buf), C2SLinkSpeaker::decode);
@@ -50,27 +50,27 @@ public class C2SLinkSpeaker implements CustomPacketPayload {
     public static void encode(C2SLinkSpeaker msg, FriendlyByteBuf buf) {
         buf.writeBoolean(msg.unlink);
 
-        buf.writeResourceLocation(msg.speakerDim.location());
+        buf.writeIdentifier(msg.speakerDim.identifier());
         buf.writeBlockPos(msg.speakerPos);
 
-        buf.writeResourceLocation(msg.radioDim.location());
+        buf.writeIdentifier(msg.radioDim.identifier());
         buf.writeBlockPos(msg.radioPos);
     }
 
     public static C2SLinkSpeaker decode(FriendlyByteBuf buf) {
         boolean unlink = buf.readBoolean();
 
-        ResourceKey<Level> speakerDim = ResourceKey.create(Registries.DIMENSION, buf.readResourceLocation());
+        ResourceKey<Level> speakerDim = ResourceKey.create(Registries.DIMENSION, buf.readIdentifier());
         BlockPos speakerPos = buf.readBlockPos();
 
-        ResourceKey<Level> radioDim = ResourceKey.create(Registries.DIMENSION, buf.readResourceLocation());
+        ResourceKey<Level> radioDim = ResourceKey.create(Registries.DIMENSION, buf.readIdentifier());
         BlockPos radioPos = buf.readBlockPos();
 
         return new C2SLinkSpeaker(unlink, speakerDim, speakerPos, radioDim, radioPos);
     }
 
     public static void handle(C2SLinkSpeaker msg, ServerPlayer player) {
-            ServerLevel speakerLevel = player.server.getLevel(msg.speakerDim);
+            ServerLevel speakerLevel = player.level().getServer().getLevel(msg.speakerDim);
             if (speakerLevel == null) return;
             if (!speakerLevel.isLoaded(msg.speakerPos)) return;
 
@@ -83,7 +83,7 @@ public class C2SLinkSpeaker implements CustomPacketPayload {
                 return;
             }
 
-            ServerLevel radioLevel = player.server.getLevel(msg.radioDim);
+            ServerLevel radioLevel = player.level().getServer().getLevel(msg.radioDim);
             if (radioLevel == null) return;
             if (!radioLevel.isLoaded(msg.radioPos)) return;
 

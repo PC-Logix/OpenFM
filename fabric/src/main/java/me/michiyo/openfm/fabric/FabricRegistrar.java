@@ -4,13 +4,13 @@ import me.michiyo.openfm.OpenFM;
 import me.michiyo.openfm.platform.OpenFMRegistrar;
 import me.michiyo.openfm.platform.RegistrySupplier;
 import me.michiyo.openfm.world.menu.RadioMenu;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
+import net.fabricmc.fabric.api.menu.v1.ExtendedMenuType;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -23,8 +23,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import java.util.function.Supplier;
 
 final class FabricRegistrar implements OpenFMRegistrar {
-    private static ResourceLocation id(String name) {
-        return ResourceLocation.fromNamespaceAndPath(OpenFM.MODID, name);
+    private static Identifier id(String name) {
+        return Identifier.fromNamespaceAndPath(OpenFM.MODID, name);
     }
 
     private static <T> RegistrySupplier<T> fixed(T value) {
@@ -51,7 +51,7 @@ final class FabricRegistrar implements OpenFMRegistrar {
 
     @Override
     public RegistrySupplier<MenuType<RadioMenu>> registerRadioMenu(String name) {
-        MenuType<RadioMenu> type = new ExtendedScreenHandlerType<>(RadioMenu::new, BlockPos.STREAM_CODEC);
+        MenuType<RadioMenu> type = new ExtendedMenuType<>(RadioMenu::new, BlockPos.STREAM_CODEC);
         return fixed(net.minecraft.core.Registry.register(BuiltInRegistries.MENU, id(name), type));
     }
 
@@ -60,11 +60,11 @@ final class FabricRegistrar implements OpenFMRegistrar {
             String name,
             Component title,
             Supplier<ItemStack> icon,
-            CreativeModeTab.DisplayItemsGenerator displayItems) {
-        CreativeModeTab tab = FabricItemGroup.builder()
+            CreativeTabEntries displayItems) {
+        CreativeModeTab tab = FabricCreativeModeTab.builder()
                 .title(title)
                 .icon(icon)
-                .displayItems(displayItems)
+                .displayItems((parameters, output) -> displayItems.accept(output::accept))
                 .build();
         return fixed(net.minecraft.core.Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, id(name), tab));
     }

@@ -1,7 +1,10 @@
 package me.michiyo.openfm.client.audio;
 
+import me.michiyo.openfm.net.C2SNowPlaying;
+import me.michiyo.openfm.net.Net;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -12,6 +15,7 @@ public final class RadioStreamManager {
 
     private static final class Desired {
         final BlockPos pos;
+        volatile ResourceKey<Level> radioDimension = Level.OVERWORLD;
         volatile String url = "";
         volatile int vol = 0;
 
@@ -105,7 +109,7 @@ public final class RadioStreamManager {
         }
         lastLevel = mc.level;
 
-        Vec3 listener = mc.gameRenderer.getMainCamera().getPosition();
+        Vec3 listener = mc.gameRenderer.getMainCamera().position();
 
         // Drive players from desired state
         for (var it = DESIRED.entrySet().iterator(); it.hasNext();) {
@@ -189,6 +193,9 @@ public final class RadioStreamManager {
 
                     System.out.println("[OpenFM][Player] start at " + pos + " url=" + d.url + " vol=" + d.vol);
 
+                    ResourceKey<Level> radioDimension = d.radioDimension;
+                    String streamUrl = d.url;
+
                     // Create with metadata callback
                     RadioStreamPlayer np = new RadioStreamPlayer(
                             d.url,
@@ -198,7 +205,10 @@ public final class RadioStreamManager {
                                 if (title == null) return;
                                 String t = title.trim();
                                 if (t.isEmpty()) return;
-                                NOW_PLAYING.put(pos, t);
+                                String previous = NOW_PLAYING.put(pos, t);
+                                if (!t.equals(previous)) {
+                                    reportNowPlaying(radioDimension, pos, streamUrl, t);
+                                }
                             }
                     );
 
@@ -254,6 +264,8 @@ public final class RadioStreamManager {
         }
 
         Desired d = DESIRED.computeIfAbsent(pos, Desired::new);
+        Level level = Minecraft.getInstance().level;
+        d.radioDimension = level == null ? Level.OVERWORLD : level.dimension();
         d.url = safeUrl;
         d.vol = vol;
 
@@ -296,14 +308,31 @@ public final class RadioStreamManager {
 
     // Keep these for existing call sites (speaker BE used them earlier)
     public static void setDesired(BlockPos pos, String url, int vol, Vec3 worldPos) {
+        Minecraft mc = Minecraft.getInstance();
+        ResourceKey<Level> dimension = mc.level == null ? Level.OVERWORLD : mc.level.dimension();
+        setDesired(dimension, pos, url, vol, worldPos);
+    }
+
+    public static void setDesired(ResourceKey<Level> dimension, BlockPos pos, String url, int vol, Vec3 worldPos) {
         if (pos == null) return;
         Desired d = DESIRED.computeIfAbsent(pos.immutable(), Desired::new);
+        d.radioDimension = dimension == null ? Level.OVERWORLD : dimension;
         d.url = url == null ? "" : url;
         d.vol = vol;
         d.worldPos = worldPos == null ? Vec3.atCenterOf(pos) : worldPos;
 
         // reset smoothing when caller explicitly sets worldPos
         d.lastWorldPos = d.worldPos;
+    }
+
+    private static void reportNowPlaying(ResourceKey<Level> dimension, BlockPos pos, String streamUrl, String title) {
+        Minecraft mc = Minecraft.getInstance();
+        mc.execute(() -> {
+            if (mc.level == null || mc.player == null) return;
+            Desired current = DESIRED.get(pos);
+            if (current == null || !streamUrl.equals(current.url) || !dimension.equals(current.radioDimension)) return;
+            Net.sendToServer(new C2SNowPlaying(dimension, pos, streamUrl, title));
+        });
     }
 
     public static void clearDesired(BlockPos pos) {

@@ -47,7 +47,7 @@ final class NeoForgeRegistrar implements OpenFMRegistrar {
             Block[] validBlocks = java.util.Arrays.stream(blocks)
                     .map(RegistrySupplier::get)
                     .toArray(Block[]::new);
-            return BlockEntityType.Builder.of(factory::create, validBlocks).build(null);
+            return new BlockEntityType<>(factory::create, validBlocks);
         });
         return holder::get;
     }
@@ -63,11 +63,11 @@ final class NeoForgeRegistrar implements OpenFMRegistrar {
             String name,
             Component title,
             Supplier<ItemStack> icon,
-            CreativeModeTab.DisplayItemsGenerator displayItems) {
+            CreativeTabEntries displayItems) {
         var holder = tabs.register(name, () -> CreativeModeTab.builder()
                 .title(title)
                 .icon(icon)
-                .displayItems(displayItems)
+                .displayItems((parameters, output) -> displayItems.accept(output::accept))
                 .build());
         return holder::get;
     }

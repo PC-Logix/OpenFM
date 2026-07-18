@@ -21,6 +21,6 @@ public final class OpenFMFabricClient implements ClientModInitializer {
         FabricNetwork.registerClient();
         ClientTickEvents.END_CLIENT_TICK.register(client -> ClientEvents.clientTick());
         ScreenEvents.AFTER_INIT.register((client, screen, width, height) ->
-                OpenFMClient.addSettingsButton(screen, button -> Screens.getButtons(screen).add(button)));
+                OpenFMClient.addSettingsButton(screen, button -> Screens.getWidgets(screen).add(button)));
     }
 }

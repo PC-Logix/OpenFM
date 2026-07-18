@@ -39,7 +39,7 @@ public class RadioMenu extends AbstractContainerMenu {
         }
         this.radio = r;
 
-        if (!inv.player.level().isClientSide && inv.player instanceof net.minecraft.server.level.ServerPlayer sp) {
+        if (!inv.player.level().isClientSide() && inv.player instanceof net.minecraft.server.level.ServerPlayer sp) {
             S2CSyncFields.syncToPlayer(sp, pos, radio);
         }
 
@@ -50,7 +50,7 @@ public class RadioMenu extends AbstractContainerMenu {
             @Override
             public int get(int index) {
                 // Server side: read real values from BE
-                if (!inv.player.level().isClientSide) {
+                if (!inv.player.level().isClientSide()) {
                     return switch (index) {
                         case 0 -> radio.getVolume();
                         case 1 -> radio.isLocked() ? 1 : 0;

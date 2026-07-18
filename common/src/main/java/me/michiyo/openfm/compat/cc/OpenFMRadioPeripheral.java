@@ -6,7 +6,7 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 import me.michiyo.openfm.world.be.RadioBlockEntity;
 import net.minecraft.server.level.ServerLevel;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public final class OpenFMRadioPeripheral implements IPeripheral {
     private final RadioBlockEntity radio;
@@ -120,6 +120,11 @@ public final class OpenFMRadioPeripheral implements IPeripheral {
     @LuaFunction(mainThread = true)
     public boolean getLockState() {
         return radio.isLocked();
+    }
+
+    @LuaFunction(mainThread = true)
+    public String getNowPlaying() {
+        return radio.getNowPlaying();
     }
 
     // ---------- Screen ----------

@@ -7,12 +7,12 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 public class C2SButtonAction implements CustomPacketPayload {
     public static final Type<C2SButtonAction> TYPE = new Type<>(
-            ResourceLocation.fromNamespaceAndPath(OpenFM.MODID, "button_action")
+            Identifier.fromNamespaceAndPath(OpenFM.MODID, "button_action")
     );
     public static final StreamCodec<RegistryFriendlyByteBuf, C2SButtonAction> STREAM_CODEC =
             StreamCodec.of((buf, msg) -> encode(msg, buf), C2SButtonAction::decode);
@@ -48,7 +48,7 @@ public class C2SButtonAction implements CustomPacketPayload {
     }
 
     public static void handle(C2SButtonAction msg, ServerPlayer player) {
-        var level = player.serverLevel();
+        var level = player.level();
         var be = level.getBlockEntity(msg.pos);
         if (!(be instanceof RadioBlockEntity radio)) return;
 

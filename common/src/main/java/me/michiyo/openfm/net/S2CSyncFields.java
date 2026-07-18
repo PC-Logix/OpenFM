@@ -10,12 +10,12 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 
 public class S2CSyncFields implements CustomPacketPayload {
     public static final Type<S2CSyncFields> TYPE = new Type<>(
-            ResourceLocation.fromNamespaceAndPath(OpenFM.MODID, "sync_fields")
+            Identifier.fromNamespaceAndPath(OpenFM.MODID, "sync_fields")
     );
     public static final StreamCodec<RegistryFriendlyByteBuf, S2CSyncFields> STREAM_CODEC =
             StreamCodec.of((buf, msg) -> encode(msg, buf), S2CSyncFields::decode);
