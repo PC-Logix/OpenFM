@@ -75,5 +75,3 @@ computer.
 | `getScreenColor()` | Returns the display text color as a 24-bit RGB value. |
 | `setScreenText(text)` | Sets the display text. Long text scrolls; blank text resets it to `OpenFM`. |
 | `getScreenText()` | Returns the current display text. |
-
-OpenFM is a heavily modified version of Dragon's Radio Mod. Both projects are licensed under the MIT License.
