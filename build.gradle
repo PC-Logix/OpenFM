@@ -4,6 +4,19 @@ plugins {
     id 'net.darkhax.curseforgegradle' version '1.1.28' apply false
 }
 
+def defaultBuildNumber = mod_version == mod_version_seed ? mod_version_seed_build : '1'
+def buildNumber = providers.gradleProperty('build_number')
+        .getOrElse(defaultBuildNumber)
+        .trim()
+
+if (!(buildNumber ==~ /\d+/) || buildNumber.toInteger() < 1) {
+    throw new GradleException("build_number must be a positive integer, got '${buildNumber}'")
+}
+
+allprojects {
+    version = "${mod_version}.${buildNumber}"
+}
+
 tasks.register('publishCurseForge') {
     group = 'publishing'
     description = 'Build and publish both the Fabric and NeoForge JARs to CurseForge.'
