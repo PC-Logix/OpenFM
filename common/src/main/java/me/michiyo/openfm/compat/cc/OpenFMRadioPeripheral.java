@@ -122,6 +122,11 @@ public final class OpenFMRadioPeripheral implements IPeripheral {
         return radio.isLocked();
     }
 
+    @LuaFunction(mainThread = true)
+    public String getNowPlaying() {
+        return radio.getNowPlaying();
+    }
+
     // ---------- Screen ----------
 
     @LuaFunction(mainThread = true)

@@ -125,6 +125,7 @@ public class SpeakerBlockEntity extends BlockEntity {
 
             if (activeUrl != null && !activeUrl.isEmpty() && activeVol > 0) {
                 me.michiyo.openfm.client.audio.RadioStreamManager.setDesired(
+                        linkedDim,
                         linkedRadioPos,
                         activeUrl,
                         activeVol,

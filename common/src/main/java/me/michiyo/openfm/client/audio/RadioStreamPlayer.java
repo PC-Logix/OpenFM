@@ -14,6 +14,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -679,7 +681,7 @@ public final class RadioStreamPlayer {
             byte[] meta = in.readNBytes(metaLen);
             if (meta.length != metaLen) return;
 
-            String metaStr = new String(meta, StandardCharsets.ISO_8859_1).trim();
+            String metaStr = decodeMetadata(meta);
             String title = extractStreamTitle(metaStr);
             if (title == null || title.isBlank()) return;
 
@@ -688,6 +690,22 @@ public final class RadioStreamPlayer {
 
             if (onTitle != null) {
                 onTitle.accept(title);
+            }
+        }
+
+        private static String decodeMetadata(byte[] meta) {
+            int length = meta.length;
+            while (length > 0 && meta[length - 1] == 0) length--;
+
+            try {
+                return StandardCharsets.UTF_8.newDecoder()
+                        .onMalformedInput(CodingErrorAction.REPORT)
+                        .onUnmappableCharacter(CodingErrorAction.REPORT)
+                        .decode(ByteBuffer.wrap(meta, 0, length))
+                        .toString()
+                        .trim();
+            } catch (CharacterCodingException ignored) {
+                return new String(meta, 0, length, StandardCharsets.ISO_8859_1).trim();
             }
         }
 

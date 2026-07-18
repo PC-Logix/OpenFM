@@ -2,6 +2,7 @@ package me.michiyo.openfm.neoforge;
 
 import me.michiyo.openfm.net.C2SButtonAction;
 import me.michiyo.openfm.net.C2SLinkSpeaker;
+import me.michiyo.openfm.net.C2SNowPlaying;
 import me.michiyo.openfm.net.C2SSetFields;
 import me.michiyo.openfm.net.S2CSyncFields;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,6 +20,9 @@ final class NeoForgeNetwork {
         registrar.playToServer(C2SLinkSpeaker.TYPE, C2SLinkSpeaker.STREAM_CODEC,
                 (message, context) -> context.enqueueWork(() ->
                         C2SLinkSpeaker.handle(message, (ServerPlayer) context.player())));
+        registrar.playToServer(C2SNowPlaying.TYPE, C2SNowPlaying.STREAM_CODEC,
+                (message, context) -> context.enqueueWork(() ->
+                        C2SNowPlaying.handle(message, (ServerPlayer) context.player())));
         registrar.playToClient(S2CSyncFields.TYPE, S2CSyncFields.STREAM_CODEC,
                 (message, context) -> context.enqueueWork(() -> S2CSyncFields.handle(message)));
     }

@@ -34,7 +34,9 @@ public class RadioBlockEntityRenderer implements BlockEntityRenderer<RadioBlockE
         }
         if (text == null || text.trim().isEmpty()) text = "OpenFM";
         text = text.trim().replace("\r", " ").replace("\n", " ");
-        if (text.length() > 128) text = text.substring(0, 128);
+        if (text.codePointCount(0, text.length()) > 128) {
+            text = text.substring(0, text.offsetByCodePoints(0, 128));
+        }
 
         int argb = parseHexColorToARGB(be.getScreenColor());
 
@@ -130,32 +132,33 @@ public class RadioBlockEntityRenderer implements BlockEntityRenderer<RadioBlockE
     private static String sliceByPixelWidth(Font font, String s, float startPx, int maxPx) {
         if (s == null || s.isEmpty()) return "";
 
-        int len = s.length();
-
         // Find the start index such that width(s[0..i]) <= startPx < width(s[0..i+1])
         int startIdx = 0;
         float acc = 0.0f;
 
-        while (startIdx < len) {
-            String ch = s.substring(startIdx, startIdx + 1);
+        while (startIdx < s.length()) {
+            int codePoint = s.codePointAt(startIdx);
+            String ch = new String(Character.toChars(codePoint));
             int w = font.width(ch);
             if (acc + w > startPx) break;
             acc += w;
-            startIdx++;
+            startIdx += Character.charCount(codePoint);
         }
 
-        if (startIdx >= len) return "";
+        if (startIdx >= s.length()) return "";
 
         // Now take as many characters as fit in maxPx
         StringBuilder out = new StringBuilder();
         int used = 0;
 
-        for (int i = startIdx; i < len; i++) {
-            String ch = s.substring(i, i + 1);
+        for (int i = startIdx; i < s.length();) {
+            int codePoint = s.codePointAt(i);
+            String ch = new String(Character.toChars(codePoint));
             int w = font.width(ch);
             if (used + w > maxPx) break;
             out.append(ch);
             used += w;
+            i += Character.charCount(codePoint);
         }
 
         return out.toString();

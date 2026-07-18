@@ -25,6 +25,7 @@ public class RadioBlockEntity extends BlockEntity {
 
     // explicit playback state
     private boolean playing = false;
+    private String nowPlaying = "";
 
     private int volume = 5; // 0..10
     private String streamUrl = "";
@@ -109,6 +110,7 @@ public class RadioBlockEntity extends BlockEntity {
             cc_event("openfm_stop",
                     worldPosition.getX(), worldPosition.getY(), worldPosition.getZ()
             );
+            clearNowPlaying();
         }
 
         markDirtyAndSync();
@@ -131,6 +133,7 @@ public class RadioBlockEntity extends BlockEntity {
         String nu = sanitizeUrl(url);
         if (nu.equals(this.streamUrl)) return;
         this.streamUrl = nu;
+        clearNowPlaying();
         cc_event("openfm_url_changed", worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), cc_getStreamUrl());
 
         markDirtyAndSync();
@@ -349,6 +352,25 @@ public class RadioBlockEntity extends BlockEntity {
 
     public String cc_getStreamUrl() {
         return this.streamUrl == null ? "" : this.streamUrl;
+    }
+
+    public String getNowPlaying() {
+        return this.nowPlaying;
+    }
+
+    public void acceptNowPlaying(String title) {
+        String next = title == null ? "" : title.trim().replace('\r', ' ').replace('\n', ' ');
+        if (next.equals(this.nowPlaying)) return;
+        this.nowPlaying = next;
+        cc_event("openfm_now_playing",
+                worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), this.nowPlaying);
+    }
+
+    private void clearNowPlaying() {
+        if (this.nowPlaying.isEmpty()) return;
+        this.nowPlaying = "";
+        cc_event("openfm_now_playing",
+                worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), "");
     }
 
     private void cc_event(String event, Object... args) {
