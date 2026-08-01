@@ -1,6 +1,6 @@
 # OpenFM
 
-OpenFM adds streaming internet radio blocks and linked speakers to Minecraft 1.21.1, with optional CC:Tweaked peripheral support.
+OpenFM adds streaming internet radio blocks and linked speakers to Minecraft 1.21.1, with optional CC:Tweaked and OpenComputers support.
 
 ## Loaders
 
@@ -25,7 +25,7 @@ The distributable JARs are written to:
 - `neoforge/build/libs/openfm-neoforge-1.21.1-<version>.jar`
 - `fabric/build/libs/openfm-fabric-1.21.1-<version>.jar`
 
-Both JARs embed the MP3, Ogg Vorbis, and AAC decoder libraries. The Fabric build requires Fabric API. CC:Tweaked is optional on both loaders.
+Both JARs embed the MP3, Ogg Vorbis, and AAC decoder libraries. The Fabric build requires Fabric API. CC:Tweaked is optional on both loaders; OpenComputers is optional on NeoForge.
 
 ## Development runs
 
@@ -91,3 +91,27 @@ print("Now playing: " .. title)
 An empty title means playback stopped or the stream URL changed. Metadata is
 reported by clients already listening to the stream, so the dedicated server
 does not open an additional connection for every active radio.
+
+## OpenComputers
+
+On NeoForge, an OpenComputers Adapter next to a radio exposes an
+`openfm_radio` component. Enable the Adapter side facing the radio, then use
+the same methods and event names documented above for CC:Tweaked.
+
+```lua
+local component = require("component")
+local fm = component.openfm_radio
+
+local ok, err = fm.play("https://example.com/radio-stream")
+if not ok then
+  error(err)
+end
+```
+
+OpenComputers programs can wait for radio events through the event library:
+
+```lua
+local event = require("event")
+local _, x, y, z, title = event.pull("openfm_now_playing")
+print("Now playing: " .. title)
+```

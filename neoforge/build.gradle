@@ -27,6 +27,13 @@ dependencies {
     compileOnly "cc.tweaked:cc-tweaked-${minecraft_version}-forge-api:${cc_tweaked_neoforge_version}"
     runtimeOnly "cc.tweaked:cc-tweaked-${minecraft_version}-forge:${cc_tweaked_neoforge_version}"
 
+    def openComputersApiJar = providers.gradleProperty('opencomputers_api_jar')
+    if (openComputersApiJar.isPresent()) {
+        compileOnly files(openComputersApiJar.get())
+    } else {
+        compileOnly "li.cil.oc:opencomputers:${opencomputers_version}:api"
+    }
+
     jarJar(implementation('javazoom:jlayer:[1.0.1]')) { version { prefer '1.0.1' } }
     jarJar(implementation('com.tianscar.javasound:jaad:[0.9.4]')) { version { prefer '0.9.4' } }
 }

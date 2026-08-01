@@ -19,6 +19,11 @@ repositories {
         url = 'https://maven.squiddev.cc'
         content { includeGroup 'cc.tweaked' }
     }
+    maven {
+        name = 'Michiyo'
+        url = 'https://maven.michiyo.me/releases/'
+        content { includeGroup 'li.cil.oc' }
+    }
     exclusiveContent {
         forRepositories(
                 maven {
@@ -67,6 +72,7 @@ processResources {
             neoforge_loader_version_range: neoforge_loader_version_range,
             cc_tweaked_version: cc_tweaked_version,
             cc_tweaked_min_version: cc_tweaked_min_version,
+            opencomputers_min_version: opencomputers_min_version,
             credits: credits,
             java_version: java_version
     ]

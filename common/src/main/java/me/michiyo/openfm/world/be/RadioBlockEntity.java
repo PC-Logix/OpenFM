@@ -89,7 +89,7 @@ public class RadioBlockEntity extends BlockEntity {
 
     public void setLocked(boolean locked) {
         this.locked = locked;
-        cc_event("openfm_lock_changed", worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), this.locked);
+        computer_event("openfm_lock_changed", worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), this.locked);
         markDirtyAndSync();
     }
 
@@ -102,12 +102,12 @@ public class RadioBlockEntity extends BlockEntity {
         this.playing = playing;
 
         if (!wasPlaying && this.playing) {
-            cc_event("openfm_start",
+            computer_event("openfm_start",
                     worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(),
                     cc_getStreamUrl(), this.volume
             );
         } else if (wasPlaying && !this.playing) {
-            cc_event("openfm_stop",
+            computer_event("openfm_stop",
                     worldPosition.getX(), worldPosition.getY(), worldPosition.getZ()
             );
             clearNowPlaying();
@@ -123,7 +123,7 @@ public class RadioBlockEntity extends BlockEntity {
         int nv = clamp(v, 0, 10);
         if (nv == this.volume) return;
         this.volume = nv;
-        cc_event("openfm_volume_changed", worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), this.volume);
+        computer_event("openfm_volume_changed", worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), this.volume);
         markDirtyAndSync();
     }
 
@@ -134,7 +134,7 @@ public class RadioBlockEntity extends BlockEntity {
         if (nu.equals(this.streamUrl)) return;
         this.streamUrl = nu;
         clearNowPlaying();
-        cc_event("openfm_url_changed", worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), cc_getStreamUrl());
+        computer_event("openfm_url_changed", worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), cc_getStreamUrl());
 
         markDirtyAndSync();
     }
@@ -145,7 +145,7 @@ public class RadioBlockEntity extends BlockEntity {
         String nc = sanitizeColor(c);
         if (nc.equals(this.screenColor)) return;
         this.screenColor = nc;
-        cc_event("openfm_screen_changed", worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), this.screenColor, this.screenText);
+        computer_event("openfm_screen_changed", worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), this.screenColor, this.screenText);
         markDirtyAndSync();
     }
 
@@ -155,7 +155,7 @@ public class RadioBlockEntity extends BlockEntity {
         String nt = sanitizeScreenText(t);
         if (nt.equals(this.screenText)) return;
         this.screenText = nt;
-        cc_event("openfm_screen_changed", worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), this.screenColor, this.screenText);
+        computer_event("openfm_screen_changed", worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), this.screenColor, this.screenText);
         markDirtyAndSync();
     }
 
@@ -362,34 +362,43 @@ public class RadioBlockEntity extends BlockEntity {
         String next = title == null ? "" : title.trim().replace('\r', ' ').replace('\n', ' ');
         if (next.equals(this.nowPlaying)) return;
         this.nowPlaying = next;
-        cc_event("openfm_now_playing",
+        computer_event("openfm_now_playing",
                 worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), this.nowPlaying);
     }
 
     private void clearNowPlaying() {
         if (this.nowPlaying.isEmpty()) return;
         this.nowPlaying = "";
-        cc_event("openfm_now_playing",
+        computer_event("openfm_now_playing",
                 worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), "");
     }
 
-    private void cc_event(String event, Object... args) {
+    private void computer_event(String event, Object... args) {
         if (this.level == null || this.level.isClientSide) return;
         if (!(this.level instanceof net.minecraft.server.level.ServerLevel serverLevel)) return;
-        if (!Services.PLATFORM.isModLoaded("computercraft")) return;
 
+        if (Services.PLATFORM.isModLoaded("computercraft")) {
+            invokeComputerEvent("me.michiyo.openfm.compat.cc.CCEvents", serverLevel, event, args);
+        }
+        if (Services.PLATFORM.isModLoaded("opencomputers")) {
+            invokeComputerEvent("me.michiyo.openfm.compat.oc.OpenFMRadioDriver", serverLevel, event, args);
+        }
+    }
+
+    private void invokeComputerEvent(String className, net.minecraft.server.level.ServerLevel serverLevel,
+                                     String event, Object[] args) {
         try {
-            Class<?> cls = Class.forName("me.michiyo.openfm.compat.cc.CCEvents");
-            java.lang.reflect.Method m = cls.getMethod(
+            Class<?> cls = Class.forName(className);
+            java.lang.reflect.Method method = cls.getMethod(
                     "queue",
                     net.minecraft.server.level.ServerLevel.class,
                     net.minecraft.core.BlockPos.class,
                     String.class,
                     Object[].class
             );
-            m.invoke(null, serverLevel, this.worldPosition, event, args);
+            method.invoke(null, serverLevel, this.worldPosition, event, args);
         } catch (Throwable ignored) {
-            // swallow: CC missing, classloader timing, etc.
+            // Optional computer mod missing or not ready.
         }
     }
 }

@@ -29,3 +29,10 @@ type="optional"
 versionRange="[${cc_tweaked_min_version},)"
 ordering="AFTER"
 side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="opencomputers"
+type="optional"
+versionRange="[${opencomputers_min_version},)"
+ordering="AFTER"
+side="BOTH"
