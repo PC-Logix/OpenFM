@@ -27,6 +27,8 @@ public class RadioScreen extends AbstractContainerScreen<RadioMenu> {
     private static final int GUI_W = 256;
     private static final int GUI_H = 166;
 
+    private static final int BRAND_Y = 115;
+
     // 1.12-relative positions (relative to GUI top-left)
     private static final int URL_X = 27;
     private static final int URL_Y = 39;
@@ -93,7 +95,7 @@ public class RadioScreen extends AbstractContainerScreen<RadioMenu> {
         this.addRenderableWidget(urlBox);
 
         colorBox = new EditBox(this.font, left + COLOR_X, top + COLOR_Y, COLOR_W, COLOR_H, Component.literal("Screen Color"));
-        colorBox.setMaxLength(6);
+        colorBox.setMaxLength(7);
         this.addRenderableWidget(colorBox);
 
         textBox = new EditBox(this.font, left + TEXT_X, top + TEXT_Y, TEXT_W, TEXT_H, Component.literal("Screen Text"));
@@ -162,28 +164,28 @@ public class RadioScreen extends AbstractContainerScreen<RadioMenu> {
                 left + 144, top + 66,
                 new Sprite(145, 0, 42, 6),
                 Component.literal("Save"),
-                () -> sendButton(C2SButtonAction.Action.SAVE_TO_CARD)
+                this::sendFieldsToServer
         ));
 
         deleteBtn = this.addRenderableWidget(new SpriteButton(
                 left + 144, top + 73,
                 new Sprite(187, 0, 54, 8),
                 Component.literal("Delete"),
-                () -> sendButton(C2SButtonAction.Action.DELETE_SAVED)
+                () -> sendFieldsThen(C2SButtonAction.Action.DELETE_SAVED)
         ));
 
         lockBtn = this.addRenderableWidget(new SpriteButton(
                 left + 224, top + 68,
                 new Sprite(115, 24, 12, 16),
                 Component.literal("Lock / Unlock"),
-                () -> sendButton(C2SButtonAction.Action.TOGGLE_LOCK)
+                () -> sendFieldsThen(C2SButtonAction.Action.TOGGLE_LOCK)
         ));
 
         saveToCardBtn = this.addRenderableWidget(new SpriteButton(
                 left + 33, top + 60,
                 new Sprite(127, 24, 8, 8),
                 Component.literal("Write to Card"),
-                () -> sendButton(C2SButtonAction.Action.SAVE_TO_CARD)
+                () -> sendFieldsThen(C2SButtonAction.Action.SAVE_TO_CARD)
         ));
 
         // old y=height/2-4 => rel y=79
@@ -191,7 +193,7 @@ public class RadioScreen extends AbstractContainerScreen<RadioMenu> {
                 left + 33, top + 70,
                 new Sprite(135, 24, 8, 8),
                 Component.literal("Read from Card"),
-                () -> sendButton(C2SButtonAction.Action.LOAD_FROM_CARD)
+                () -> sendFieldsThen(C2SButtonAction.Action.LOAD_FROM_CARD)
         ));
 
         locked = menu.isLocked();
@@ -268,6 +270,11 @@ public class RadioScreen extends AbstractContainerScreen<RadioMenu> {
         Net.sendToServer(new C2SButtonAction(menu.pos, action));
     }
 
+    private void sendFieldsThen(C2SButtonAction.Action action) {
+        sendFieldsToServer();
+        sendButton(action);
+    }
+
     private void sendFieldsToServer() {
         Net.sendToServer(new C2SSetFields(menu.pos, urlBox.getValue(), colorBox.getValue(), textBox.getValue()));
     }
@@ -337,6 +344,22 @@ public class RadioScreen extends AbstractContainerScreen<RadioMenu> {
 
         // Volume number: put it where the old volumeBox lived.
         g.drawString(this.font, String.valueOf(menu.getVolume()), leftPos + VOL_TXT_X, topPos + VOL_TXT_Y, 0xFFFFFF, false);
+        g.drawCenteredString(this.font, Component.literal("OpenFM"),
+                leftPos + GUI_W / 2,
+                topPos + BRAND_Y,
+                getScreenTextColor());
+    }
+
+    private int getScreenTextColor() {
+        String value = colorBox == null ? "" : colorBox.getValue();
+        if (value.startsWith("#")) value = value.substring(1);
+        if (!value.matches("(?i)[0-9a-f]{6}")) value = menu.radio.getScreenColor();
+
+        try {
+            return Integer.parseInt(value, 16) & 0xFFFFFF;
+        } catch (NumberFormatException ignored) {
+            return 0x0AFF0A;
+        }
     }
 
     @Override
@@ -364,7 +387,7 @@ public class RadioScreen extends AbstractContainerScreen<RadioMenu> {
                 lockBtn, saveToCardBtn, loadFromCardBtn, closeBtn
         };
         for (SpriteButton button : buttons) {
-            if (button != null && button.isHoveredOrFocused()) return button;
+            if (button != null && button.isHovered()) return button;
         }
         return null;
     }

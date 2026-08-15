@@ -4,6 +4,7 @@ import me.michiyo.openfm.OpenFM;
 import me.michiyo.openfm.platform.OpenFMRegistrar;
 import me.michiyo.openfm.platform.RegistrySupplier;
 import me.michiyo.openfm.world.menu.RadioMenu;
+import me.michiyo.openfm.world.menu.PortablePlayerMenu;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
@@ -52,6 +53,13 @@ final class FabricRegistrar implements OpenFMRegistrar {
     @Override
     public RegistrySupplier<MenuType<RadioMenu>> registerRadioMenu(String name) {
         MenuType<RadioMenu> type = new ExtendedScreenHandlerType<>(RadioMenu::new, BlockPos.STREAM_CODEC);
+        return fixed(net.minecraft.core.Registry.register(BuiltInRegistries.MENU, id(name), type));
+    }
+
+    @Override
+    public RegistrySupplier<MenuType<PortablePlayerMenu>> registerPortableMenu(String name) {
+        MenuType<PortablePlayerMenu> type = new MenuType<>((id, inv) -> new PortablePlayerMenu(id, inv),
+                net.minecraft.world.flag.FeatureFlags.DEFAULT_FLAGS);
         return fixed(net.minecraft.core.Registry.register(BuiltInRegistries.MENU, id(name), type));
     }
 

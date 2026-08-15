@@ -36,6 +36,9 @@ public final class FabricPlatform implements OpenFMPlatform {
             }
         });
     }
+    @Override public void openStandardMenu(ServerPlayer player, MenuProvider provider) {
+        player.openMenu(provider);
+    }
     @Override public double getRadioVolume() { return FabricClientConfig.getVolume(); }
     @Override public void setRadioVolume(double volume) { FabricClientConfig.setVolume(volume); }
 }

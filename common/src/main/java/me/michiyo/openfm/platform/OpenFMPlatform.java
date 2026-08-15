@@ -21,6 +21,8 @@ public interface OpenFMPlatform {
 
     void openMenu(ServerPlayer player, MenuProvider provider, BlockPos pos);
 
+    void openStandardMenu(ServerPlayer player, MenuProvider provider);
+
     double getRadioVolume();
 
     void setRadioVolume(double volume);

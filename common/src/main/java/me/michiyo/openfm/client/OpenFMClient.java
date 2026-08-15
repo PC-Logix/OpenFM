@@ -1,25 +1,34 @@
 package me.michiyo.openfm.client;
 
-import me.michiyo.openfm.client.screen.OpenFMAudioSettingsScreen;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
+import me.michiyo.openfm.config.OpenFMClientConfig;
+import net.minecraft.client.OptionInstance;
+import net.minecraft.client.gui.components.OptionsList;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.options.OptionsScreen;
+import net.minecraft.client.gui.screens.options.SoundOptionsScreen;
 import net.minecraft.network.chat.Component;
 
-import java.util.function.Consumer;
-
 public final class OpenFMClient {
-    public static void addSettingsButton(Screen screen, Consumer<Button> addButton) {
-        if (!(screen instanceof OptionsScreen optionsScreen)) return;
+    public static void addSoundOptions(Screen screen) {
+        if (!(screen instanceof SoundOptionsScreen)) return;
 
-        int x = screen.width / 2 - 155;
-        int y = screen.height - 27;
-        Button button = Button.builder(Component.literal("OpenFM Audio..."), ignored ->
-                Minecraft.getInstance().setScreen(new OpenFMAudioSettingsScreen(optionsScreen)))
-                .bounds(x, y, 150, 20)
-                .build();
-        addButton.accept(button);
+        for (var child : screen.children()) {
+            if (child instanceof OptionsList optionsList) {
+                optionsList.addBig(createRadioVolumeOption());
+                return;
+            }
+        }
+    }
+
+    private static OptionInstance<Double> createRadioVolumeOption() {
+        return new OptionInstance<>(
+                "openfm.options.radio_volume",
+                OptionInstance.noTooltip(),
+                (caption, value) -> Component.literal(
+                        "OpenFM Radio Volume: " + (int) Math.round(value * 100.0) + "%"),
+                OptionInstance.UnitDouble.INSTANCE,
+                OpenFMClientConfig.RADIO_VOLUME.get(),
+                OpenFMClientConfig.RADIO_VOLUME::set
+        );
     }
 
     private OpenFMClient() {}

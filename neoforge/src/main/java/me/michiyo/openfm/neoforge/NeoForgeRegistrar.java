@@ -4,6 +4,7 @@ import me.michiyo.openfm.OpenFM;
 import me.michiyo.openfm.platform.OpenFMRegistrar;
 import me.michiyo.openfm.platform.RegistrySupplier;
 import me.michiyo.openfm.world.menu.RadioMenu;
+import me.michiyo.openfm.world.menu.PortablePlayerMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
@@ -55,6 +56,14 @@ final class NeoForgeRegistrar implements OpenFMRegistrar {
     @Override
     public RegistrySupplier<MenuType<RadioMenu>> registerRadioMenu(String name) {
         var holder = menus.register(name, () -> IMenuTypeExtension.create(RadioMenu::new));
+        return holder::get;
+    }
+
+    @Override
+    public RegistrySupplier<MenuType<PortablePlayerMenu>> registerPortableMenu(String name) {
+        var holder = menus.register(name, () -> new MenuType<>(
+                (id, inv) -> new PortablePlayerMenu(id, inv),
+                net.minecraft.world.flag.FeatureFlags.DEFAULT_FLAGS));
         return holder::get;
     }
 

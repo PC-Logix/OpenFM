@@ -1,6 +1,7 @@
 package me.michiyo.openfm.platform;
 
 import me.michiyo.openfm.world.menu.RadioMenu;
+import me.michiyo.openfm.world.menu.PortablePlayerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -22,6 +23,8 @@ public interface OpenFMRegistrar {
             String name, BlockEntityFactory<T> factory, RegistrySupplier<? extends Block>... blocks);
 
     RegistrySupplier<MenuType<RadioMenu>> registerRadioMenu(String name);
+
+    RegistrySupplier<MenuType<PortablePlayerMenu>> registerPortableMenu(String name);
 
     RegistrySupplier<CreativeModeTab> registerCreativeTab(
             String name,

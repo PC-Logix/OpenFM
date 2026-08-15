@@ -5,6 +5,9 @@ import me.michiyo.openfm.net.C2SLinkSpeaker;
 import me.michiyo.openfm.net.C2SNowPlaying;
 import me.michiyo.openfm.net.C2SSetFields;
 import me.michiyo.openfm.net.S2CSyncFields;
+import me.michiyo.openfm.net.C2SPortableAction;
+import me.michiyo.openfm.net.C2SSetPortableFields;
+import me.michiyo.openfm.net.S2CPortableState;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -15,7 +18,10 @@ final class FabricNetwork {
         PayloadTypeRegistry.playC2S().register(C2SSetFields.TYPE, C2SSetFields.STREAM_CODEC);
         PayloadTypeRegistry.playC2S().register(C2SLinkSpeaker.TYPE, C2SLinkSpeaker.STREAM_CODEC);
         PayloadTypeRegistry.playC2S().register(C2SNowPlaying.TYPE, C2SNowPlaying.STREAM_CODEC);
+        PayloadTypeRegistry.playC2S().register(C2SPortableAction.TYPE, C2SPortableAction.STREAM_CODEC);
+        PayloadTypeRegistry.playC2S().register(C2SSetPortableFields.TYPE, C2SSetPortableFields.STREAM_CODEC);
         PayloadTypeRegistry.playS2C().register(S2CSyncFields.TYPE, S2CSyncFields.STREAM_CODEC);
+        PayloadTypeRegistry.playS2C().register(S2CPortableState.TYPE, S2CPortableState.STREAM_CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(C2SButtonAction.TYPE, (message, context) ->
                 context.server().execute(() -> C2SButtonAction.handle(message, context.player())));
@@ -25,11 +31,17 @@ final class FabricNetwork {
                 context.server().execute(() -> C2SLinkSpeaker.handle(message, context.player())));
         ServerPlayNetworking.registerGlobalReceiver(C2SNowPlaying.TYPE, (message, context) ->
                 context.server().execute(() -> C2SNowPlaying.handle(message, context.player())));
+        ServerPlayNetworking.registerGlobalReceiver(C2SPortableAction.TYPE, (message, context) ->
+                context.server().execute(() -> C2SPortableAction.handle(message, context.player())));
+        ServerPlayNetworking.registerGlobalReceiver(C2SSetPortableFields.TYPE, (message, context) ->
+                context.server().execute(() -> C2SSetPortableFields.handle(message, context.player())));
     }
 
     static void registerClient() {
         ClientPlayNetworking.registerGlobalReceiver(S2CSyncFields.TYPE, (message, context) ->
                 context.client().execute(() -> S2CSyncFields.handle(message)));
+        ClientPlayNetworking.registerGlobalReceiver(S2CPortableState.TYPE, (message, context) ->
+                context.client().execute(() -> S2CPortableState.handle(message)));
     }
 
     private FabricNetwork() {}

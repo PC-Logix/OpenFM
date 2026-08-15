@@ -3,5 +3,7 @@
   "item.openfm.memory_card": "Memory Card",
   "item.openfm.radio_block": "OpenFM Radio",
   "item.openfm.tuner": "Tuner",
+  "item.openfm.portable_player": "Portable Streamer",
+  "item.openfm.headphones": "Headphones",
   "block.openfm.speaker_block": "Speaker"
 }

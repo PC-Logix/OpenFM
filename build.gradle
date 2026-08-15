@@ -22,3 +22,19 @@ tasks.register('publishCurseForge') {
     description = 'Build and publish both the Fabric and NeoForge JARs to CurseForge.'
     dependsOn(':fabric:publishCurseForge', ':neoforge:publishCurseForge')
 }
+
+// Keep the loader run targets explicit. A root-level `runClient` is ambiguous
+// because both loader projects expose one, so IntelliJ can otherwise launch
+// Fabric and then NeoForge in sequence.
+def registerLoaderRunTask = { String name, String target, String description ->
+    tasks.register(name) {
+        group = 'run'
+        this.description = description
+        dependsOn(target)
+    }
+}
+
+registerLoaderRunTask('runFabricClient', ':fabric:runClient', 'Launch the Fabric development client.')
+registerLoaderRunTask('runNeoForgeClient', ':neoforge:runClient', 'Launch the NeoForge development client.')
+registerLoaderRunTask('runFabricServer', ':fabric:runServer', 'Launch the Fabric development server.')
+registerLoaderRunTask('runNeoForgeServer', ':neoforge:runServer', 'Launch the NeoForge development server.')

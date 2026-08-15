@@ -25,6 +25,9 @@ public final class NeoForgePlatform implements OpenFMPlatform {
     @Override public void openMenu(ServerPlayer player, MenuProvider provider, BlockPos pos) {
         player.openMenu(provider, buffer -> buffer.writeBlockPos(pos));
     }
+    @Override public void openStandardMenu(ServerPlayer player, MenuProvider provider) {
+        player.openMenu(provider);
+    }
     @Override public double getRadioVolume() { return NeoForgeClientConfig.RADIO_VOLUME.get(); }
     @Override public void setRadioVolume(double volume) { NeoForgeClientConfig.RADIO_VOLUME.set(volume); }
 }

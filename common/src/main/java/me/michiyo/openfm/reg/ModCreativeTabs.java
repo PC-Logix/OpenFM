@@ -19,6 +19,8 @@ public final class ModCreativeTabs {
                     output.accept(ModItems.SPEAKER_BLOCK_ITEM.get());
                     output.accept(ModItems.MEMORY_CARD.get());
                     output.accept(ModItems.TUNER.get());
+                    output.accept(ModItems.PORTABLE_PLAYER.get());
+                    output.accept(ModItems.HEADPHONES.get());
                 });
     }
 

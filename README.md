@@ -2,6 +2,16 @@
 
 OpenFM adds streaming internet radio blocks and linked speakers to Minecraft 1.21.1, with optional CC:Tweaked and OpenComputers support.
 
+## Portable streamer
+
+The Portable Streamer opens its own control screen when used. Insert a Memory
+Card, use `Load` to copy its saved stream URL and volume, then start playback.
+While the streamer is held, nearby players hear it as a moving positional
+source. Hold Headphones in the main hand and the Portable Streamer in the
+offhand, then sneak-use the Headphones to switch that stream to private mode;
+only the player holding the pair hears it. Repeat the action to make the
+stream public again.
+
 ## Loaders
 
 OpenFM is maintained as a multi-loader project:
