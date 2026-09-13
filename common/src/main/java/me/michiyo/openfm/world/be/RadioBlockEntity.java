@@ -211,16 +211,16 @@ public class RadioBlockEntity extends BlockEntity {
         if (level == null || !level.isClientSide) return;
 
         if (!playing) {
-            RadioStreamManager.applyState(worldPosition, "", 0);
+            RadioStreamManager.applyState(level, worldPosition, "", 0);
             return;
         }
 
         if (streamUrl == null || streamUrl.isEmpty() || volume <= 0) {
-            RadioStreamManager.applyState(worldPosition, "", 0);
+            RadioStreamManager.applyState(level, worldPosition, "", 0);
             return;
         }
 
-        RadioStreamManager.applyState(worldPosition, streamUrl, volume);
+        RadioStreamManager.applyState(level, worldPosition, streamUrl, volume);
     }
 
     public void applyClientSync(String url, String color, String text, int volume, boolean locked, boolean playing) {
@@ -239,7 +239,7 @@ public class RadioBlockEntity extends BlockEntity {
     @Override
     public void setRemoved() {
         if (level != null && level.isClientSide) {
-            RadioStreamManager.applyState(worldPosition, "", 0);
+            RadioStreamManager.applyState(level, worldPosition, "", 0);
         }
         super.setRemoved();
     }

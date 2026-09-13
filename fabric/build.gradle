@@ -16,6 +16,7 @@ dependencies {
     modCompileOnly "cc.tweaked:cc-tweaked-${minecraft_version}-fabric-api:${cc_tweaked_version}"
     modRuntimeOnly "cc.tweaked:cc-tweaked-${minecraft_version}-fabric:${cc_tweaked_version}"
 
+    include implementation("dev.ryanhcode.sable-companion:sable-companion-common-${minecraft_version}:${sable_companion_version}")
     include implementation('javazoom:jlayer:1.0.1')
     include implementation('com.tianscar.javasound:jaad:0.9.4')
 }

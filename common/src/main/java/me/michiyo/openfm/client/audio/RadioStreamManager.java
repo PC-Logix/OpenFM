@@ -61,12 +61,13 @@ public final class RadioStreamManager {
      * Register/update an emitter for a given radio position.
      * Call this from SpeakerBlockEntity (client-side) whenever it loads/updates.
      */
-    public static void setEmitterForRadio(BlockPos radioPos, BlockPos emitterPos, Vec3 worldPos) {
+    public static void setEmitterForRadio(Level sourceLevel, BlockPos radioPos, BlockPos emitterPos, Vec3 worldPos) {
         if (radioPos == null || emitterPos == null) return;
 
         BlockPos r = radioPos.immutable();
         BlockPos e = emitterPos.immutable();
-        Vec3 wp = (worldPos == null) ? Vec3.atCenterOf(e) : worldPos;
+        Vec3 wp = SableSoundCompat.physicalPosition(
+                sourceLevel, worldPos == null ? Vec3.atCenterOf(e) : worldPos);
         System.out.println("[OpenFM][Emitter] radio=" + radioPos + " + emitter=" + emitterPos);
         RADIO_EMITTERS.computeIfAbsent(r, k -> new ConcurrentHashMap<>()).put(e, wp);
     }
@@ -109,7 +110,8 @@ public final class RadioStreamManager {
         }
         lastLevel = mc.level;
 
-        Vec3 listener = mc.gameRenderer.getMainCamera().getPosition();
+        Vec3 listener = SableSoundCompat.physicalPosition(
+                mc.level, mc.gameRenderer.getMainCamera().getPosition());
 
         // Drive players from desired state
         for (var it = DESIRED.entrySet().iterator(); it.hasNext();) {
@@ -138,7 +140,7 @@ public final class RadioStreamManager {
 
             // Pick nearest emitter for this radio (radio itself is always an implicit emitter)
             boolean radioLoaded = mc.level.hasChunkAt(pos);
-            Vec3 targetPos = blockCenter(pos);
+            Vec3 targetPos = d.worldPos;
 
             Map<BlockPos, Vec3> emitters = RADIO_EMITTERS.get(pos);
             if (emitters != null && !emitters.isEmpty()) {
@@ -249,7 +251,7 @@ public final class RadioStreamManager {
         lastLevel = null;
     }
 
-    public static void applyState(BlockPos pos, String url, int volume0to10) {
+    public static void applyState(Level sourceLevel, BlockPos pos, String url, int volume0to10) {
         String safeUrl = (url == null) ? "" : url.trim();
         int vol = Math.max(0, Math.min(10, volume0to10));
 
@@ -268,7 +270,7 @@ public final class RadioStreamManager {
         d.vol = vol;
 
         // Default source position is the radio itself (will be overridden in tick if emitters exist)
-        d.worldPos = blockCenter(pos);
+        d.worldPos = SableSoundCompat.physicalPosition(sourceLevel, blockCenter(pos));
 
         //System.out.println("[OpenFM][Desired] pos=" + pos + " url=" + safeUrl + " vol=" + vol);
 
@@ -279,6 +281,10 @@ public final class RadioStreamManager {
             NOW_PLAYING.remove(pos);
             d.nextRestartAtMs = 0;
         }
+    }
+
+    public static void applyState(BlockPos pos, String url, int volume0to10) {
+        applyState(Minecraft.getInstance().level, pos, url, volume0to10);
     }
 
     private static void stopPlayer(BlockPos pos) {
@@ -311,16 +317,21 @@ public final class RadioStreamManager {
         setDesired(dimension, pos, url, vol, worldPos);
     }
 
-    public static void setDesired(ResourceKey<Level> dimension, BlockPos pos, String url, int vol, Vec3 worldPos) {
+    public static void setDesired(Level sourceLevel, ResourceKey<Level> dimension, BlockPos pos, String url, int vol, Vec3 worldPos) {
         if (pos == null) return;
         Desired d = DESIRED.computeIfAbsent(pos.immutable(), Desired::new);
         d.radioDimension = dimension == null ? Level.OVERWORLD : dimension;
         d.url = url == null ? "" : url;
         d.vol = vol;
-        d.worldPos = worldPos == null ? Vec3.atCenterOf(pos) : worldPos;
+        d.worldPos = SableSoundCompat.physicalPosition(
+                sourceLevel, worldPos == null ? Vec3.atCenterOf(pos) : worldPos);
 
         // reset smoothing when caller explicitly sets worldPos
         d.lastWorldPos = d.worldPos;
+    }
+
+    public static void setDesired(ResourceKey<Level> dimension, BlockPos pos, String url, int vol, Vec3 worldPos) {
+        setDesired(Minecraft.getInstance().level, dimension, pos, url, vol, worldPos);
     }
 
     private static void reportNowPlaying(ResourceKey<Level> dimension, BlockPos pos, String streamUrl, String title) {

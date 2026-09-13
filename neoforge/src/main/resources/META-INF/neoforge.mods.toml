@@ -36,3 +36,10 @@ type="optional"
 versionRange="[${opencomputers_min_version},)"
 ordering="AFTER"
 side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="sable"
+type="optional"
+versionRange="[2.0,3)"
+ordering="AFTER"
+side="BOTH"

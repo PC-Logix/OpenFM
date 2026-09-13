@@ -37,6 +37,7 @@ dependencies {
 
     compileOnly "li.cil.oc:opencomputers:${opencomputers_version}:api"
 
+    jarJar(implementation("dev.ryanhcode.sable-companion:sable-companion-common-${minecraft_version}:${sable_companion_version}"))
     jarJar(implementation('javazoom:jlayer:[1.0.1]')) { version { prefer '1.0.1' } }
     jarJar(implementation('com.tianscar.javasound:jaad:[0.9.4]')) { version { prefer '0.9.4' } }
 }

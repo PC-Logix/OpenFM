@@ -15,6 +15,13 @@ if (!(buildNumber ==~ /\d+/) || buildNumber.toInteger() < 1) {
 
 allprojects {
     version = "${mod_version}.${buildNumber}"
+    repositories {
+        maven {
+            name = 'Sable Companion'
+            url = 'https://maven.ryanhcode.dev/releases'
+            content { includeGroup 'dev.ryanhcode.sable-companion' }
+        }
+    }
 }
 
 tasks.register('publishCurseForge') {

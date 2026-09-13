@@ -89,9 +89,10 @@ public class SpeakerBlockEntity extends BlockEntity {
     // Client emitter bridging
     // -----------------------
 
-    private static void clientRegisterEmitter(BlockPos radioPos, BlockPos speakerPos) {
+    private static void clientRegisterEmitter(Level sourceLevel, BlockPos radioPos, BlockPos speakerPos) {
         if (Services.PLATFORM.isPhysicalClient()) {
             me.michiyo.openfm.client.audio.RadioStreamManager.setEmitterForRadio(
+                    sourceLevel,
                     radioPos,
                     speakerPos,
                     Vec3.atCenterOf(speakerPos)
@@ -121,10 +122,11 @@ public class SpeakerBlockEntity extends BlockEntity {
 
         // If currently linked, register as an emitter (ALWAYS; do not gate on activeUrl/activeVol)
         if (linkedRadioPos != null) {
-            clientRegisterEmitter(linkedRadioPos, worldPosition);
+            clientRegisterEmitter(level, linkedRadioPos, worldPosition);
 
             if (activeUrl != null && !activeUrl.isEmpty() && activeVol > 0) {
                 me.michiyo.openfm.client.audio.RadioStreamManager.setDesired(
+                        level,
                         linkedDim,
                         linkedRadioPos,
                         activeUrl,

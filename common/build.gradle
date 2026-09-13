@@ -15,6 +15,7 @@ dependencies {
     api 'javazoom:jlayer:1.0.1'
     api 'org.jcraft:jorbis:0.0.17'
     api 'com.tianscar.javasound:jaad:0.9.4'
+    api "dev.ryanhcode.sable-companion:sable-companion-common-${minecraft_version}:${sable_companion_version}"
     compileOnly "cc.tweaked:cc-tweaked-${minecraft_version}-core-api:${cc_tweaked_neoforge_version}"
 }
 
